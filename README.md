@@ -1,1 +1,50 @@
-# DBW-2026-Gx-Matrioska
+# Matrioska
+
+Projeto desenvolvido no âmbito da disciplina de Desenvolvimento Baseado na Web (DBW) 2026.
+
+## Grupo
+- Afonso Camoes - 2123322
+- Rafael Vieira Silva - 2176524
+- Teresa Silva - 2028815
+
+## Descrição
+
+Matrioska é um jogo multijogador de agilidade linguística onde os jogadores recebem uma Palavra-Mestra e têm 30 segundos para descobrir o maior número possível de subpalavras válidas.
+
+A pontuação é baseada no número de letras de cada palavra correta, sendo penalizadas palavras inválidas (-2 pontos).
+
+## Funcionalidades Planeadas
+
+- Sistema de Login e Registo
+- Página de Perfil com estatísticas acumuladas
+- Criação de salas privadas
+- Entrada em salas por código
+- Lobby com contagem decrescente automática
+- Jogo sincronizado com temporizador
+- Ranking final da partida
+
+## Protótipo
+
+O protótipo foi desenvolvido no Figma e inclui:
+
+- Landing Page
+- Login / Registo
+- Página Principal
+- Create Match
+- Lobby
+- Game Screen
+- Loading Screen
+- Ranking Final
+- Profile Page
+
+## Tecnologias Previstas
+
+- HTML
+- CSS
+- JavaScript
+- MongoDB
+- Socket.io
+
+---
+
+Em desenvolvimento.
