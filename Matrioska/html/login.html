@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <!-- Configuração base -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matrioska - Login</title>
+
+    <!-- Fonte -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Estilos globais + autenticação -->
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/auth.css" />
+  </head>
+
+  <body>
+    <!-- Fundo -->
+    <img
+      src="../images/homepage_bg.png"
+      alt="Fundo Matrioska"
+      class="background-image"
+    />
+
+    <!-- Botão de voltar -->
+    <a href="homepage.html" class="auth-back" aria-label="Voltar">←</a>
+
+    <!-- Card de login -->
+    <main class="glass-card auth-card">
+      <!-- Título -->
+      <h1 class="title-neon">Matrioska</h1>
+
+      <!-- Subtítulo (dinâmico) -->
+      <p class="auth-subtitle">Insere os teus dados</p>
+
+      <!-- Formulário de login -->
+      <form class="auth-form" id="login-form">
+        <!-- Email -->
+        <input
+          type="email"
+          class="auth-input"
+          id="login-email"
+          placeholder="E-mail"
+          required
+        />
+
+        <!-- Username -->
+        <input
+          type="text"
+          class="auth-input"
+          id="login-username"
+          placeholder="Nome de utilizador"
+          required
+        />
+
+        <!-- Password -->
+        <input
+          type="password"
+          class="auth-input"
+          id="login-password"
+          placeholder="Palavra-passe"
+          required
+        />
+
+        <!-- Botão de login -->
+        <button type="submit" class="auth-submit login-submit">Entrar</button>
+      </form>
+
+      <!-- Seletor de idioma -->
+      <div class="lang-footer" id="lang-selector" onclick="toggleLanguage()">
+        <div id="lang-flag" class="lang-icon english-flag"></div>
+        <span id="lang-name" class="lang-text">English</span>
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../js/main.js"></script>
+    <script src="../js/login.js"></script>
+  </body>
+</html>

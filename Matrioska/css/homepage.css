@@ -1,0 +1,91 @@
+/* HOMEPAGE.CSS Estilos exclusivos da homepage */
+
+.glass-card.homepage-card {
+  width: 880px;
+  max-width: 90%;
+  min-height: 480px;
+  padding: 50px 40px 110px 40px;
+  margin-top: 0;
+}
+
+.welcome-label {
+  font-size: 32px;
+  color: var(--text-slate);
+  margin-bottom: 5px;
+}
+
+.homepage-card .title-neon {
+  font-size: clamp(3rem, 10vw, 86px);
+  margin: 10px 0;
+}
+
+.description {
+  font-size: 20px;
+  color: rgba(226, 232, 240, 0.8);
+  max-width: 500px;
+  margin-bottom: 40px;
+}
+
+.btn-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.btn-custom {
+  width: 260px;
+  height: 70px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 28px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-blue {
+  background: var(--login-gradient);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+}
+
+.btn-pink {
+  background: var(--register-gradient);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+.btn-custom:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.1);
+}
+
+@media (max-width: 768px) {
+  .glass-card.homepage-card {
+    margin-top: 0;
+    width: 95%;
+    padding: 35px 20px 80px 20px;
+  }
+
+  .btn-container {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-custom {
+    width: 100%;
+    font-size: 24px;
+    height: 60px;
+  }
+
+  .welcome-label {
+    font-size: 24px;
+  }
+
+  .description {
+    font-size: 17px;
+  }
+}

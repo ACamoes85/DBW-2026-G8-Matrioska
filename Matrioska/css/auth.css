@@ -1,0 +1,121 @@
+/* AUTH.CSS Estilos exclusivos das páginas de autenticação */
+
+.auth-back {
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  color: white;
+  text-decoration: none;
+  font-size: 38px;
+  font-weight: bold;
+  z-index: 2;
+  transition: transform 0.2s ease;
+}
+
+.auth-back:hover {
+  transform: scale(1.08);
+}
+
+.glass-card.auth-card {
+  width: 470px;
+  max-width: 90%;
+  min-height: 580px;
+  padding: 35px 35px 75px 35px;
+}
+
+.auth-card .title-neon {
+  font-size: clamp(3rem, 7vw, 72px);
+  margin-bottom: 12px;
+}
+
+.auth-subtitle {
+  font-size: 18px;
+  color: var(--text-slate);
+  margin-bottom: 22px;
+  font-weight: 600;
+}
+
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-input {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-size: 16px;
+  font-weight: 600;
+  outline: none;
+  background: #ffffff;
+  color: #111827;
+}
+
+.auth-input::placeholder {
+  color: #374151;
+}
+
+.auth-submit {
+  width: 160px;
+  height: 52px;
+  margin: 8px auto 0;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.auth-submit:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.login-submit {
+  background: var(--login-gradient);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+}
+
+.register-submit {
+  background: var(--register-gradient);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}
+
+@media (max-width: 768px) {
+  .glass-card.auth-card {
+    width: 95%;
+    min-height: auto;
+    padding: 30px 20px 75px 20px;
+  }
+
+  .auth-card .title-neon {
+    font-size: 52px;
+  }
+
+  .auth-subtitle {
+    font-size: 16px;
+  }
+
+  .auth-input {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .auth-submit {
+    width: 140px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .auth-back {
+    top: 18px;
+    left: 18px;
+    font-size: 32px;
+  }
+}

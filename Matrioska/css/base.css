@@ -1,0 +1,104 @@
+/* BASE.CSS Estilos globais partilhados por todas as páginas */
+
+:root {
+  --matrioska-gradient: linear-gradient(90deg, #66adff 0%, #ff45f3 100%);
+  --login-gradient: linear-gradient(90deg, #00e5ff 0%, #007bff 100%);
+  --register-gradient: linear-gradient(90deg, #a855f7 0%, #ff3cf7 100%);
+  --text-slate: #cbd5e1;
+  --text-white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #05010d;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Inter", sans-serif;
+  color: var(--text-white);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  padding: 0;
+}
+
+.background-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center center;
+  z-index: -2;
+  opacity: 0.9;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.title-neon {
+  font-weight: 700;
+  background: var(--matrioska-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lang-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(11, 23, 48, 0.7);
+  border: 1px solid rgba(45, 211, 238, 0.3);
+  padding: 8px 18px;
+  border-radius: 10px;
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+}
+
+.lang-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.english-flag {
+  background-image: url("../images/english_icon.png");
+}
+
+.portuguese-flag {
+  background-image: url("../images/portuguese_icon.png");
+}
+
+.lang-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-slate);
+}
