@@ -1,0 +1,329 @@
+body {
+    /* Gradiente exato do teu código Figma */
+    background: linear-gradient(255.61deg, #0B1026 11.34%, #141B3A 55.49%, #1C0F3F 100%);
+    min-height: 100vh;
+    margin: 0;
+}
+
+.howto-container {
+    width: 1200px; /* Valor do teu código Figma */
+    max-width: 95%;
+    flex-direction: row; /* Coloca texto à esquerda e imagem à direita */
+    padding: 60px;
+    gap: 40px;
+    justify-content: space-between;
+}
+
+.howto-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Garante que tudo começa à esquerda */
+    text-align: left;
+}
+
+.rules-list {
+    list-style: none;
+    margin: 30px 0;
+    color: rgba(199, 210, 254, 0.8); /* Cor exata do teu Figma */
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.rules-list li {
+    margin-bottom: 15px;
+}
+
+/* O botão azul "Passageiro" */
+.word-badge {
+    display: inline-block;
+    padding: 15px 40px;
+    background: linear-gradient(90deg, #22D3EE 0%, #6366F1 100%); /* Gradiente do teu Figma */
+    border-radius: 14px;
+    font-weight: bold;
+    font-size: 32px;
+    margin: 20px 0;
+}
+
+.howto-image img {
+    width: 100%;
+    max-width: 500px;
+    /* Adiciona o brilho que estava no Figma */
+    filter: drop-shadow(0 0 30px rgba(34, 211, 238, 0.45));
+}
+
+@media (max-width: 1024px) {
+    .howto-container {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+main.howto-container {
+    margin-top: 120px; /* Dá espaço para a barra de navegação */
+    margin-bottom: 50px;
+    /* Garante que o cartão está centrado */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-navbar {
+  /* 1. Fixar no topo */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 88px; /* Altura exata do teu Figma */
+  
+  /* 2. Cores e Estilo */
+  background: rgba(11, 16, 38, 0.7); /* Fundo semi-transparente */
+  backdrop-filter: blur(10px);        /* Efeito de vidro */
+  border-bottom: 1px solid rgba(124, 58, 237, 0.2); /* Linha roxa fina */
+  
+  /* 3. Alinhamento dos itens */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  z-index: 1000; /* Garante que fica por cima de todos os outros elementos */
+}
+
+/* Estilo dos links (Início, Classificação, Como jogar) */
+.nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-links a {
+  color: rgba(199, 210, 254, 0.8);
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: #FFFFFF;
+}
+
+/* 4. A Linha Azul Brilhante (Indicador de página ativa) */
+.nav-links a.active::after {
+  content: "";
+  position: absolute;
+  bottom: -32px; /* Empurra para a base da navbar */
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #2DD3EE;
+  /* Brilho neon azul */
+  box-shadow: 0px 0px 14px rgba(45, 211, 238, 0.6), 
+              0px 0px 6px rgba(45, 211, 238, 0.8);
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Garante que o contentor não tem espaço interno */
+}
+
+.profile-avatar {
+  /* 1. Tamanho do ícone */
+  width: 60px;
+  height: 60px;
+  
+  /* 2. Mantém apenas o formato redondo */
+  border-radius: 50%;
+  
+  /* 3. Garante que a foto preenche o espaço sem distorcer */
+  object-fit: cover;
+  
+  /* 4. Remove TUDO o resto (bordas, sombras, fundos) */
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  
+  /* 5. Garante que não há comportamentos estranhos de bloco */
+  display: block;
+}
+
+/* A caixa (o quadrado) */
+.answers-card {
+  background: rgba(11, 23, 48, 0.85); /* Fundo escuro */
+  border: 1px solid rgba(45, 211, 238, 0.25); /* Borda azul neon fina */
+  box-shadow: 0px 0px 10px rgba(45, 211, 238, 0.2); /* Brilho exterior */
+  border-radius: 12px;
+  padding: 20px;
+  width: 280px; /* Ajusta o tamanho ao texto */
+  min-width: 250px;
+  text-align: left;
+  margin-top: 15px;
+}
+
+/* O título dentro da caixa */
+.answers-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: rgba(159, 179, 217, 0.7);
+  margin-bottom: 10px;
+}
+
+/* A lista de palavras */
+.answers-list {
+  list-style: none; /* Tira as bolinhas da lista */
+  padding: 0;
+}
+
+.answers-list li {
+  font-weight: 700;
+  font-size: 18px;
+  color: #C7D2FE;
+  margin-bottom: 5px;
+  padding-left: 15px;
+  position: relative;
+}
+
+/* Adiciona a bolinha personalizada se quiseres igual ao Figma */
+.answers-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #2DD3EE;
+}
+
+/* Centraliza apenas a secção do exemplo */
+.example-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;    /* Centra o botão e o quadrado entre si */
+    width: 100%;            /* Ocupa a largura toda para poder centrar no meio */
+    margin-top: 20px;
+}
+
+/* 1. Remove os pontos padrão e reseta o recuo */
+.rules-list, .answers-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 2. Prepara o espaço para o novo ponto em ambas as listas */
+.rules-list li, .answers-list li {
+  position: relative;
+  padding-left: 25px; /* Espaço para o ponto azul */
+  margin-bottom: 12px;
+  color: rgba(199, 210, 254, 0.8);
+  font-family: 'Inter', sans-serif;
+}
+
+/* 1. Afastar as regras do título */
+.title-neon {
+    margin-bottom: 40px; /* Aumenta este valor se quiseres mais espaço */
+    display: block;
+}
+
+/* 2. Ajustar a posição vertical do ponto */
+.rules-list li::before, 
+.answers-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    
+    /* AJUSTE AQUI: */
+    top: 4px; /* Aumenta para 5px ou 6px se ainda achares alto */
+    
+    color: #2DD3EE;
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 1;
+    text-shadow: 0 0 8px rgba(45, 211, 238, 0.6);
+}
+
+/* Garante que o texto da lista tem um bom respiro entre linhas */
+.rules-list li {
+    margin-bottom: 20px; /* Dá mais espaço entre cada regra */
+    line-height: 1.4;    /* Melhora a leitura */
+}
+
+/* Garante que o link não tem decorações e o rato muda para mão */
+.profile-link {
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+/* Efeito ao passar o rato: a imagem aumenta ligeiramente e brilha */
+.profile-link:hover {
+    transform: scale(1.05); /* Aumenta 5% */
+    filter: brightness(1.2); /* Fica mais clarinha */
+}
+
+.back-button {
+    display: none; /* Escondido por padrão */
+    color: #2DD3EE;
+    text-decoration: none;
+    font-weight: bold;
+    align-items: center;
+    gap: 8px;
+}
+
+
+@media (max-width: 768px) {
+    /* 1. Limpar o fundo da barra de navegação */
+    .header-navbar {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0 20px;
+        height: 50px; /* Reduzi a altura para não ocupar tanto espaço */
+        background: none; /* Remove o fundo se quiseres que flutue */
+        border-bottom: none; /* Remove a linha se preferires */
+        position: absolute; /* Para não empurrar o conteúdo para baixo */
+    }
+
+    /* Esconder o que não queres */
+    .nav-links, .profile-section, .howto-image {
+        display: none !important;
+    }
+
+    .back-button {
+        display: flex !important;
+        color: #2DD3EE;
+        text-decoration: none;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    /* 2. Ajustar o Quadrado (Glass Card) e o Título */
+    main.howto-container {
+        margin-top: 60px; /* Espaço para o botão voltar */
+        padding: 15px; /* Reduz padding externo */
+        width: 95%;
+    }
+
+    .howto-content {
+        padding: 20px 10px; /* Dá espaço interno para o texto não bater nas bordas */
+    }
+
+    .title-neon {
+        font-size: 26px;
+        margin-top: 10px; /* Afasta o título do topo do quadrado */
+        margin-bottom: 25px;
+    }
+
+    /* 3. Ajustar as Bolas (Bullets) da lista */
+    .rules-list li::before, 
+    .answers-list li::before {
+        top: 2px !important; /* DIMINUÍ este valor para a bola subir */
+        font-size: 18px;     /* Reduzi o tamanho da bola para alinhar melhor */
+    }
+
+    .rules-list li {
+        padding-left: 25px; /* Garante espaço para a bola */
+        margin-bottom: 15px;
+    }
+}

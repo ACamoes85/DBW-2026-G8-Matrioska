@@ -19,6 +19,20 @@ const traducoes = {
     confirmPassword: "Confirmar palavra-passe",
     registerButton: "Registar",
 
+    /* How to Play */
+    back: "← Voltar",
+    rulesTitle: "Como jogar",
+    rule1: "Palavra-Mestra:",
+    rule1Desc: "No teu ecrã irá aparecer uma \"Palavra-Mestra\".",
+    rule2: "Palavras escondidas:",
+    rule2Desc: "O teu objetivo é encontrar palavras menores dentro dela.",
+    rule3: "Regra:",
+    rule3Desc: "As letras podem estar em sequência direta ou indireta.",
+    rule4: "Pontuação:",
+    rule4Desc: "Quanto maior a palavra, mais pontos obténs.",
+    rule5: "Aqui está um exemplo prático:",
+    correctAnswers: "Respostas corretas:",
+
     /* Botão de troca de idioma */
     nextLang: "English",
     flag: "../images/english_icon.png",
@@ -42,6 +56,20 @@ const traducoes = {
     registerSubtitle: "Enter your details",
     confirmPassword: "Confirm Password",
     registerButton: "Register",
+
+    /* How to Play */
+    back: "← Back",
+    rulesTitle: "How to Play",
+    rule1: "Master Word:",
+    rule1Desc: "A \"Master Word\" will appear on your screen.",
+    rule2: "Hidden words:",
+    rule2Desc: "Your goal is to find smaller words within it.",
+    rule3: "Rule:",
+    rule3Desc: "Letters can be in direct or indirect sequence.",
+    rule4: "Scoring:",
+    rule4Desc: "The longer the word, the more points you get.",
+    rule5: "Here is a practical example:",
+    correctAnswers: "Correct answers:",
 
     /* Botão de troca de idioma */
     nextLang: "Português",
@@ -79,6 +107,12 @@ function aplicarIdioma() {
   );
   const elRegisterBtn = document.getElementById("register-button");
 
+  /* Elementos da How to Play */
+  const elBack = document.querySelector(".back-button");
+  const elRulesTitle = document.querySelector(".title-neon");
+  const elCorrectTitle = document.querySelector(".answers-title");
+  const rulesList = document.querySelectorAll(".rules-list li");
+
   /* Elementos do seletor de idioma */
   const elLangName = document.getElementById("lang-name");
   const elLangFlag = document.getElementById("lang-flag");
@@ -106,6 +140,18 @@ function aplicarIdioma() {
     elRegisterConfirmPassword.placeholder = dados.confirmPassword;
   }
   if (elRegisterBtn) elRegisterBtn.innerText = dados.registerButton;
+
+  /* Aplicar How to Play */
+  if (elBack) elBack.innerHTML = `<span>←</span> ${dados.back}`;
+  if (elRulesTitle) elRulesTitle.innerText = dados.rulesTitle;
+  if (elCorrectTitle) elCorrectTitle.innerText = dados.correctAnswers;
+  if (rulesList.length > 0) {
+    rulesList[0].innerHTML = `<strong>${dados.rule1}</strong> ${dados.rule1Desc}`;
+    rulesList[1].innerHTML = `<strong>${dados.rule2}</strong> ${dados.rule2Desc}`;
+    rulesList[2].innerHTML = `<strong>${dados.rule3}</strong> ${dados.rule3Desc}`;
+    rulesList[3].innerHTML = `<strong>${dados.rule4}</strong> ${dados.rule4Desc}`;
+    rulesList[4].innerText = dados.rule5;
+  }
 
   /* Botão de idioma: mostra sempre a próxima língua */
   if (elLangName) elLangName.innerText = dados.nextLang;
