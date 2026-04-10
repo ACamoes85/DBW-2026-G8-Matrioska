@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matrioska - Perfil</title>
+    <!-- Estilos globais e específicos da página profile -->
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/navbar.css" />
+    <link rel="stylesheet" href="../css/profile.css" />
+  </head>
+  <body>
+    <!-- Imagem de fundo -->
+    <img src="../images/howtoplay_bg.png" class="background-image" />
+    <div class="background-ellipse"></div>
+    <!-- Botão para voltar atrás -->
+    <a href="hub.html" class="back-button"></a>
+    <!-- Barra de navegação -->
+    <header class="header-navbar">
+        <nav class="nav-links">
+            <a href="hub.html">Início</a>
+            <a href="leaderboard.html">Classificação</a>
+            <a href="howtoplay.html">Como jogar</a>
+        </nav>
+        <div class="profile-section">
+            <a href="profile.html" class="profile-link active-profile">
+                <img src="../images/profile.png" alt="Perfil" class="profile-avatar">
+            </a>
+        </div>
+    </header>
+    <!-- Conteúdo principal -->
+    <main class="profile-page">
+      <div class="glass-card profile-container">
+        <!-- Estatísticas -->
+        <div class="stats-section">
+          <h1 class="title-neon" id="profile-title">Estatísticas</h1>
+          
+          <div class="stats-grid">
+            <div class="stat-item">
+              <p class="stat-label" id="stat-total-score">Pontuação Total</p>
+              <p class="stat-value">500</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label" id="stat-correct">Respostas Corretas</p>
+              <p class="stat-value">5</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label" id="stat-wrong">Respostas Erradas</p>
+              <p class="stat-value">2</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-label" id="stat-games">Partidas Jogadas</p>
+              <p class="stat-value">1</p>
+            </div>
+          </div>
+        </div>
+        <!-- Secção do avatar -->
+        <div class="avatar-section">
+          
+          <h2 class="player-name" id="user-display-name">Player1</h2>
+
+          <div class="avatar-circle-glow">
+            <img src="../images/profile1.png" alt="User Avatar" class="large-avatar">
+          </div>
+
+          <button class="btn-change-avatar" id="btn-change-photo">Alterar imagem de perfil</button>
+        </div>
+
+      </div>
+    </main>
+    <!-- Script principal -->
+    <script src="../js/main.js"></script>
+  </body>
+</html>

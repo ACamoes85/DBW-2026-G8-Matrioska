@@ -1,0 +1,160 @@
+/* LEADERBOARD.CSS - Estilos exclusivos da página Leaderboard*/
+
+body {
+    background: linear-gradient(255.61deg, #0B1026 11.34%, #141B3A 55.49%, #1C0F3F 100%) !important;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -2;
+    opacity: 0.5; 
+}
+
+.leaderboard-page {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 100px; 
+    padding-bottom: 40px;
+}
+
+.leaderboard-card {
+    width: 1100px; 
+    max-width: 92%;
+    padding: 60px;
+    background: rgba(15, 23, 42, 0.65) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border-radius: 24px;
+    align-items: flex-start; 
+}
+
+.leaderboard-card .title-neon {
+    font-size: 56px;
+    margin-bottom: 40px;
+}
+
+.leaderboard-table {
+    width: 100%;
+}
+
+.table-header, .table-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 250px; 
+    align-items: center;
+    padding: 0 30px;
+}
+
+.table-header {
+    margin-bottom: 15px;
+}
+
+.table-header span {
+    color: rgba(199, 210, 254, 0.8);
+    font-weight: 700;
+    font-size: 18px;
+    text-align: center;
+}
+
+.table-row {
+    height: 72px;
+    background: rgba(11, 23, 48, 0.85);
+    border: 1px solid rgba(45, 211, 238, 0.25);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.table-row span {
+    text-align: center;
+}
+
+.header-navbar .profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 0; 
+    border: none;
+    background: transparent;
+    object-fit: contain; 
+    box-shadow: none;
+    padding: 0;
+}
+
+.profile-link {
+    display: block;
+    padding: 0;
+    line-height: 0;
+}
+
+.back-button {
+    display: none; 
+    color: #FFFFFF !important; 
+    border-color: #FFFFFF !important;
+    text-decoration: none;
+    font-weight: bold;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    font-size: 18px;
+}
+
+@media (max-width: 768px) {
+    .header-navbar, .nav-links, .profile-section {
+        display: none !important;
+    }
+
+    .back-button {
+        display: flex !important;
+    }
+
+    .leaderboard-page {
+        padding-top: 80px; 
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .leaderboard-card {
+        padding: 30px 15px; 
+        width: 100%;
+        align-items: center; 
+    }
+
+    .leaderboard-card .title-neon {
+        font-size: 32px; 
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .table-header, .table-row {
+        grid-template-columns: 50px 1fr 90px; 
+        padding: 0 10px;
+        font-size: 14px;
+    }
+
+    .table-row {
+        height: 60px; 
+    }
+
+    .table-row span {
+        font-size: 15px; 
+    }
+
+    .table-header span {
+        font-size: 13px;
+    }
+}

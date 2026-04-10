@@ -20,7 +20,7 @@ const traducoes = {
     registerButton: "Registar",
 
     /* How to Play */
-    back: "← Voltar",
+    back: "Voltar",
     rulesTitle: "Como jogar",
     rule1: "Palavra-Mestra:",
     rule1Desc: "No teu ecrã irá aparecer uma \"Palavra-Mestra\".",
@@ -34,8 +34,26 @@ const traducoes = {
     correctAnswers: "Respostas corretas:",
     exampleWord: "Passageiro",
     exampleAnswers: ["PASSA", "ASA", "SAGE", "AGE", "EIRO"],
-  
 
+    /* Leaderboard */
+    leaderboardTitle: "Classificação",
+    colPos: "Posição",
+    colPlayer: "Jogador",
+    colScore: "Pontuação Total",
+
+    /* Barra de Navegação */
+    navStart: "Início",
+    navLeaderboard: "Classificação",
+    navHowTo: "Como jogar",
+
+    /* Profile */
+    changePhoto: "Alterar imagem de perfil",
+    statsTitle: "Estatísticas",
+    statTotalScore: "Pontuação Total",
+    statCorrect: "Respostas Corretas",
+    statWrong: "Respostas Erradas",
+    statGames: "Partidas Jogadas",
+  
     /* Botão de troca de idioma */
     nextLang: "English",
     flag: "../images/english_icon.png",
@@ -61,7 +79,7 @@ const traducoes = {
     registerButton: "Register",
 
     /* How to Play */
-    back: "← Back",
+    back: "Back",
     rulesTitle: "How to Play",
     rule1: "Master Word:",
     rule1Desc: "A \"Master Word\" will appear on your screen.",
@@ -75,7 +93,25 @@ const traducoes = {
     correctAnswers: "Correct answers:",
     exampleWord: "Overstanding",
     exampleAnswers: ["OVER", "STAND", "STANDING", "STAIN", "AND"],
-  
+
+    /* Leaderboard */
+    leaderboardTitle: "Leaderboard",
+    colPos: "Rank",
+    colPlayer: "Player",
+    colScore: "Total Score",
+
+    /* Barra de Navegação */
+    navStart: "Home",
+    navLeaderboard: "Leaderboard",
+    navHowTo: "How to Play",
+
+    /* Profile */
+    changePhoto: "Change profile picture",
+    statsTitle: "Stats",
+    statTotalScore: "Total Score",
+    statCorrect: "Correct Answers",
+    statWrong: "Wrong Answers",
+    statGames: "Matches Played",
 
     /* Botão de troca de idioma */
     nextLang: "Português",
@@ -122,6 +158,18 @@ function aplicarIdioma() {
   const isHowToPage = document.querySelector(".howto-container");
   const elRulesTitle = isHowToPage ? isHowToPage.querySelector(".title-neon") : null;
 
+  /* Elementos da Leaderboard */
+  const elLeaderboardTitle = document.querySelector(".leaderboard-card .title-neon");
+  const elTableHeaders = document.querySelectorAll(".table-header span");
+
+  /* Elementos da Navbar */
+  const navLinks = document.querySelectorAll(".nav-links a");
+
+  /* Elementos do Profile */
+  const elProfileTitle = document.querySelector(".stats-section .title-neon");
+  const elBtnChangePhoto = document.getElementById("btn-change-photo"); 
+  const elStatLabels = document.querySelectorAll(".stat-label");
+
   /* Elementos do seletor de idioma */
   const elLangName = document.getElementById("lang-name");
   const elLangFlag = document.getElementById("lang-flag");
@@ -150,7 +198,7 @@ function aplicarIdioma() {
   }
   if (elRegisterBtn) elRegisterBtn.innerText = dados.registerButton;
 
-  /* Aplicar How to Play */
+  /* How to Play */
   if (elBack) elBack.innerHTML = `<span>←</span> ${dados.back}`;
   if (elRulesTitle) {
     elRulesTitle.innerText = dados.rulesTitle;
@@ -173,6 +221,31 @@ function aplicarIdioma() {
             }
         });
     }
+
+  // Leaderboard
+  if (elLeaderboardTitle) elLeaderboardTitle.innerText = dados.leaderboardTitle;
+  if (elTableHeaders.length >= 3) {
+    elTableHeaders[0].innerText = dados.colPos;
+    elTableHeaders[1].innerText = dados.colPlayer;
+    elTableHeaders[2].innerText = dados.colScore;
+  }
+
+  // Navbar
+  if (navLinks.length >= 3) {
+    navLinks[0].innerText = dados.navStart;
+    navLinks[1].innerText = dados.navLeaderboard;
+    navLinks[2].innerText = dados.navHowTo;
+  }
+
+  /* Profile */
+  if (elProfileTitle) elProfileTitle.innerText = dados.statsTitle;
+  if (elBtnChangePhoto) elBtnChangePhoto.innerText = dados.changePhoto;
+  if (elStatLabels.length >= 4) {
+    elStatLabels[0].innerText = dados.statTotalScore;
+    elStatLabels[1].innerText = dados.statCorrect;
+    elStatLabels[2].innerText = dados.statWrong;
+    elStatLabels[3].innerText = dados.statGames;
+  }
 
   /* Botão de idioma: mostra sempre a próxima língua */
   if (elLangName) elLangName.innerText = dados.nextLang;
