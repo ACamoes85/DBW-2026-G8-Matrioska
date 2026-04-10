@@ -25,13 +25,16 @@ const traducoes = {
     rule1: "Palavra-Mestra:",
     rule1Desc: "No teu ecrã irá aparecer uma \"Palavra-Mestra\".",
     rule2: "Palavras escondidas:",
-    rule2Desc: "O teu objetivo é encontrar palavras menores dentro dela.",
+    rule2Desc: "O teu objetivo é encontrar palavras menores \"escondidas\" dentro dela, antes que o tempo acabe.",
     rule3: "Regra:",
     rule3Desc: "As letras podem estar em sequência direta ou indireta.",
     rule4: "Pontuação:",
-    rule4Desc: "Quanto maior a palavra, mais pontos obténs.",
+    rule4Desc: "Quanto maior a palavra, mais pontos irá obter.",
     rule5: "Aqui está um exemplo prático:",
     correctAnswers: "Respostas corretas:",
+    exampleWord: "Passageiro",
+    exampleAnswers: ["PASSA", "ASA", "SAGE", "AGE", "EIRO"],
+  
 
     /* Botão de troca de idioma */
     nextLang: "English",
@@ -63,13 +66,16 @@ const traducoes = {
     rule1: "Master Word:",
     rule1Desc: "A \"Master Word\" will appear on your screen.",
     rule2: "Hidden words:",
-    rule2Desc: "Your goal is to find smaller words within it.",
-    rule3: "Rule:",
-    rule3Desc: "Letters can be in direct or indirect sequence.",
+    rule2Desc: "Your goal is to find and type the smaller words \"hidden\" within it before the time runs out.",
+    rule3: "The Rule:",
+    rule3Desc: "Letters can be in a direct or indirect sequence.",
     rule4: "Scoring:",
-    rule4Desc: "The longer the word, the more points you get.",
-    rule5: "Here is a practical example:",
+    rule4Desc: "The more words you find or the longer they are, the more points you earn!",
+    rule5: "Here's a practical example:",
     correctAnswers: "Correct answers:",
+    exampleWord: "Overstanding",
+    exampleAnswers: ["OVER", "STAND", "STANDING", "STAIN", "AND"],
+  
 
     /* Botão de troca de idioma */
     nextLang: "Português",
@@ -112,6 +118,8 @@ function aplicarIdioma() {
   const elRulesTitle = document.querySelector(".title-neon");
   const elCorrectTitle = document.querySelector(".answers-title");
   const rulesList = document.querySelectorAll(".rules-list li");
+  const elExampleWord = document.querySelector(".word-badge");
+  const elExampleAnswers = document.querySelectorAll(".answers-list li");
 
   /* Elementos do seletor de idioma */
   const elLangName = document.getElementById("lang-name");
@@ -152,6 +160,16 @@ function aplicarIdioma() {
     rulesList[3].innerHTML = `<strong>${dados.rule4}</strong> ${dados.rule4Desc}`;
     rulesList[4].innerText = dados.rule5;
   }
+  if (elExampleWord) elExampleWord.innerText = dados.exampleWord;
+
+    // Aplica a lista de respostas do exemplo
+    if (elExampleAnswers.length > 0 && dados.exampleAnswers) {
+        elExampleAnswers.forEach((li, index) => {
+            if (dados.exampleAnswers[index]) {
+                li.innerText = dados.exampleAnswers[index];
+            }
+        });
+    }
 
   /* Botão de idioma: mostra sempre a próxima língua */
   if (elLangName) elLangName.innerText = dados.nextLang;
