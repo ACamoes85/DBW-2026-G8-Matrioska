@@ -115,11 +115,12 @@ function aplicarIdioma() {
 
   /* Elementos da How to Play */
   const elBack = document.querySelector(".back-button");
-  const elRulesTitle = document.querySelector(".title-neon");
   const elCorrectTitle = document.querySelector(".answers-title");
   const rulesList = document.querySelectorAll(".rules-list li");
   const elExampleWord = document.querySelector(".word-badge");
   const elExampleAnswers = document.querySelectorAll(".answers-list li");
+  const isHowToPage = document.querySelector(".howto-container");
+  const elRulesTitle = isHowToPage ? isHowToPage.querySelector(".title-neon") : null;
 
   /* Elementos do seletor de idioma */
   const elLangName = document.getElementById("lang-name");
@@ -151,7 +152,9 @@ function aplicarIdioma() {
 
   /* Aplicar How to Play */
   if (elBack) elBack.innerHTML = `<span>←</span> ${dados.back}`;
-  if (elRulesTitle) elRulesTitle.innerText = dados.rulesTitle;
+  if (elRulesTitle) {
+    elRulesTitle.innerText = dados.rulesTitle;
+  }
   if (elCorrectTitle) elCorrectTitle.innerText = dados.correctAnswers;
   if (rulesList.length > 0) {
     rulesList[0].innerHTML = `<strong>${dados.rule1}</strong> ${dados.rule1Desc}`;
