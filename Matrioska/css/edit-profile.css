@@ -1,0 +1,197 @@
+/* EDIT-PROFILE.CSS - Estilos da Página de editar perfil */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: linear-gradient(255.61deg, #0B1026 11.34%, #141B3A 55.49%, #1C0F3F 100%);
+    min-height: 100vh;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden;
+}
+
+.background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 80% 20%, rgba(79, 70, 229, 0.15) 0%, transparent 40%);
+    z-index: -1;
+}
+
+.back-button {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 18px;
+    transition: opacity 0.2s;
+}
+
+.central-card {
+    width: 1100px;
+    max-width: 90%;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(15px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0px 30px 80px rgba(0, 0, 0, 0.4);
+    padding: 60px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 40px;
+}
+
+.edit-title {
+    color: #EDE9FE;
+    font-size: 36px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.avatar-preview-wrapper {
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    border: 3px solid rgba(45, 211, 238, 0.7);
+    box-shadow: 0 0 30px rgba(45, 211, 238, 0.4);
+    overflow: hidden;
+}
+
+#main-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.choose-label {
+    color: white;
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 110px);
+    gap: 20px;
+}
+
+.grid-item {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    object-fit: cover;
+}
+
+.grid-item.active {
+    border-color: #2DD3EE;
+    box-shadow: 0 0 15px rgba(45, 211, 238, 0.8);
+    transform: scale(1.05);
+}
+
+@media (max-width: 900px) {
+    .central-card {
+        flex-direction: column;
+        padding: 40px 20px;
+        margin-top: 60px;
+    }
+    .avatar-preview-wrapper {
+        width: 250px;
+        height: 250px;
+    }
+    .avatar-grid {
+        grid-template-columns: repeat(4, 70px);
+    }
+    .grid-item { width: 70px; height: 70px; }
+}
+
+@media (max-width: 768px) {
+    
+    .central-card {
+        flex-direction: column !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 10px !important;
+        margin-top: 50px !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+    }
+
+    .edit-title {
+        font-size: 26px !important;
+        margin-bottom: 5px !important;
+        text-align: center;
+    }
+
+    .preview-section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        justify-content: center;
+    }
+
+    .avatar-preview-wrapper {
+        width: 180px !important; 
+        height: 180px !important; 
+        margin: 25px auto !important; 
+        display: block; 
+        border-radius: 50%;
+    }
+
+    .selection-section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .choose-label {
+        font-size: 18px !important;
+        margin-bottom: 15px !important;
+        text-align: center;
+    }
+
+    .avatar-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important; /* 3 colunas/4 linhas */
+        gap: 15px !important;
+        width: 80% !important;
+        max-width: 250px !important; 
+        margin: 0 auto !important;
+        padding-bottom: 30px;
+    }
+
+    .grid-item {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 50% !important;
+    }
+
+    .back-button {
+        top: 15px !important;
+        left: 15px !important;
+        font-size: 16px !important;
+    }
+}

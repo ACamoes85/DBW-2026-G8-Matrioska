@@ -53,7 +53,24 @@ const traducoes = {
     statCorrect: "Respostas Corretas",
     statWrong: "Respostas Erradas",
     statGames: "Partidas Jogadas",
-  
+
+    /* Edit Profile*/
+    editAvatarTitle: "Imagem de perfil",
+    chooseImage: "Escolha uma imagem:",
+
+    /* Create Match */
+    createMatchTitle: "Criar partida",
+    gameModeLabel: "Modo de Jogo:",
+    multiplayer: "Multijogador",
+    solo: "Solo",
+    timeLimitLabel: "Tempo Limite:",
+    roomCodeLabel: "Código da Sala:",
+    createBtn: "Criar",
+ 
+    /* Lobby */
+    lobbyTitle: "Sala de Jogo",
+    startMatchBtn: "Iniciar partida",
+
     /* Botão de troca de idioma */
     nextLang: "English",
     flag: "../images/english_icon.png",
@@ -113,6 +130,23 @@ const traducoes = {
     statWrong: "Wrong Answers",
     statGames: "Matches Played",
 
+    /* Edit Profile*/
+    editAvatarTitle: "Profile picture",
+    chooseImage: "Choose a picture:",
+
+    /* Create Match */
+    createMatchTitle: "Create Match",
+    gameModeLabel: "Game Mode:",
+    multiplayer: "Multiplayer",
+    solo: "Solo",
+    timeLimitLabel: "Time Limit:",
+    roomCodeLabel: "Room Code:",
+    createBtn: "Create",
+
+    /* Lobby */
+    lobbyTitle: "Game Room",
+    startMatchBtn: "Start Match",
+
     /* Botão de troca de idioma */
     nextLang: "Português",
     flag: "../images/portuguese_icon.png",
@@ -169,6 +203,20 @@ function aplicarIdioma() {
   const elProfileTitle = document.querySelector(".stats-section .title-neon");
   const elBtnChangePhoto = document.getElementById("btn-change-photo"); 
   const elStatLabels = document.querySelectorAll(".stat-label");
+
+  /* Elementos do Edit Profile */
+  const elEditAvatarTitle = document.querySelector(".edit-title");
+  const elChooseLabel = document.querySelector(".choose-label");
+
+  /* Elementos da Create Match */
+  const elCreateTitle = document.querySelector(".match-card .gradient-title");
+  const elLabels = document.querySelectorAll(".match-card label");
+  const elGameModeOptions = document.querySelectorAll("#game-mode option");
+  const elCreateBtn = document.querySelector(".btn-create-match");
+
+  /* Elementos do Lobby */
+  const elLobbyTitle = document.querySelector(".lobby-card .gradient-title");
+  const elStartBtn = document.querySelector(".lobby-card .btn-create-match");
 
   /* Elementos do seletor de idioma */
   const elLangName = document.getElementById("lang-name");
@@ -247,6 +295,31 @@ function aplicarIdioma() {
     elStatLabels[3].innerText = dados.statGames;
   }
 
+  /* Edit Profile */
+  if (elEditAvatarTitle) elEditAvatarTitle.innerText = dados.editAvatarTitle;
+  if (elChooseLabel) elChooseLabel.innerText = dados.chooseImage;
+
+  /* Create Match Page */
+  if (elCreateTitle) elCreateTitle.innerText = dados.createMatchTitle;
+  if (elCreateBtn) elCreateBtn.innerText = dados.createBtn;
+  
+  // Mapeia os labels (Modo de Jogo, Tempo Limite, Código da Sala)
+  if (elLabels.length >= 3) {
+    elLabels[0].innerText = dados.gameModeLabel;
+    elLabels[1].innerText = dados.timeLimitLabel;
+    elLabels[2].innerText = dados.roomCodeLabel;
+  }
+
+  // Mapeia as opções do select de Modo de Jogo
+  if (elGameModeOptions.length >= 2) {
+    elGameModeOptions[0].innerText = dados.multiplayer;
+    elGameModeOptions[1].innerText = dados.solo;
+  }
+
+  /* Lobby */
+  if (elLobbyTitle) elLobbyTitle.innerText = dados.lobbyTitle;
+  if (elStartBtn) elStartBtn.innerText = dados.startMatchBtn;
+
   /* Botão de idioma: mostra sempre a próxima língua */
   if (elLangName) elLangName.innerText = dados.nextLang;
 
@@ -257,6 +330,7 @@ function aplicarIdioma() {
   document.documentElement.lang = idiomaAtual === "pt" ? "pt-PT" : "en";
 }
 
+
 /* Função de troca de idioma */
 function toggleLanguage() {
   idiomaAtual = idiomaAtual === "pt" ? "en" : "pt";
@@ -264,9 +338,52 @@ function toggleLanguage() {
   aplicarIdioma();
 }
 
-/* Inicialização */
+function gerarCodigoSala() {
+  const elRoomCode = document.getElementById("room-code");
+  if (elRoomCode) {
+    const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let resultado = "";
+    for (let i = 0; i < 6; i++) {
+      resultado += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    elRoomCode.innerText = resultado;
+  }
+}
+
+/* Função para configurar o clique no botão Criar */
+function configurarBotaoCriar() {
+    const btnCriar = document.getElementById("btn-confirm-create");
+    const displayCodigo = document.getElementById("room-code");
+
+    if (btnCriar && displayCodigo) {
+        btnCriar.addEventListener("click", () => {
+            // 1. Guarda o código que está no ecrã para usar na página seguinte
+            const codigoGerado = displayCodigo.innerText;
+            localStorage.setItem("codigoSalaAtual", codigoGerado);
+
+            // 2. Redireciona para a página do lobby
+            window.location.href = "lobby.html"; 
+        });
+    }
+}
+
+/* Função para carregar o código na página do Lobby */
+function carregarCodigoNoLobby() {
+    const displayLobby = document.querySelector(".lobby-code .code-display");
+    const codigoSalvo = localStorage.getItem("codigoSalaAtual");
+
+    if (displayLobby && codigoSalvo) {
+        displayLobby.innerText = codigoSalvo;
+    }
+}
+
+/* Inicialização Única */
 document.addEventListener("DOMContentLoaded", () => {
   aplicarIdioma();
+  carregarAvatarSalvo();
+  gerarCodigoSala();
+  configurarBotaoCriar();
+  carregarCodigoNoLobby();
 
   const botoes = document.querySelectorAll(".btn-custom");
   botoes.forEach((botao) => {
@@ -275,3 +392,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+function carregarAvatarSalvo() {
+    const avatarSalvo = localStorage.getItem('userAvatar');
+    
+    // Procura a imagem da navbar
+    const imagemNavbar = document.getElementById('nav-profile-avatar');
+    
+    // Procura a imagem grande da página de perfil
+    const imagemPerfilGrande = document.getElementById('main-profile-img');
+
+    if (avatarSalvo) {
+        if (imagemNavbar) {
+            imagemNavbar.src = avatarSalvo;
+        }
+        if (imagemPerfilGrande) {
+            imagemPerfilGrande.src = avatarSalvo;
+        }
+    }
+}

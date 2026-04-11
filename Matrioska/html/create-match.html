@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrioska - Criar Partida</title>
+    <!-- Estilos -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/create-match.css">
+</head>
+<body class="create-match-page">
+    <!-- Voltar atrás -->
+    <a href="hub.html" class="back-button">Voltar</a>
+    <!-- Imagem de fundo -->
+    <img src="../images/create-match.png" class="background-image" />
+
+    <!-- Conteúdo principal -->
+    <main class="central-container">
+        <div class="glass-card match-card">
+            <h1 class="gradient-title">Criar partida</h1>
+
+            <!-- Selação do modo de jogo e tempo de jogo -->
+            <div class="form-group">
+                <label>Modo de Jogo:</label>
+                <div class="custom-select">
+                    <select id="game-mode">
+                        <option value="multiplayer">Multijogador</option>
+                        <option value="solo">Solo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Tempo Limite:</label>
+                <div class="custom-select">
+                    <select id="time-limit">
+                        <option value="30">30s</option>
+                        <option value="60">60s</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Código da sala -->
+            <div class="room-code-section">
+                <label>Código da Sala:</label>
+                <div class="code-display" id="room-code">X7K9P2</div>
+            </div>
+
+            <button class="btn-create-match" id="btn-confirm-create">Criar</button>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../js/main.js"></script>
+</body>
+</html>
