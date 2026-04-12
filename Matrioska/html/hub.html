@@ -1,46 +1,61 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matrioska</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../css/hub.css">
 </head>
 <body>
-    <header class="topbar">
-        <div class="brand">Hub</div>
 
+    <header class="topbar">
         <nav class="menu">
-            <a href="#" class="active">Início</a>
-            <a href="#">Classificação</a>
-            <a href="#">Como jogar</a>
+            <a href="#" class="active" id="nav-home">Início</a>
+            <a href="leaderboard.html" id="nav-ranking">Classificação</a>
+            <a href="howtoplay.html" id="nav-how">Como jogar</a>
         </nav>
 
-        <div class="avatar">
-            <span>👔</span>
+        <div class="profile">
+            <a href="profile.html">
+                <img src="../images/profile1.png" alt="Perfil">
+            </a>
         </div>
     </header>
 
-    <main class="page">
-        <section class="hero-card">
-            <div class="hero-left">
-                <h1>Bem-vindo à Matrioska</h1>
-                <p>Descobre as palavras escondidas antes que o tempo acabe.</p>
+    <main class="hero">
+        <section class="card">
 
-                <div class="actions">
-                    <button class="btn btn-primary">Criar partida</button>
+            <div class="left">
+                <h1 id="welcome-label">Bem-vindo à Matrioska</h1>
 
-                    <form class="join-room">
-                        <input type="text" placeholder="Introduzir código da sala" />
-                        <button type="submit" class="btn btn-secondary">Entrar</button>
-                    </form>
+                <p id="description">Revela o máximo de palavras antes que o tempo se esgote.</p>
+
+                <button id="btn-create" class="btn btn-main" onclick="window.location.href='create-match.html'">
+                    Criar partida
+                </button>
+
+                <div class="join-room">
+                    <input id="room-input" type="text" placeholder="Introduzir código da sala">
+                    <button id="btn-enter-room" class="btn btn-enter">
+                        Entrar
+                    </button>
                 </div>
             </div>
-            <div class="language-switch">
-                <span class="flag">🇬🇧</span>
-                <span>English</span>
+
+            <div class="right">
+                <img src="../images/clock_illustration.png" class="game-image" alt="Jogo Matrioska">
             </div>
+
+            <div class="language">
+                <button class="lang-btn" type="button" onclick="toggleLanguage()">
+                    <img id="lang-flag" class="flag" src="../images/english_icon.png" alt="Idioma">
+                    <span id="lang-name">English</span>
+                </button>
+            </div>
+
         </section>
     </main>
+
+    <script src="../js/main.js"></script>
 </body>
 </html>
