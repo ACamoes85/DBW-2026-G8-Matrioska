@@ -192,3 +192,164 @@ body {
     border-radius: 50%;
 }
 
+@media (max-width: 768px) {
+
+    /* RESET */
+    html, body {
+        height: 100% !important;
+        background: #0b1026 !important;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden !important;
+    }
+
+    /* NAVBAR */
+    .header-navbar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 70px !important;
+        background: rgba(11, 16, 38, 0.95) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0 8px 0 15px !important; /* Ajustado para o avatar colar à direita */
+        z-index: 1000 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .nav-links {
+        display: flex !important;
+        gap: 55px !important; /* 👈 MAIOR ESPAÇO ENTRE Classificação e Como Jogar */
+    }
+
+    /* remover "Início" */
+    .nav-links a:first-child {
+        display: none !important;
+    }
+
+    .nav-links a {
+        font-size: 13px !important;
+        color: #8a8da4 !important;
+        text-decoration: none !important;
+        white-space: nowrap !important;
+    }
+
+    /* AVATAR NO CANTO DIREITO */
+    .profile-section {
+        display: flex !important;
+        justify-content: flex-end !important;
+        margin-right: 0 !important;
+    }
+
+    .profile-avatar {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 50% !important;
+    }
+
+    /* HERO */
+    .hero {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        min-height: 100vh !important;
+        padding: 120px 20px 60px 20px !important;
+    }
+
+    /* CARD */
+    .card {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        gap: 25px !important;
+    }
+
+    /* ESCONDER TEXTO */
+    .left h1, .left p {
+        display: none !important;
+    }
+
+    /* IMAGEM RELÓGIO */
+    .right {
+        order: 1 !important;
+    }
+
+    .game-image {
+        width: 300px !important;
+        max-width: 90% !important;
+    }
+
+    /* BOTÕES */
+    .left {
+        order: 2 !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 16px !important;
+    }
+
+    .btn-main, .btn-enter, .join-room input {
+        width: 100% !important;
+        max-width: 280px !important; /* Ligeiramente maior para melhor toque */
+        height: 50px !important;
+        border-radius: 12px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        border: none !important;
+    }
+
+    /* INPUT + ENTRAR */
+    .join-room {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 16px !important;
+        width: 100% !important;
+    }
+
+    .join-room input {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #fff !important;
+        text-align: center !important;
+    }
+
+    /* CORES */
+    .btn-main { background: linear-gradient(90deg, #67d9ff, #7475ff) !important; }
+    .btn-enter { background: linear-gradient(90deg, #9385ff, #f56fc4) !important; }
+
+    /* BOTÃO IDIOMA */
+    .language {
+        order: 3 !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        margin-top: 10px !important;
+    }
+
+    .language button {
+        padding: 8px 16px !important;
+        border-radius: 10px !important;
+        font-size: 14px !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        color: #fff !important;
+    }
+
+    .flag {
+        width: 18px !important;
+        height: 18px !important;
+    }
+}
