@@ -31,13 +31,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     localStorage.setItem("userData", JSON.stringify(user));
 
+<<<<<<< HEAD
     localStorage.setItem("username", username);
 
+=======
+>>>>>>> 0cf1e80c552c6dd202af9327ad2825c17a914b51
     console.log("Utilizador registado:", user);
 
     alert("Registo feito com sucesso!");
 
+<<<<<<< HEAD
     // redirecionar para o hub
     window.location.href = "hub.html";
+=======
+    // redirecionar para login
+    window.location.href = "login.html";
+>>>>>>> 0cf1e80c552c6dd202af9327ad2825c17a914b51
   });
 });
