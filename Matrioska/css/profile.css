@@ -89,7 +89,6 @@
     font-size: 32px;
     font-weight: 700;
     margin: 0;
-    text-transform: uppercase;
     letter-spacing: 2px;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     text-align: center;
@@ -100,9 +99,7 @@
     position: relative;
     width: 450px;
     height: 450px;
-    border: none !important;
     background: transparent !important;
-    box-shadow: none !important;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -112,10 +109,9 @@
 .large-avatar {
     width: 100%;
     height: 100%;
-    object-fit: contain; 
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
+    object-fit: cover; 
+    border-radius: 50%;
+    border: 4px solid rgba(45, 211, 238, 0.7);
 }
 
 
@@ -142,11 +138,8 @@
 .header-navbar .profile-avatar {
     width: 60px;
     height: 60px;
-    border-radius: 0;
-    border: none !important;
     background: transparent !important;
     object-fit: contain; 
-    box-shadow: none !important;
     padding: 0;
 }
 

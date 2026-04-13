@@ -84,11 +84,8 @@ body {
 .header-navbar .profile-avatar {
     width: 60px;
     height: 60px;
-    border-radius: 0; 
-    border: none;
     background: transparent;
     object-fit: contain; 
-    box-shadow: none;
     padding: 0;
 }
 

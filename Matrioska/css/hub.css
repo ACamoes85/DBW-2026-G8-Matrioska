@@ -61,7 +61,7 @@ body {
 .hero {
     display: flex;
     justify-content: center;
-    padding: 40px;
+    padding-top: 120px;
 }
 
 /* CARD */
@@ -191,3 +191,4 @@ body {
     height: 22px;
     border-radius: 50%;
 }
+

@@ -136,8 +136,6 @@ main.howto-container {
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  border: none;
-  box-shadow: none;
   background: transparent;
   padding: 0;
   display: block;
