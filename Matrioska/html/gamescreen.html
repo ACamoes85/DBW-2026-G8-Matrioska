@@ -1,26 +1,59 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sala de Jogo</title>
+    <title>Matrioska - Sala de Jogo</title>
+
+    <!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Estilo -->
     <link rel="stylesheet" href="../css/gamescreen.css">
 </head>
 <body>
     <div class="game-screen">
         <div class="overlay">
+            <!-- Título -->
             <h1>Sala de Jogo</h1>
 
-            <p class="timer">30s</p>
+            <!-- Informações da partida -->
+            <div class="game-info">
+                <p class="timer" id="game-timer">30s</p>
+                <p class="game-mode" id="game-mode-display">Modo: Solo</p>
+                <p class="score-display" id="score-display">Pontuação: 0</p>
+            </div>
 
+            <!-- Palavra principal -->
             <p class="label">A palavra é:</p>
-            <h2>Relação</h2>
+            <h2 id="master-word">RELAÇÃO</h2>
 
-            <input type="text" placeholder="Escreve uma palavra...">
+            <!-- Input do jogador -->
+            <div class="input-section">
+                <input
+                    type="text"
+                    id="player-word"
+                    placeholder="Escreve uma palavra..."
+                    autocomplete="off"
+                >
+                <button id="submit-word-btn">Submeter</button>
+            </div>
 
+            <!-- Mensagem de feedback -->
+            <p id="feedback-message"></p>
+
+            <!-- Lista de palavras encontradas -->
+            <div class="found-words-section">
+                <p class="found-words-title">Palavras encontradas:</p>
+                <ul id="found-words-list"></ul>
+            </div>
+
+            <!-- Código da sala -->
             <p class="room-label">Código da sala:</p>
-            <div class="room-code">X7K9P2</div>
+            <div class="room-code" id="game-room-code">X7K9P2</div>
         </div>
     </div>
+
+    <script src="../js/gamescreen.js"></script>
 </body>
 </html>
