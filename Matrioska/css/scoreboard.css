@@ -1,0 +1,167 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: url("../images/gamescreen.png") no-repeat center center;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.scoreboard-screen {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.scoreboard-card {
+    width: 88%;
+    max-width: 980px;
+    min-height: 600px;
+    background: rgba(4, 14, 45, 0.92);
+    border-radius: 24px;
+    padding: 55px 60px 70px;
+    text-align: center;
+    color: #ffffff;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+.subtitle {
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.winner {
+    font-size: 3.4rem;
+    font-weight: 700;
+    margin-bottom: 85px;
+}
+
+.ranking h3 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.ranking p {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.buttons {
+    margin-top: 95px;
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    min-width: 230px;
+    padding: 16px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #5ec8ef 0%, #6972f3 100%);
+    box-shadow: 0 8px 18px rgba(77, 114, 255, 0.28);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 22px rgba(77, 114, 255, 0.35);
+    }
+
+@media (max-width: 900px) {
+    .scoreboard-card {
+        padding: 40px 30px 50px;
+        min-height: auto;
+    }
+
+    .subtitle {
+        font-size: 1.8rem;
+    }
+
+    .winner {
+        font-size: 2.5rem;
+        margin-bottom: 60px;
+    }
+
+    .ranking h3 {
+        font-size: 1.8rem;
+    }
+
+    .ranking p {
+        font-size: 1.35rem;
+    }
+
+    .buttons {
+        margin-top: 70px;
+        gap: 25px;
+    }
+
+    .btn {
+        min-width: 210px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .scoreboard-screen {
+        padding: 20px;
+    }
+
+    .scoreboard-card {
+        width: 95%;
+        border-radius: 18px;
+        padding: 30px 20px 35px;
+    }
+
+    .subtitle {
+        font-size: 1.5rem;
+    }
+
+    .winner {
+        font-size: 2rem;
+        margin-bottom: 45px;
+    }
+
+    .ranking h3 {
+        font-size: 1.5rem;
+    }
+
+    .ranking p {
+        font-size: 1.1rem;
+    }
+
+    .buttons {
+        flex-direction: column;
+        gap: 18px;
+        margin-top: 50px;
+    }
+
+    .btn {
+        width: 100%;
+        min-width: unset;
+    }
+}
