@@ -27,7 +27,7 @@ Os diagramas abaixo representam o funcionamento do sistema considerando a arquit
 ![Autenticação](Matrioska/docs/Autenticacao.png)
 
 ### Criar Partida + Lobby
-![Criar Partida](Matrioska/docs/CriarPartida.png)
+![Criarartida](Matrioska/docs/Criarpartida.png)
 
 ### Game Screen
 ![Game Screen](Matrioska/docs/Gamescreen.png)
