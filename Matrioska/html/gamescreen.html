@@ -15,7 +15,7 @@
     <div class="game-screen">
         <div class="overlay">
             <!-- Título -->
-            <h1>Sala de Jogo</h1>
+            <h1 id="gamescreen-title">Sala de Jogo</h1>
 
             <!-- Informações da partida -->
             <div class="game-info">
@@ -25,7 +25,7 @@
             </div>
 
             <!-- Palavra principal -->
-            <p class="label">A palavra é:</p>
+            <p class="label" id="master-word-label">A palavra é:</p>
             <h2 id="master-word">RELAÇÃO</h2>
 
             <!-- Input do jogador -->
@@ -44,16 +44,17 @@
 
             <!-- Lista de palavras encontradas -->
             <div class="found-words-section">
-                <p class="found-words-title">Palavras encontradas:</p>
+                <p class="found-words-title" id="found-words-title">Palavras encontradas:</p>
                 <ul id="found-words-list"></ul>
             </div>
 
             <!-- Código da sala -->
-            <p class="room-label">Código da sala:</p>
+            <p class="room-label" id="game-room-code-label">Código da sala:</p>
             <div class="room-code" id="game-room-code">X7K9P2</div>
         </div>
     </div>
 
+    <script src="../js/main.js"></script>
     <script src="../js/gamescreen.js"></script>
 </body>
 </html>

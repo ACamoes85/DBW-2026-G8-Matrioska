@@ -26,6 +26,8 @@ let intervaloTemporizador = null;
 /* Inicializa a página de jogo com os dados vindos do lobby */
 function inicializarJogo() {
   const partidaAtual = JSON.parse(localStorage.getItem("partidaAtual"));
+  const idiomaAtual = localStorage.getItem("idioma") || "pt";
+  const dados = traducoes[idiomaAtual];
 
   const elTimer = document.getElementById("game-timer");
   const elRoomCode = document.getElementById("game-room-code");
@@ -34,9 +36,9 @@ function inicializarJogo() {
   const elScore = document.getElementById("score-display");
 
   if (!partidaAtual) {
-    alert("Nenhuma partida encontrada!");
-    window.location.href = "create-match.html";
-    return;
+  alert(dados.noMatchFound);
+  window.location.href = "create-match.html";
+  return;
   }
 
   /* Tempo */
@@ -52,10 +54,13 @@ function inicializarJogo() {
 
   /* Mostrar modo de jogo */
   if (elMode && partidaAtual.modo) {
-    const modoTexto =
-      partidaAtual.modo === "multiplayer" ? "Modo: Multijogador" : "Modo: Solo";
-    elMode.innerText = modoTexto;
-  }
+  const modoTexto =
+    partidaAtual.modo === "multiplayer"
+      ? `${dados.gameModePrefix} ${dados.gameModeMultiplayer}`
+      : `${dados.gameModePrefix} ${dados.gameModeSolo}`;
+
+  elMode.innerText = modoTexto;
+}
 
   /* Escolher palavra-mestra */
   escolherPalavraMestre();
@@ -66,8 +71,8 @@ function inicializarJogo() {
 
   /* Pontuação inicial */
   if (elScore) {
-    elScore.innerText = `Pontuação: ${pontuacao}`;
-  }
+  elScore.innerText = `${dados.scorePrefix} ${pontuacao}`;
+}
 
   /* Guardar palavra atual */
   localStorage.setItem("palavraAtual", palavraMestreAtual);
@@ -85,6 +90,8 @@ function escolherPalavraMestre() {
 /* Inicia o temporizador */
 function iniciarTemporizador() {
   const elTimer = document.getElementById("game-timer");
+  const idiomaAtual = localStorage.getItem("idioma") || "pt";
+  const dados = traducoes[idiomaAtual];
 
   if (!elTimer) return;
 
@@ -105,7 +112,7 @@ function iniciarTemporizador() {
 
       localStorage.setItem("resultadoPartida", JSON.stringify(resultadoPartida));
 
-      alert("Tempo esgotado!");
+      alert(dados.timeUpAlert);
       window.location.href = "scoreboard.html";
     }
   }, 1000);
@@ -113,6 +120,8 @@ function iniciarTemporizador() {
 
 /* Configura submissão por botão e Enter */
 function configurarSubmissaoPalavras() {
+  const idiomaAtual = localStorage.getItem("idioma") || "pt";
+  const dados = traducoes[idiomaAtual];
   const input = document.getElementById("player-word");
   const button = document.getElementById("submit-word-btn");
 
@@ -142,24 +151,24 @@ function submeterPalavra() {
   const palavra = input.value.trim().toUpperCase();
 
   if (!palavra) {
-    feedback.innerText = "Escreve uma palavra antes de submeter.";
+    feedback.innerText = dados.emptyWordFeedback;
     return;
   }
 
   if (palavra.length < 2) {
-    feedback.innerText = "A palavra é demasiado curta.";
+    feedback.innerText = dados.shortWordFeedback;
     input.value = "";
     return;
   }
 
   if (palavrasEncontradas.includes(palavra)) {
-    feedback.innerText = "Essa palavra já foi encontrada.";
+    feedback.innerText = dados.repeatedWordFeedback;
     input.value = "";
     return;
   }
 
   if (palavra === palavraMestreAtual) {
-    feedback.innerText = "Não podes submeter a palavra-mestra completa.";
+    feedback.innerText = dados.masterWordFeedback;
     input.value = "";
     return;
   }
@@ -180,10 +189,10 @@ function submeterPalavra() {
     item.innerText = `${palavra} (+${pontosGanhos})`;
     lista.appendChild(item);
 
-    score.innerText = `Pontuação: ${pontuacao}`;
-    feedback.innerText = "Palavra válida!";
+    score.innerText = `${dados.scorePrefix} ${pontuacao}`;
+    feedback.innerText = dados.validWordFeedback;
   } else {
-    feedback.innerText = "Palavra inválida para esta ronda.";
+    feedback.innerText = dados.invalidWordFeedback;
   }
 
   input.value = "";

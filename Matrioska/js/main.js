@@ -78,6 +78,27 @@ const traducoes = {
         /* Lobby */
         lobbyTitle: "Sala de Jogo",
         startMatchBtn: "Iniciar partida",
+        lobbyRoomCodeLabel: "Código da sala:",
+
+        /* Game Screen */
+        gameScreenTitle: "Sala de Jogo",
+        masterWordLabel: "A palavra é:",
+        foundWordsTitle: "Palavras encontradas:",
+        gameRoomCodeLabel: "Código da sala:",
+        submitWordBtn: "Submeter",
+        gameModePrefix: "Modo:",
+        gameModeSolo: "Solo",
+        gameModeMultiplayer: "Multijogador",
+        scorePrefix: "Pontuação:",
+        emptyWordFeedback: "Escreve uma palavra antes de submeter.",
+        shortWordFeedback: "A palavra é demasiado curta.",
+        repeatedWordFeedback: "Essa palavra já foi encontrada.",
+        masterWordFeedback: "Não podes submeter a palavra-mestra completa.",
+        validWordFeedback: "Palavra válida!",
+        invalidWordFeedback: "Palavra inválida para esta ronda.",
+        noMatchFound: "Nenhuma partida encontrada!",
+        timeUpAlert: "Tempo esgotado!",
+        wordInputPlaceholder: "Escreve uma palavra...",
 
         /* Botão de troca de idioma */
         nextLang: "English",
@@ -162,6 +183,27 @@ const traducoes = {
         /* Lobby */
         lobbyTitle: "Game Room",
         startMatchBtn: "Start Match",
+        lobbyRoomCodeLabel: "Room code:",
+
+        /* Game Screen */
+        gameScreenTitle: "Game Room",
+        masterWordLabel: "The word is:",
+        foundWordsTitle: "Found words:",
+        gameRoomCodeLabel: "Room code:",
+        submitWordBtn: "Submit",
+        gameModePrefix: "Mode:",
+        gameModeSolo: "Solo",
+        gameModeMultiplayer: "Multiplayer",
+        scorePrefix: "Score:",
+        emptyWordFeedback: "Write a word before submitting.",
+        shortWordFeedback: "The word is too short.",
+        repeatedWordFeedback: "That word has already been found.",
+        masterWordFeedback: "You cannot submit the full master word.",
+        validWordFeedback: "Valid word!",
+        invalidWordFeedback: "Invalid word for this round.",
+        noMatchFound: "No match found!",
+        timeUpAlert: "Time is up!",
+        wordInputPlaceholder: "Write a word...",
 
         /* Botão de troca de idioma */
         nextLang: "Português",
@@ -241,6 +283,16 @@ function aplicarIdioma() {
     /* Elementos do Lobby */
     const elLobbyTitle = document.querySelector(".lobby-card .gradient-title");
     const elStartBtn = document.querySelector(".lobby-card .btn-create-match");
+    const elLobbyRoomCodeLabel = document.querySelector(".lobby-code label");
+    const elBackButtonText = document.querySelector(".back-button .txt-back");
+
+    /* Elementos do Game Screen */
+    const elGameScreenTitle = document.getElementById("gamescreen-title");
+    const elMasterWordLabel = document.getElementById("master-word-label");
+    const elFoundWordsTitle = document.getElementById("found-words-title");
+    const elGameRoomCodeLabel = document.getElementById("game-room-code-label");
+    const elSubmitWordBtn = document.getElementById("submit-word-btn");
+    const elPlayerWordInput = document.getElementById("player-word");
 
     /* Elementos do seletor de idioma */
     const elLangName = document.getElementById("lang-name");
@@ -350,6 +402,16 @@ function aplicarIdioma() {
     /* Lobby */
     if (elLobbyTitle) elLobbyTitle.innerText = dados.lobbyTitle;
     if (elStartBtn) elStartBtn.innerText = dados.startMatchBtn;
+    if (elLobbyRoomCodeLabel) elLobbyRoomCodeLabel.innerText = dados.lobbyRoomCodeLabel;
+    if (elBackButtonText) elBackButtonText.innerText = dados.back;
+
+    /* Game Screen */
+    if (elGameScreenTitle) elGameScreenTitle.innerText = dados.gameScreenTitle;
+    if (elMasterWordLabel) elMasterWordLabel.innerText = dados.masterWordLabel;
+    if (elFoundWordsTitle) elFoundWordsTitle.innerText = dados.foundWordsTitle;
+    if (elGameRoomCodeLabel) elGameRoomCodeLabel.innerText = dados.gameRoomCodeLabel;
+    if (elSubmitWordBtn) elSubmitWordBtn.innerText = dados.submitWordBtn;
+    if (elPlayerWordInput) elPlayerWordInput.placeholder = dados.wordInputPlaceholder;
     
     /* Botão de idioma: mostra sempre a próxima língua */
     if (elLangName) elLangName.innerText = dados.nextLang;
