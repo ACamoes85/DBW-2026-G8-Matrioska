@@ -36,6 +36,8 @@ router.get('/resultsloading', protegerRota, userController.getResultsLoading);
 // Rota Dinâmica do Jogo
 router.get('/gamescreen', protegerRota, gameController.renderizarJogo);
 
+router.post('/api/partidas/guardar', protegerRota, gameController.guardarEstatisticasPartida);
+
 // Prevenção de Cache
 router.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
