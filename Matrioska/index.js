@@ -1,6 +1,7 @@
 "use strict";
 
-import 'dotenv/config'; // 1. Adiciona isto no topo
+import dotenv from "dotenv";
+dotenv.config({ path: "./.env" });
 import express from "express";
 import mongoose from "mongoose"; 
 import methodOverride from "method-override"; 
@@ -14,6 +15,7 @@ const MongoDBStore = MongoStore(session);
 
 // Usa a variável do ficheiro .env
 const mongoURI = process.env.MONGO_URI;
+console.log("MONGO_URI:", mongoURI);
 
 // Configurar armazenamento de sessões
 const store = new MongoDBStore({
