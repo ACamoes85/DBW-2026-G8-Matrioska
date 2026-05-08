@@ -1,5 +1,6 @@
 "use strict";
 
+import 'dotenv/config'; // 1. Adiciona isto no topo
 import express from "express";
 import mongoose from "mongoose"; 
 import methodOverride from "method-override"; 
@@ -11,7 +12,8 @@ import authRoutes from "./routes/authRoutes.js";
 const app = express();
 const MongoDBStore = MongoStore(session);
 
-const mongoURI = "mongodb+srv://grupo8dbw:matrioska@matrioska.pdguue3.mongodb.net/MatrioskaDB?appName=Matrioska";
+// Usa a variável do ficheiro .env
+const mongoURI = process.env.MONGO_URI;
 
 // Configurar armazenamento de sessões
 const store = new MongoDBStore({
@@ -28,7 +30,7 @@ app.use(methodOverride("_method"));
 
 // Configuração da Sessão
 app.use(session({
-    secret: "matrioska_secret_key_123", // Muda isto para algo seguro
+    secret: process.env.SESSION_SECRET, // Usa o secret do .env
     resave: false,
     saveUninitialized: false,
     store: store,
@@ -48,7 +50,7 @@ app.use("/api/auth", authRoutes);
 mongoose.connect(mongoURI)
     .then(() => {
         console.log("Connected to MongoDB Atlas");
-        const PORT = 3000;
+        const PORT = process.env.PORT || 3000; // Usa a porta do .env ou 3000 por defeito
         app.listen(PORT, () => {
             console.log(`Servidor a correr em http://localhost:${PORT}`);
         });
