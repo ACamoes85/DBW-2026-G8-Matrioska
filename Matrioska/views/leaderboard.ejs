@@ -12,9 +12,8 @@
   <body>
     <img src="/images/howtoplay_bg.png" class="background-image" alt="Fundo Classificação" />
 
-    <a href="/hub" class="back-button"></a>
-
     <header class="header-navbar">
+        <a href="/hub" class="back-button" style="text-decoration: none; color: white; margin-left: 20px;">← Voltar</a>
         <nav class="nav-links">
             <a href="/hub">Início</a>
             <a href="/leaderboard" class="active">Classificação</a>
@@ -22,7 +21,7 @@
         </nav>
         <div class="profile-section">
             <a href="/profile" class="profile-link">
-                <img src="/images/profile1.png" alt="Perfil" class="profile-avatar" id="nav-profile-avatar">
+                <img src="<%= user ? user.avatar : '/images/profile1.png' %>" alt="Perfil" class="profile-avatar" id="nav-profile-avatar">
             </a>
         </div>
     </header>
@@ -38,36 +37,19 @@
           </div>
 
           <div class="table-body">
-            <div class="table-row">
-              <span>1</span>
-              <span>Jogador1</span>
-              <span>1000</span>
-            </div>
-            <div class="table-row">
-              <span>2</span>
-              <span>Jogador2</span>
-              <span>900</span>
-            </div>
-            <div class="table-row">
-              <span>3</span>
-              <span>Jogador3</span>
-              <span>800</span>
-            </div>
-            <div class="table-row">
-              <span>4</span>
-              <span>Jogador4</span>
-              <span>700</span>
-            </div>
-            <div class="table-row">
-              <span>5</span>
-              <span>Jogador5</span>
-              <span>600</span>
-            </div>
-            <div class="table-row">
-              <span>6</span>
-              <span>Jogador6</span>
-              <span>500</span>
-            </div>
+            <% if (typeof players !== 'undefined' && players.length > 0) { %>
+              <% players.forEach((player, index) => { %>
+                <div class="table-row">
+                  <span><%= index + 1 %></span>
+                  <span><%= player.username %></span>
+                  <span><%= player.stats.totalScore %></span>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <div class="table-row">
+                <span colspan="3">Ainda não há pontuações registadas.</span>
+              </div>
+            <% } %>
           </div>
         </div>
       </div>

@@ -1,36 +1,41 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("register-form");
+"use strict";
 
-    if (!form) return;
+const registerForm = document.getElementById('register-form');
 
-    form.addEventListener("submit", (event) => {
-        event.preventDefault();
+if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-        const email = document.getElementById("register-email").value;
-        const username = document.getElementById("register-username").value;
-        const password = document.getElementById("register-password").value;
-        const confirmPassword = document.getElementById("register-confirm-password").value;
+        const email = document.getElementById('register-email').value;
+        const username = document.getElementById('register-username').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('register-confirm-password').value;
 
-        if (!email || !username || !password || !confirmPassword) {
-            alert("Preenche todos os campos!");
-            return;
-        }
-
+        // Verificação básica no cliente antes de enviar ao servidor
         if (password !== confirmPassword) {
-            alert("As palavras-passe não coincidem!");
+            alert("As passwords não coincidem!");
             return;
         }
 
-        const user = {
-            email,
-            username,
-            password
-        };
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, username, password, confirmPassword })
+            });
 
-        localStorage.setItem("userData", JSON.stringify(user));
-        localStorage.setItem("user", username); // Usado pelo lobby.js
+            const data = await response.json();
 
-        alert("Registo feito com sucesso!");
-        window.location.href = "/hub";
+            if (response.ok) {
+                // Aqui está o que pediste: redirecionar direto para o HUB
+                alert("Registo concluído com sucesso! Bem-vindo.");
+                window.location.href = '/hub'; 
+            } else {
+                alert(data.message || "Erro ao realizar registo.");
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro ao ligar ao servidor.");
+        }
     });
-});
+}

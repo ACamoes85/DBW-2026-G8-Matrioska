@@ -10,13 +10,13 @@
     <main class="scoreboard-screen">
         <section class="scoreboard-card">
             <h2 class="subtitle">Vencedor</h2>
-            <h1 class="winner">Player_1 - 320 pts</h1>
+            
+            <h1 class="winner" id="winner-display">A carregar...</h1>
 
             <div class="ranking">
                 <h3>Classificação</h3>
-                <p>1 - Player_1 - 320 pts</p>
-                <p>2 - Player_2 - 280 pts</p>
-                <p>3 - Player_3 - 200 pts</p>
+                <div id="ranking-list">
+                    </div>
             </div>
 
             <div class="buttons">
@@ -25,5 +25,8 @@
             </div>
         </section>
     </main>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/scoreboard.js"></script>
 </body>
 </html>

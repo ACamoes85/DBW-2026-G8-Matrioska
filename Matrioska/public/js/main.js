@@ -1,3 +1,4 @@
+"use strict";
 /* Dicionário de textos para multi-idioma */
 const traducoes = {
     pt: {
@@ -331,7 +332,8 @@ function aplicarIdioma() {
     if (elEnterBtn) elEnterBtn.innerText = dados.enter;
 
     /* How to Play */
-    if (elBack) elBack.innerHTML = `<span>←</span> ${dados.back}`;
+    const isEditProfile = document.querySelector('.edit-profile-page');
+    if (elBack && !isEditProfile) elBack.innerHTML = `<span>←</span> ${dados.back}`;
     if (elRulesTitle) {
       elRulesTitle.innerText = dados.rulesTitle;
     }
@@ -436,25 +438,6 @@ function toggleLanguage() {
     aplicarIdioma();
 }
 
-function carregarAvatarSalvo() {
-    const avatarSalvo = localStorage.getItem('userAvatar');
-    
-    // Procura a imagem da navbar
-    const imagemNavbar = document.getElementById('nav-profile-avatar');
-    
-    // Procura a imagem grande da página de perfil
-    const imagemPerfilGrande = document.getElementById('main-profile-img');
-
-    if (avatarSalvo) {
-        if (imagemNavbar) {
-            imagemNavbar.src = avatarSalvo;
-        }
-        if (imagemPerfilGrande) {
-            imagemPerfilGrande.src = avatarSalvo;
-        }
-    }
-}
-
 // Função para aplicar o nome em qualquer página --- */
 function aplicarNomeUtilizador() {
     const nome = localStorage.getItem("user") || localStorage.getItem("username");
@@ -478,7 +461,6 @@ function aplicarNomeUtilizador() {
 /* Inicialização */
 document.addEventListener("DOMContentLoaded", () => {
     aplicarIdioma();
-    carregarAvatarSalvo();
     aplicarNomeUtilizador();
 
     // Event listener para o botão de troca de idioma 

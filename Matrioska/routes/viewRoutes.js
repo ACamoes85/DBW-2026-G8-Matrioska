@@ -1,19 +1,45 @@
+"use strict";
+
 import express from 'express';
+import * as gameController from '../controllers/gameController.js'; 
+import * as userController from '../controllers/userController.js';
+
 const router = express.Router();
 
+/**
+ * Middleware: Proteção de Rotas
+ */
+const protegerRota = (req, res, next) => {
+    if (req.session && req.session.user) {
+        return next();
+    }
+    res.redirect('/login');
+};
+
+// --- Rotas Públicas ---
 router.get(['/', '/homepage'], (req, res) => res.render('homepage'));
 router.get('/login', (req, res) => res.render('login'));
 router.get('/register', (req, res) => res.render('register'));
-router.get('/hub', (req, res) => res.render('hub'));
-router.get('/profile', (req, res) => res.render('profile'));
-router.get('/leaderboard', (req, res) => res.render('leaderboard'));
-router.get('/howtoplay', (req, res) => res.render('howtoplay'));
-router.get('/create-match', (req, res) => res.render('create-match'));
-router.get('/lobby', (req, res) => res.render('lobby'));
-router.get('/edit-profile', (req, res) => res.render('edit-profile'));
-router.get('/gamescreen', (req, res) => res.render('gamescreen'));
-router.get('/loadingmatch', (req, res) => res.render('loadingmatch'));
-router.get('/resultsloading', (req, res) => res.render('resultsloading'));
-router.get('/scoreboard', (req, res) => res.render('scoreboard'));
+
+// --- Rotas Protegidas (Todas via Controller para garantir Avatar atualizado) ---
+router.get('/hub', protegerRota, userController.getHub);
+router.get('/howtoplay', protegerRota, userController.getHowToPlay);
+router.get('/leaderboard', protegerRota, userController.getLeaderboard);
+router.get('/profile', protegerRota, userController.getProfile);
+router.get('/edit-profile', protegerRota, userController.getEditProfile);
+router.get('/create-match', protegerRota, userController.getCreateMatch); 
+router.get('/lobby', protegerRota, userController.getLobby);
+router.get('/loadingmatch', protegerRota, userController.getLoadingMatch);
+router.get('/scoreboard', protegerRota, userController.getScoreboard);
+router.get('/resultsloading', protegerRota, userController.getResultsLoading);
+
+// Rota Dinâmica do Jogo
+router.get('/gamescreen', protegerRota, gameController.renderizarJogo);
+
+// Prevenção de Cache
+router.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
 
 export default router;

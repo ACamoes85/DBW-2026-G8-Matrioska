@@ -11,7 +11,7 @@
 <body class="edit-profile-page">
     <img src="/images/howtoplay_bg.png" class="background-image" alt="fundo" />
 
-    <a href="/profile" class="back-button">
+    <a href="/profile" class="back-button" id="btn-back">
         <span class="arrow">←</span> <span class="txt-back">Voltar</span>
     </a>
 
@@ -19,15 +19,19 @@
         <div class="preview-section">
             <h1 class="edit-title">Imagem de perfil</h1>
             <div class="avatar-preview-wrapper">
-                <img src="/images/profile1.png" id="main-preview" alt="Preview">
+                <img src="<%= user.avatar %>" id="main-preview" alt="Preview">
             </div>
-        </div>
+            </div>
 
         <div class="selection-section">
             <h2 class="choose-label">Escolha uma imagem:</h2>
             <div class="avatar-grid">
-                <% for(let i=1; i<=12; i++) { %>
-                    <img src="/images/profile<%= i %>.png" class="grid-item" data-avatar="profile<%= i %>.png">
+                <% for(let i=1; i<=12; i++) { 
+                    let path = "/images/profile" + i + ".png";
+                %>
+                    <img src="<%= path %>" 
+                         class="grid-item <%= user.avatar === path ? 'active' : '' %>" 
+                         data-avatar="<%= path %>">
                 <% } %>
             </div>
         </div>

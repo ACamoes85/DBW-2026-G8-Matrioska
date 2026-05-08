@@ -12,9 +12,8 @@
     <img src="/images/howtoplay_bg.png" class="background-image" alt="Fundo Perfil" />
     <div class="background-ellipse"></div>
     
-    <a href="/hub" class="back-button"></a>
-    
     <header class="header-navbar">
+        <a href="/hub" class="back-button" style="text-decoration: none; color: white; margin-left: 20px;">← Voltar</a>
         <nav class="nav-links">
             <a href="/hub">Início</a>
             <a href="/leaderboard">Classificação</a>
@@ -22,7 +21,7 @@
         </nav>
         <div class="profile-section">
             <a href="/profile" class="profile-link active-profile">
-                <img src="/images/profile1.png" alt="Perfil" class="profile-avatar" id="nav-profile-avatar">
+                <img src="<%= user.avatar %>" alt="Perfil" class="profile-avatar" id="nav-profile-avatar">
             </a>
         </div>
     </header>
@@ -35,28 +34,28 @@
           <div class="stats-grid">
             <div class="stat-item">
               <p class="stat-label" id="stat-total-score">Pontuação Total</p>
-              <p class="stat-value">500</p>
+              <p class="stat-value"><%= user.stats.totalScore %></p>
             </div>
             <div class="stat-item">
               <p class="stat-label" id="stat-correct">Respostas Corretas</p>
-              <p class="stat-value">5</p>
+              <p class="stat-value"><%= user.stats.correctAnswers %></p>
             </div>
             <div class="stat-item">
               <p class="stat-label" id="stat-wrong">Respostas Erradas</p>
-              <p class="stat-value">2</p>
+              <p class="stat-value"><%= user.stats.wrongAnswers %></p>
             </div>
             <div class="stat-item">
               <p class="stat-label" id="stat-games">Partidas Jogadas</p>
-              <p class="stat-value">1</p>
+              <p class="stat-value"><%= user.stats.gamesPlayed %></p>
             </div>
           </div>
         </div>
 
         <div class="avatar-section">
-          <h2 class="player-name" id="user-display-name">Player1</h2>
+          <h2 class="player-name" id="user-display-name"><%= user.username %></h2>
 
           <div class="avatar-circle-glow">
-            <img src="/images/profile1.png" alt="User Avatar" class="large-avatar" id="main-profile-img">
+            <img src="<%= user.avatar %>" alt="User Avatar" class="large-avatar" id="main-profile-img">
           </div>
           
           <a href="/edit-profile" style="text-decoration: none;">

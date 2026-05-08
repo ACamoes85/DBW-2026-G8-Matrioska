@@ -1,26 +1,56 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", () => {
     const mainPreview = document.getElementById('main-preview');
     const gridItems = document.querySelectorAll('.grid-item');
 
-    const avatarAtual = localStorage.getItem('userAvatar');
-    
-    if (avatarAtual) {
-        mainPreview.src = avatarAtual;
-        gridItems.forEach(item => {
-            if (item.src === mainPreview.src) {
-                item.classList.add('active');
-            }
-        });
-    } else if (gridItems.length > 0) {
-        gridItems[0].classList.add('active');
-    }
+    let selectedAvatar = mainPreview.getAttribute('src');
 
     gridItems.forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', async () => {
             gridItems.forEach(i => i.classList.remove('active'));
             item.classList.add('active');
-            mainPreview.src = item.src;
-            localStorage.setItem('userAvatar', item.src);
+            selectedAvatar = item.getAttribute('data-avatar');
+            mainPreview.src = selectedAvatar;
+
+            // Guarda imediatamente ao clicar
+            await fetch('/api/auth/update-avatar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ avatar: selectedAvatar })
+            });
         });
     });
+
+    // Interceta qualquer navegação para fora da página
+    window.addEventListener('beforeunload', () => {
+        navigator.sendBeacon('/api/auth/update-avatar', 
+            JSON.stringify({ avatar: selectedAvatar })
+        );
+    });
+
+    const btnBack = document.getElementById('btn-back');
+    if (btnBack) {
+        btnBack.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            try {
+
+                const response = await fetch('/api/auth/update-avatar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ avatar: selectedAvatar })
+                });
+
+                if (response.ok) {
+                    window.location.href = '/profile?v=' + Date.now();
+                } else {
+                    window.location.href = '/profile';
+                }
+            } catch (error) {
+                console.error("Erro ao atualizar avatar:", error);
+                window.location.href = '/profile';
+            }
+        });
+    }
 });

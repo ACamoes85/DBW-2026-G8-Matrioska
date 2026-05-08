@@ -1,3 +1,4 @@
+"use strict";
 /* Botão Entrar para /lobby */
 document.addEventListener("DOMContentLoaded", () => {
     // Garante que o idioma é aplicado ao carregar o Hub

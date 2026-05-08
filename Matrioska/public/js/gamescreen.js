@@ -1,17 +1,10 @@
-document.addEventListener("DOMContentLoaded", () => {
-  inicializarJogo();
-  configurarSubmissaoPalavras();
-  iniciarTemporizador();
-});
+"use strict";
 
-const bancoPalavras = {
-  RELACAO: ["RELA", "REAL", "LEAL", "LAR", "ALA", "CAL", "RA", "AR", "AO"],
-  PASSAGEIRO: ["PASSA", "ASA", "AGE", "EIRO", "RIO", "SAI", "PAI"],
-  SOLIDARIEDADE: ["SOL", "LIDA", "IDA", "IDADE", "AR", "RIO", "DIA"],
-  COMPUTADOR: ["COM", "PUTA", "DOR", "DADO", "TOR", "ADOR", "RATO"],
-  PROGRAMACAO: ["PRO", "GRAMA", "AMA", "RAMA", "ACAO", "ROCA", "AR"],
-  DESENVOLVIMENTO: ["ENVIO", "VENTO", "DENTE", "SOM", "LENTO", "VIVO", "MENTE"]
-};
+document.addEventListener("DOMContentLoaded", () => {
+    inicializarJogo();
+    configurarSubmissaoPalavras();
+    iniciarTemporizador();
+});
 
 let palavraMestreAtual = "";
 let palavrasValidasAtuais = [];
@@ -21,126 +14,128 @@ let tempoRestante = 30;
 let intervaloTemporizador = null;
 
 function inicializarJogo() {
-  const partidaAtual = JSON.parse(localStorage.getItem("partidaAtual"));
-  const idiomaAtual = localStorage.getItem("idioma") || "pt";
-  // Fallback caso traducoes não esteja definido globalmente
-  const dados = (typeof traducoes !== 'undefined') ? traducoes[idiomaAtual] : { scorePrefix: "Pontos:", noMatchFound: "Partida não encontrada!" };
+    // 1. Carrega os dados que o EJS "imprimiu" na página vindos do MongoDB
+    if (window.DADOS_JOGO) {
+        palavraMestreAtual = window.DADOS_JOGO.palavraMestra.toUpperCase().trim();
+        // Garantimos que todas as subpalavras da BD estão em maiúsculas e sem espaços extras
+        palavrasValidasAtuais = window.DADOS_JOGO.subPalavras.map(p => p.toUpperCase().trim());
+        
+        console.log("Jogo Iniciado!");
+        console.log("Palavra Mestre:", palavraMestreAtual);
+        console.log("Palavras que o jogador deve adivinhar:", palavrasValidasAtuais);
+    }
 
-  const elTimer = document.getElementById("game-timer");
-  const elRoomCode = document.getElementById("game-room-code");
-  const elMasterWord = document.getElementById("master-word");
-  const elMode = document.getElementById("game-mode-display");
-  const elScore = document.getElementById("score-display");
+    // 2. Recupera dados da partida (como o tempo definido no lobby)
+    const partidaAtual = JSON.parse(localStorage.getItem("partidaAtual"));
+    const elTimer = document.getElementById("game-timer");
+    const elRoomCode = document.getElementById("game-room-code");
+    const elMasterWord = document.getElementById("master-word");
+    const elScore = document.getElementById("score-display");
 
-  if (!partidaAtual) {
-    alert(dados.noMatchFound);
-    window.location.href = "/create-match";
-    return;
-  }
+    if (partidaAtual) {
+        tempoRestante = parseInt(partidaAtual.tempo, 10) || 30;
+        if (elTimer) elTimer.innerText = `${tempoRestante}s`;
+        if (elRoomCode && partidaAtual.codigo) elRoomCode.innerText = partidaAtual.codigo;
+    }
 
-  tempoRestante = parseInt(partidaAtual.tempo, 10) || 30;
-  if (elTimer) elTimer.innerText = `${tempoRestante}s`;
-  if (elRoomCode && partidaAtual.codigo) elRoomCode.innerText = partidaAtual.codigo;
-
-  if (elMode && partidaAtual.modo) {
-    const prefix = dados.gameModePrefix || "Modo:";
-    const modo = partidaAtual.modo === "multiplayer" ? (dados.gameModeMultiplayer || "Multijogador") : (dados.gameModeSolo || "Solo");
-    elMode.innerText = `${prefix} ${modo}`;
-  }
-
-  escolherPalavraMestre();
-  if (elMasterWord) elMasterWord.innerText = palavraMestreAtual;
-  if (elScore) elScore.innerText = `${dados.scorePrefix} ${pontuacao}`;
+    if (elMasterWord) elMasterWord.innerText = palavraMestreAtual;
+    if (elScore) elScore.innerText = `Pontuação: ${pontuacao}`;
 }
 
-function escolherPalavraMestre() {
-  const palavrasMestre = Object.keys(bancoPalavras);
-  palavraMestreAtual = palavrasMestre[Math.floor(Math.random() * palavrasMestre.length)];
-  palavrasValidasAtuais = bancoPalavras[palavraMestreAtual];
+function configurarSubmissaoPalavras() {
+    const input = document.getElementById("player-word");
+    const button = document.getElementById("submit-word-btn");
+
+    if (button) {
+        button.onclick = submeterPalavra;
+    }
+
+    if (input) {
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                submeterPalavra();
+            }
+        });
+    }
+}
+
+function submeterPalavra() {
+    const input = document.getElementById("player-word");
+    const feedback = document.getElementById("feedback-message");
+    const listaUI = document.getElementById("found-words-list");
+    const scoreDisplay = document.getElementById("score-display");
+
+    if (!input) return;
+
+    const tentativa = input.value.trim().toUpperCase();
+
+    // Validações básicas
+    if (!tentativa) return;
+
+    if (palavrasEncontradas.includes(tentativa)) {
+        feedback.innerText = "Já encontraste essa!";
+        feedback.style.color = "orange";
+        input.value = "";
+        return;
+    }
+
+    // A REGRA DE OURO: A tentativa está na lista de subPalavras do MongoDB?
+    if (palavrasValidasAtuais.includes(tentativa)) {
+        // Sucesso!
+        palavrasEncontradas.push(tentativa);
+        
+        // Atribui pontos (ex: 10 pontos por letra)
+        const pontosGanhos = tentativa.length * 10;
+        pontuacao += pontosGanhos;
+
+        // Atualiza a interface (UI)
+        const item = document.createElement("li");
+        item.innerText = `${tentativa} (+${pontosGanhos})`;
+        listaUI.appendChild(item);
+
+        if (scoreDisplay) scoreDisplay.innerText = `Pontuação: ${pontuacao}`;
+        
+        feedback.innerText = "Acertaste!";
+        feedback.style.color = "#00FF00"; // Verde
+    } else {
+        // Erro: A palavra não consta na tua lista do Atlas
+        feedback.innerText = "Palavra incorreta!";
+        feedback.style.color = "#FF4444"; // Vermelho
+    }
+
+    // Limpa o campo e foca para a próxima tentativa
+    input.value = "";
+    input.focus();
+    setTimeout(() => {
+        feedback.innerText = "";
+    }, 1500);
 }
 
 function iniciarTemporizador() {
-  const elTimer = document.getElementById("game-timer");
-  const idiomaAtual = localStorage.getItem("idioma") || "pt";
-  const dados = (typeof traducoes !== 'undefined') ? traducoes[idiomaAtual] : { timeUpAlert: "Tempo esgotado!" };
+    const elTimer = document.getElementById("game-timer");
+    if (!elTimer) return;
 
-  if (!elTimer) return;
+    intervaloTemporizador = setInterval(() => {
+        tempoRestante--;
+        elTimer.innerText = `${tempoRestante}s`;
 
-  intervaloTemporizador = setInterval(() => {
-    tempoRestante--;
-    elTimer.innerText = `${tempoRestante}s`;
+        if (tempoRestante <= 0) {
+            clearInterval(intervaloTemporizador);
+            finalizarPartida();
+        }
+    }, 1000);
+}
 
-    if (tempoRestante <= 0) {
-      clearInterval(intervaloTemporizador);
-      const resultadoPartida = {
+function finalizarPartida() {
+    const resultadoPartida = {
         palavraMestre: palavraMestreAtual,
         palavrasEncontradas,
         pontuacao,
         tempo: 0
-      };
-      localStorage.setItem("resultadoPartida", JSON.stringify(resultadoPartida));
-      alert(dados.timeUpAlert);
-      window.location.href = "/scoreboard";
-    }
-  }, 1000);
-}
-
-function configurarSubmissaoPalavras() {
-  const input = document.getElementById("player-word");
-  const button = document.getElementById("submit-word-btn");
-  if (button) button.addEventListener("click", submeterPalavra);
-  if (input) {
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        submeterPalavra();
-      }
-    });
-  }
-}
-
-function submeterPalavra() {
-  const input = document.getElementById("player-word");
-  const feedback = document.getElementById("feedback-message");
-  const lista = document.getElementById("found-words-list");
-  const score = document.getElementById("score-display");
-  const idiomaAtual = localStorage.getItem("idioma") || "pt";
-  const dados = (typeof traducoes !== 'undefined') ? traducoes[idiomaAtual] : { scorePrefix: "Pontos:" };
-
-  if (!input || !feedback || !lista || !score) return;
-
-  const palavra = input.value.trim().toUpperCase();
-  if (!palavra) return;
-
-  if (palavra.length < 2 || palavrasEncontradas.includes(palavra) || palavra === palavraMestreAtual) {
-    input.value = "";
-    return;
-  }
-
-  const existeNaLista = palavrasValidasAtuais.includes(palavra);
-  const respeitaSequencia = ehSubsequencia(palavra, palavraMestreAtual);
-
-  if (existeNaLista && respeitaSequencia) {
-    palavrasEncontradas.push(palavra);
-    const pontosGanhos = palavra.length * 10;
-    pontuacao += pontosGanhos;
-
-    const item = document.createElement("li");
-    item.innerText = `${palavra} (+${pontosGanhos})`;
-    lista.appendChild(item);
-
-    score.innerText = `${dados.scorePrefix} ${pontuacao}`;
-  }
-
-  input.value = "";
-  input.focus();
-}
-
-function ehSubsequencia(palavraPequena, palavraGrande) {
-  let i = 0, j = 0;
-  while (i < palavraPequena.length && j < palavraGrande.length) {
-    if (palavraPequena[i] === palavraGrande[j]) i++;
-    j++;
-  }
-  return i === palavraPequena.length;
+    };
+    localStorage.setItem("resultadoPartida", JSON.stringify(resultadoPartida));
+    
+    alert("Tempo esgotado! Pontuação: " + pontuacao);
+    window.location.href = "/resultsloading";
 }

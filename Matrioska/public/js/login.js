@@ -1,23 +1,33 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("login-form");
-  if (!form) return;
+"use strict";
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const username = document.getElementById("login-username").value;
-    const password = document.getElementById("login-password").value;
-    const storedUser = JSON.parse(localStorage.getItem("userData"));
+const loginForm = document.getElementById('login-form');
 
-    if (!storedUser) {
-      alert("Nenhum utilizador registado!");
-      return;
-    }
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    if (username === storedUser.username && password === storedUser.password) {
-      localStorage.setItem("user", username);
-      window.location.href = "/hub";
-    } else {
-      alert("Credenciais inválidas!");
-    }
-  });
-});
+        const email = document.getElementById('login-email').value;
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem("user", username);
+                window.location.href = '/hub';
+            } else {
+                alert(data.message || "Credenciais incorretas.");
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro ao ligar ao servidor.");
+        }
+    });
+}

@@ -18,7 +18,7 @@
 
         <div class="profile-section">
             <a href="/profile">
-                <img src="/images/profile1.png" alt="Perfil" class="profile-avatar" id="nav-profile-avatar">
+                <img src="<%= user ? user.avatar : '/images/profile1.png' %>" alt="Perfil" class="profile-avatar" id="nav-profile-avatar">
             </a>
         </div>
     </header>
@@ -27,7 +27,9 @@
         <section class="card">
 
             <div class="left">
-                <h1 id="welcome-label">Bem-vindo à Matrioska</h1>
+                <h1 id="welcome-label">
+                    Bem-vindo, <%= user ? user.username : 'à Matrioska' %>
+                </h1>
 
                 <p id="description">Revela o máximo de palavras antes que o tempo se esgote.</p>
 

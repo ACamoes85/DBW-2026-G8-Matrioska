@@ -19,7 +19,7 @@
             </div>
 
             <p class="label" id="master-word-label">A palavra é:</p>
-            <h2 id="master-word">RELAÇÃO</h2>
+            <h2 id="master-word"><%= jogo.palavraMestra %></h2>
 
             <div class="input-section">
                 <input type="text" id="player-word" placeholder="Escreve uma palavra..." autocomplete="off">
@@ -37,6 +37,13 @@
             <div class="room-code" id="game-room-code">X7K9P2</div>
         </div>
     </div>
+
+    <script>
+        window.DADOS_JOGO = {
+            palavraMestra: "<%= jogo.palavraMestra %>",
+            subPalavras: <%- JSON.stringify(jogo.subPalavras) %>
+        };
+    </script>
 
     <script src="/js/main.js"></script>
     <script src="/js/gamescreen.js"></script>

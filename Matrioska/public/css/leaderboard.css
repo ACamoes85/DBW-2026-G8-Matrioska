@@ -111,14 +111,29 @@ body {
 }
 
 @media (max-width: 768px) {
-    .header-navbar, .nav-links, .profile-section {
+    .header-navbar {
+        display: block !important; 
+        background: none !important;
+        border: none !important;
+        height: 0 !important; 
+    }
+
+    .nav-links, .profile-section {
         display: none !important;
     }
 
     .back-button {
         display: flex !important;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 1100;
+        color: #FFFFFF !important;
+        text-decoration: none;
+        background: none !important; 
+        border: none !important;      
     }
-
+    
     .leaderboard-page {
         padding-top: 80px; 
         padding-left: 10px;
