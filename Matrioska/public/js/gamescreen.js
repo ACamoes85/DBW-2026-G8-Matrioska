@@ -127,15 +127,31 @@ function iniciarTemporizador() {
     }, 1000);
 }
 
-function finalizarPartida() {
+async function finalizarPartida() {
+    const partidaAtual = JSON.parse(localStorage.getItem("partidaAtual"));
+
     const resultadoPartida = {
+        codigoSala: partidaAtual?.codigo || "SOLO",
         palavraMestre: palavraMestreAtual,
         palavrasEncontradas,
         pontuacao,
-        tempo: 0
+        tempoJogo: partidaAtual?.tempo || 30
     };
+
     localStorage.setItem("resultadoPartida", JSON.stringify(resultadoPartida));
-    
+
+    try {
+        await fetch("/api/partidas/guardar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(resultadoPartida)
+        });
+    } catch (err) {
+        console.error("Erro ao guardar partida:", err);
+    }
+
     alert("Tempo esgotado! Pontuação: " + pontuacao);
     window.location.href = "/resultsloading";
 }
