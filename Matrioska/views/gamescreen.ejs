@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrioska - Em Jogo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/gamescreen.css">
+</head>
+<body>
+    <div class="game-screen">
+        <div class="overlay">
+            <h1 id="gamescreen-title">Sala de Jogo</h1>
+
+            <div class="game-info">
+                <p class="timer" id="game-timer">30s</p>
+                <p class="game-mode" id="game-mode-display">Modo: Solo</p>
+                <p class="score-display" id="score-display">Pontuação: 0</p>
+            </div>
+
+            <p class="label" id="master-word-label">A palavra é:</p>
+            <h2 id="master-word">RELAÇÃO</h2>
+
+            <div class="input-section">
+                <input type="text" id="player-word" placeholder="Escreve uma palavra..." autocomplete="off">
+                <button id="submit-word-btn">Submeter</button>
+            </div>
+
+            <p id="feedback-message"></p>
+
+            <div class="found-words-section">
+                <p class="found-words-title" id="found-words-title">Palavras encontradas:</p>
+                <ul id="found-words-list"></ul>
+            </div>
+
+            <p class="room-label" id="game-room-code-label">Código da sala:</p>
+            <div class="room-code" id="game-room-code">X7K9P2</div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/gamescreen.js"></script>
+</body>
+</html>

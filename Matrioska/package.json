@@ -1,0 +1,30 @@
+{
+  "name": "projeto_matrioska",
+  "version": "1.0.0",
+  "description": "Projeto desenvolvido no âmbito da disciplina de Desenvolvimento Baseado na Web (DBW) 2026.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ACamoes85/DBW-2026-G8-Matrioska.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ACamoes85/DBW-2026-G8-Matrioska/issues"
+  },
+  "homepage": "https://github.com/ACamoes85/DBW-2026-G8-Matrioska#readme",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "mongoose": "^8.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrioska - Alterar Perfil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/edit-profile.css">
+</head>
+<body class="edit-profile-page">
+    <img src="/images/howtoplay_bg.png" class="background-image" alt="fundo" />
+
+    <a href="/profile" class="back-button">
+        <span class="arrow">←</span> <span class="txt-back">Voltar</span>
+    </a>
+
+    <main class="central-card">
+        <div class="preview-section">
+            <h1 class="edit-title">Imagem de perfil</h1>
+            <div class="avatar-preview-wrapper">
+                <img src="/images/profile1.png" id="main-preview" alt="Preview">
+            </div>
+        </div>
+
+        <div class="selection-section">
+            <h2 class="choose-label">Escolha uma imagem:</h2>
+            <div class="avatar-grid">
+                <% for(let i=1; i<=12; i++) { %>
+                    <img src="/images/profile<%= i %>.png" class="grid-item" data-avatar="profile<%= i %>.png">
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/edit-profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matrioska - Homepage</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/homepage.css" />
+  </head>
+
+  <body>
+    <img src="/images/homepage_bg.png" alt="Fundo Matrioska" class="background-image" />
+
+    <main class="glass-card homepage-card">
+      <p id="welcome-label" class="welcome-label">Bem-vindo ao</p>
+
+      <h1 class="title-neon">Matrioska</h1>
+
+      <p id="description" class="description">
+        Revela o máximo de palavras antes que o tempo se esgote.
+      </p>
+
+      <div class="btn-container">
+        <a href="/login" id="btn-login" class="btn-custom btn-blue">
+          Entrar
+        </a>
+
+        <a href="/register" id="btn-register" class="btn-custom btn-pink">
+          Registar
+        </a>
+      </div>
+
+      <div class="lang-footer" id="lang-selector" onclick="toggleLanguage()">
+        <div id="lang-flag" class="lang-icon english-flag"></div>
+        <span id="lang-name" class="lang-text">English</span>
+      </div>
+    </main>
+
+    <script src="/js/main.js"></script>
+  </body>
+</html>

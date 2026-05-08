@@ -1,0 +1,262 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    min-height: 100vh;
+    background: black;
+}
+
+/* Fundo da página */
+.game-screen {
+    width: 100%;
+    min-height: 100vh;
+    background-image: url("../images/gamescreen.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+/* Caixa principal */
+.overlay {
+    width: 950px;
+    max-width: 95%;
+    min-height: 650px;
+    background: rgba(7, 16, 45, 0.96);
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    padding: 35px 30px 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+/* Título */
+.overlay h1 {
+    font-size: 64px;
+    font-weight: 800;
+    margin-bottom: 25px;
+    background: linear-gradient(90deg, #7ea2ff, #d85cff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Bloco com timer, modo e pontuação */
+.game-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+/* Timer */
+.timer {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ff3b30;
+}
+
+/* Modo de jogo */
+.game-mode {
+    font-size: 18px;
+    font-weight: 700;
+    color: #9ecbff;
+}
+
+/* Pontuação */
+.score-display {
+    font-size: 18px;
+    font-weight: 700;
+    color: #7fffd4;
+}
+
+/* Texto introdutório */
+.label {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* Palavra principal */
+.overlay h2 {
+    font-size: 64px;
+    font-weight: 800;
+    margin: 18px 0 30px;
+    word-break: break-word;
+}
+
+/* Zona do input + botão */
+.input-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+/* Input */
+#player-word {
+    width: 420px;
+    max-width: 90%;
+    height: 56px;
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    background: transparent;
+    color: white;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    outline: none;
+    padding: 0 12px;
+}
+
+#player-word::placeholder {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Botão de submeter */
+#submit-word-btn {
+    height: 56px;
+    padding: 0 22px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #66adff 0%, #ff45f3 100%);
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+#submit-word-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+}
+
+/* Feedback ao jogador */
+#feedback-message {
+    min-height: 24px;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #ffffff;
+}
+
+/* Zona das palavras encontradas */
+.found-words-section {
+    margin: 20px auto 26px;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+}
+
+/* Título da lista */
+.found-words-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #d9e7ff;
+}
+
+/* Lista */
+#found-words-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 140px;
+    overflow-y: auto;
+}
+
+/* Cada palavra encontrada */
+#found-words-list li {
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+}
+
+/* Código da sala */
+.room-label {
+    font-size: 22px;
+    font-weight: 700;
+    color: #9ea7bb;
+    margin-top: 10px;
+}
+
+.room-code {
+    width: 240px;
+    height: 45px;
+    margin: 10px auto 0;
+    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #64d8ff;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .overlay {
+        min-height: auto;
+        padding: 28px 18px 24px;
+    }
+
+    .overlay h1 {
+        font-size: 42px;
+        margin-bottom: 20px;
+    }
+
+    .timer {
+        font-size: 22px;
+    }
+
+    .game-mode,
+    .score-display {
+        font-size: 16px;
+    }
+
+    .label {
+        font-size: 22px;
+    }
+
+    .overlay h2 {
+        font-size: 42px;
+        margin: 16px 0 24px;
+    }
+
+    #player-word {
+        width: 100%;
+        font-size: 17px;
+        height: 52px;
+    }
+
+    #submit-word-btn {
+        width: 100%;
+        height: 50px;
+    }
+
+    .found-words-section {
+        max-width: 100%;
+    }
+
+    .room-label {
+        font-size: 18px;
+    }
+
+    .room-code {
+        width: 200px;
+        font-size: 20px;
+    }
+}
