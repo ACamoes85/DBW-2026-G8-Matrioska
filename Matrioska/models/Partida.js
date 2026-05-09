@@ -1,53 +1,26 @@
-"use strict";
-
 import mongoose from "mongoose";
 
 const partidaSchema = new mongoose.Schema({
-    jogador: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+    codigoSala: { 
+        type: String, 
+        required: true, 
+        unique: true 
     },
-
-    username: {
-        type: String,
-        required: true
+    jogadores: [{
+        id: String,
+        username: String,
+        avatar: String,
+        pontuacao: { type: Number, default: 0 }
+    }],
+    // Guarda se a sala é 'solo' ou 'multiplayer'
+    modoJogo: { 
+        type: String, 
+        enum: ['solo', 'multiplayer'], 
+        default: 'multiplayer' 
     },
-
-    codigoSala: {
-        type: String,
-        default: "SOLO"
-    },
-
-    palavraMestre: {
-        type: String,
-        required: true
-    },
-
-    palavrasEncontradas: {
-        type: [String],
-        default: []
-    },
-
-    totalPalavrasEncontradas: {
-        type: Number,
-        default: 0
-    },
-
-    pontuacao: {
-        type: Number,
-        default: 0
-    },
-
-    tempoJogo: {
-        type: Number,
-        default: 30
-    },
-
-    dataPartida: {
-        type: Date,
-        default: Date.now
-    }
+    palavrasEncontradas: [String],
+    ativa: { type: Boolean, default: true },
+    createdAt: { type: Date, default: Date.now, expires: 3600 } // A sala expira em 1 hora
 });
 
 export default mongoose.model("Partida", partidaSchema);

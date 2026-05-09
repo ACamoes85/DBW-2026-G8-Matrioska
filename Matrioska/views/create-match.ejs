@@ -14,13 +14,13 @@
     <img src="/images/create-match.png" class="background-image" alt="Fundo Criar Partida" />
 
     <main class="central-container">
-        <div class="glass-card match-card">
+        <form action="/api/match/create" method="POST" class="glass-card match-card">
             <h1 class="gradient-title">Criar partida</h1>
 
             <div class="form-group">
                 <label>Modo de Jogo:</label>
                 <div class="custom-select">
-                    <select id="game-mode">
+                    <select id="game-mode" name="modoJogo">
                         <option value="multiplayer">Multijogador</option>
                         <option value="solo">Solo</option>
                     </select>
@@ -30,7 +30,7 @@
             <div class="form-group">
                 <label>Tempo Limite:</label>
                 <div class="custom-select">
-                    <select id="time-limit">
+                    <select id="time-limit" name="tempoLimite">
                         <option value="30">30s</option>
                         <option value="60">60s</option>
                     </select>
@@ -39,11 +39,12 @@
 
             <div class="room-code-section">
                 <label>Código da Sala:</label>
-                <div class="code-display" id="room-code">X7K9P2</div>
+                <input type="hidden" id="hidden-room-code" name="codigoSala">
+                <div class="code-display" id="room-code">------</div>
             </div>
 
-            <button class="btn-create-match" id="btn-confirm-create">Criar</button>
-        </div>
+            <button type="submit" class="btn-create-match" id="btn-confirm-create">Criar</button>
+        </form>
     </main>
 
     <script src="/js/main.js"></script>

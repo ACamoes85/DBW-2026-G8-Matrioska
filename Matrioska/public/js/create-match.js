@@ -1,40 +1,43 @@
 "use strict";
 
-document.addEventListener("DOMContentLoaded", () => { 
-    gerarCodigoSala();
-    configurarBotaoCriar();
-});
+document.addEventListener("DOMContentLoaded", () => {
+    const roomCodeDisplay = document.getElementById("room-code");
+    const hiddenInput = document.getElementById("hidden-room-code");
+    const btnConfirm = document.getElementById("btn-confirm-create");
 
-// Gera um código aleatório de 6 caracteres e exibe no ecrã
-function gerarCodigoSala() {
-    const elRoomCode = document.getElementById("room-code");
-    if (elRoomCode) {
-        const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let resultado = "";
+    /**
+     * Função para gerar um código aleatório de 6 caracteres
+     */
+    function generateRoomCode() {
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let result = "";
         for (let i = 0; i < 6; i++) {
-            resultado += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
         }
-        elRoomCode.innerText = resultado;
+        return result;
     }
-}
 
-// Guarda as definições da partida e o código no localStorage
-function configurarBotaoCriar() {
-    const btnCriar = document.getElementById("btn-confirm-create");
-    const displayCodigo = document.getElementById("room-code");
-    const selectModo = document.getElementById("game-mode");
-    const selectTempo = document.getElementById("time-limit");
+    // Gerar o código assim que a página carrega
+    const newCode = generateRoomCode();
+    
+    // Mostrar no ecrã para o utilizador ver
+    if (roomCodeDisplay) {
+        roomCodeDisplay.innerText = newCode;
+    }
 
-    if (btnCriar && displayCodigo) {
-        btnCriar.addEventListener("click", () => {
-            // Guarda o código gerado
-            localStorage.setItem("codigoSalaAtual", displayCodigo.innerText);
-            
-            // Guarda também as definições de jogo
-            if (selectModo) localStorage.setItem("modoJogo", selectModo.value);
-            if (selectTempo) localStorage.setItem("tempoLimite", selectTempo.value);
+    // Colocar no input hidden para ser enviado no POST ao servidor
+    if (hiddenInput) {
+        hiddenInput.value = newCode;
+    }
 
-            window.location.href = "/lobby"; 
+    // Validação extra ao clicar no botão
+    const form = document.querySelector("form");
+    if (form) {
+        form.addEventListener("submit", (e) => {
+            if (!hiddenInput.value || hiddenInput.value === "------") {
+                e.preventDefault();
+                alert("Erro ao gerar código da sala. Por favor, recarregue a página.");
+            }
         });
     }
-}
+});

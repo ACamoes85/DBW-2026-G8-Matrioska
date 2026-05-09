@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrioska - Sala de Jogo</title>
+    <title>Matrioska - Lobby</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/base.css">
@@ -12,9 +12,14 @@
 </head>
 <body class="create-match-page">
 
-    <img src="/images/create-match.png" class="background-image" alt="Fundo da sala de jogo">
+    <% if (user) { %>
+        <input type="hidden" id="current-user-id" value="<%= String(user.id || user._id) %>">
+        <span id="player-username-display" style="display:none;"><%= user.username %></span>
+    <% } %>
 
-    <a href="/create-match" class="back-button">
+    <img src="/images/create-match.png" class="background-image" alt="Fundo">
+
+    <a href="/hub" class="back-button">
         <span>←</span> <span class="txt-back">Voltar</span>
     </a>
 
@@ -24,27 +29,50 @@
 
             <div class="room-code-section lobby-code">
                 <label>Código da sala:</label>
-                <div class="code-display" id="room-code">------</div>
+                <div class="code-display" id="room-code"><%= sala.codigoSala %></div>
             </div>
 
             <div class="players-list">
-                <div class="player-slot">
-                    <div class="avatar-container">
-                        <img src="<%= user ? user.avatar : '/images/profile1.png' %>?v=<%= Date.now() %>" id="main-profile-img" alt="Jogador">
-                        <div class="avatar-glow"></div>
-                    </div>
+                <% sala.jogadores.forEach(jogador => { %>
+                    <div class="player-slot" id="player-<%= String(jogador.id || jogador._id) %>">
+                        <div class="avatar-container">
+                            <img src="<%= jogador.avatar %>" alt="Jogador">
+                            <div class="avatar-glow"></div>
+                        </div>
 
-                    <div class="player-name-badge">
-                        <span id="player-username-display"><%= user ? user.username : 'Jogador' %></span>
+                        <div class="player-name-badge">
+                            <span><%= jogador.username %></span>
+                        </div>
                     </div>
-                </div>
+                <% }) %>
             </div>
 
-            <button class="btn-create-match" id="btn-start-match">Iniciar partida</button>
+            <div class="actions-section" style="margin-top: 2rem; width: 100%; display: flex; justify-content: center;">
+                <% 
+                   // Lógica de verificação robusta
+                   let eLider = false;
+                   if (user && sala.jogadores.length > 0) {
+                       const meuId = String(user.id || user._id);
+                       const liderId = String(sala.jogadores[0].id || sala.jogadores[0]._id);
+                       if (meuId === liderId) eLider = true;
+                   }
+                %>
+
+                <% if (eLider) { %>
+                    <button class="btn-create-match" id="btn-start-match">Iniciar partida</button>
+                <% } else { %>
+                    <p class="waiting-msg" style="color: white; font-style: italic; opacity: 0.8;">
+                        A aguardar que o líder inicie a partida...
+                    </p>
+                <% } %>
+            </div>
         </div>
     </main>
 
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="/js/Socket/lobby-manager.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/lobby.js"></script>
+
 </body>
 </html>

@@ -67,15 +67,6 @@ export const getCreateMatch = async (req, res) => {
     }
 };
 
-export const getLobby = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.user.id);
-        res.render('lobby', { user });
-    } catch (err) {
-        res.render('lobby', { user: req.session.user });
-    }
-};
-
 export const getLoadingMatch = async (req, res) => {
     try {
         const user = await User.findById(req.session.user.id);

@@ -21,14 +21,20 @@ router.get(['/', '/homepage'], (req, res) => res.render('homepage'));
 router.get('/login', (req, res) => res.render('login'));
 router.get('/register', (req, res) => res.render('register'));
 
-// --- Rotas Protegidas (Todas via Controller para garantir Avatar atualizado) ---
+// --- Rotas Protegidas ---
 router.get('/hub', protegerRota, userController.getHub);
 router.get('/howtoplay', protegerRota, userController.getHowToPlay);
 router.get('/leaderboard', protegerRota, userController.getLeaderboard);
 router.get('/profile', protegerRota, userController.getProfile);
 router.get('/edit-profile', protegerRota, userController.getEditProfile);
 router.get('/create-match', protegerRota, userController.getCreateMatch); 
-router.get('/lobby', protegerRota, userController.getLobby);
+
+// --- Rota para Criar/Entrar na Sala (POST) ---
+router.post('/api/match/create', protegerRota, gameController.criarOuEntrarSala);
+
+// --- Rota do Lobby ---
+router.get('/lobby', protegerRota, gameController.renderizarLobby);
+
 router.get('/loadingmatch', protegerRota, userController.getLoadingMatch);
 router.get('/scoreboard', protegerRota, userController.getScoreboard);
 router.get('/resultsloading', protegerRota, userController.getResultsLoading);
@@ -36,6 +42,7 @@ router.get('/resultsloading', protegerRota, userController.getResultsLoading);
 // Rota Dinâmica do Jogo
 router.get('/gamescreen', protegerRota, gameController.renderizarJogo);
 
+// API para guardar estatísticas
 router.post('/api/partidas/guardar', protegerRota, gameController.guardarEstatisticasPartida);
 
 // Prevenção de Cache

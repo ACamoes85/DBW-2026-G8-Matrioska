@@ -37,12 +37,18 @@
                     Criar partida
                 </button>
 
-                <div class="join-room">
-                    <input id="room-input" type="text" placeholder="Introduzir código da sala">
-                    <button id="btn-enter-room" class="btn btn-enter">
+                <form action="/api/match/create" method="POST" class="join-room">
+                    <input 
+                        id="room-input" 
+                        name="codigoSala" 
+                        type="text" 
+                        placeholder="Introduzir código da sala" 
+                        required
+                    >
+                    <button type="submit" id="btn-enter-room" class="btn btn-enter">
                         Entrar
                     </button>
-                </div>
+                </form>
             </div>
 
             <div class="right">

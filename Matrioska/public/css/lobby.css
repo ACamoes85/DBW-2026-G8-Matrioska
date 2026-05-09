@@ -29,18 +29,19 @@
 }
 
 .players-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
+    display: flex;        
+    flex-wrap: wrap;       
+    justify-content: center; 
+    gap: 20px;             
+    margin-top: 20px;
     width: 100%;
-    margin-bottom: 30px;
 }
 
 .player-slot {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 120px;          
 }
 
 .avatar-container {
