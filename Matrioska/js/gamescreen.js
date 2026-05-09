@@ -36,10 +36,9 @@ function inicializarJogo() {
   const elScore = document.getElementById("score-display");
 
   if (!partidaAtual) {
-  alert(dados.noMatchFound);
-  window.location.href = "create-match.html";
+  window.location.href = "/create-match";
   return;
-  }
+}
 
   /* Tempo */
   tempoRestante = parseInt(partidaAtual.tempo, 10) || 30;
@@ -90,8 +89,6 @@ function escolherPalavraMestre() {
 /* Inicia o temporizador */
 function iniciarTemporizador() {
   const elTimer = document.getElementById("game-timer");
-  const idiomaAtual = localStorage.getItem("idioma") || "pt";
-  const dados = traducoes[idiomaAtual];
 
   if (!elTimer) return;
 
@@ -100,28 +97,27 @@ function iniciarTemporizador() {
     elTimer.innerText = `${tempoRestante}s`;
 
     if (tempoRestante <= 0) {
-      clearInterval(intervaloTemporizador);
+  clearInterval(intervaloTemporizador);
 
-      /* Guardar resultados da partida */
-      const resultadoPartida = {
-        palavraMestre: palavraMestreAtual,
-        palavrasEncontradas,
-        pontuacao,
-        tempo: 0
-      };
+  const partidaAtual = JSON.parse(localStorage.getItem("partidaAtual"));
 
-      localStorage.setItem("resultadoPartida", JSON.stringify(resultadoPartida));
+  const resultadoPartida = {
+    codigoSala: partidaAtual?.codigo || "SOLO",
+    palavraMestre: palavraMestreAtual,
+    palavrasEncontradas,
+    pontuacao,
+    tempoJogo: parseInt(partidaAtual?.tempo, 10) || 30
+  };
 
-      alert(dados.timeUpAlert);
-      window.location.href = "scoreboard.html";
-    }
+  localStorage.setItem("resultadoPartida", JSON.stringify(resultadoPartida));
+
+  window.location.href = "/resultsloading";
+}
   }, 1000);
 }
 
 /* Configura submissão por botão e Enter */
 function configurarSubmissaoPalavras() {
-  const idiomaAtual = localStorage.getItem("idioma") || "pt";
-  const dados = traducoes[idiomaAtual];
   const input = document.getElementById("player-word");
   const button = document.getElementById("submit-word-btn");
 
@@ -141,6 +137,8 @@ function configurarSubmissaoPalavras() {
 
 /* Lê, valida e regista a palavra submetida */
 function submeterPalavra() {
+  const idiomaAtual = localStorage.getItem("idioma") || "pt";
+  const dados = traducoes[idiomaAtual];
   const input = document.getElementById("player-word");
   const feedback = document.getElementById("feedback-message");
   const lista = document.getElementById("found-words-list");
