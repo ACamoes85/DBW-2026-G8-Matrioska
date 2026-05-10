@@ -1,36 +1,35 @@
 "use strict";
 
-document.addEventListener("DOMContentLoaded", () => {
-    carregarDadosLobby();
-    configurarBotaoIniciar();
-});
+/**
+ * Atualiza o estado visual do botão de início
+ */
+export function atualizarEstadoBotao(jogadores, modoJogo) {
+    const btnIniciar = document.getElementById("btn-start-match");
+    // Se o botão não existe (ex: o jogador não é o líder), não faz nada
+    if (!btnIniciar) return;
 
-function carregarDadosLobby() {
-    const codigoSala = localStorage.getItem("codigoSalaAtual");
-    // Removida a leitura do username do localStorage para não causar conflitos com o servidor
-    const displayLobby = document.querySelector(".lobby-code .code-display");
-
-    if (displayLobby && codigoSala) {
-        displayLobby.innerText = codigoSala;
+    if (modoJogo === "multiplayer" && jogadores.length < 2) {
+        btnIniciar.disabled = true;
+        btnIniciar.style.opacity = "0.5";
+        btnIniciar.style.cursor = "not-allowed";
+        btnIniciar.innerText = "A aguardar jogadores (mín. 2)...";
+    } else {
+        btnIniciar.disabled = false;
+        btnIniciar.style.opacity = "1";
+        btnIniciar.style.cursor = "pointer";
+        btnIniciar.innerText = "Iniciar Partida";
     }
 }
 
-function configurarBotaoIniciar() {
+/**
+ * Vincula o evento de clique ao botão de iniciar.
+ */
+export function vincularBotaoIniciar(callback) {
     const btnIniciar = document.getElementById("btn-start-match");
-    if (!btnIniciar) return;
-
-    btnIniciar.addEventListener("click", () => {
-        const modoJogo = localStorage.getItem("modoJogo");
-        const tempoLimite = localStorage.getItem("tempoLimite");
-        const codigoSala = localStorage.getItem("codigoSalaAtual");
-
-        const partidaAtual = {
-            modo: modoJogo || "solo",
-            tempo: tempoLimite || 30,
-            codigo: codigoSala || "X7K9P2"
+    if (btnIniciar) {
+        btnIniciar.onclick = (e) => {
+            if (btnIniciar.disabled) return;
+            callback(e);
         };
-
-        localStorage.setItem("partidaAtual", JSON.stringify(partidaAtual));
-        window.location.href = "/loadingmatch"; 
-    });
+    }
 }

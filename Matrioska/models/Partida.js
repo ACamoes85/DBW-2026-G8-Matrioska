@@ -31,17 +31,26 @@ const partidaSchema = new mongoose.Schema({
     enum: ["lobby", "em_jogo", "finalizada"],
     default: "lobby",
   },
+  
   // Palavra escolhida para esta partida
-  palavraMestre: {
+  palavraMestra: {
     type: String,
     default: "",
   },
 
-  // Lista de respostas válidas para a palavra-mestra
+  // Lista de respostas válidas para a palavra-mestra (do banco de dados)
   subPalavras: {
     type: [String],
     default: [],
   },
+
+  palavrasAcertadasRegisto: [
+    {
+      termo: String,     // A palavra acertada
+      username: String,  // Quem a encontrou
+      pontos: Number     // Quantos pontos valeu
+    }
+  ],
 
   // Tempo definido para esta partida
   tempoJogo: {
@@ -55,7 +64,7 @@ const partidaSchema = new mongoose.Schema({
   },
 
   ativa: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now, expires: 3600 }, // A sala expira em 1 hora
+  createdAt: { type: Date, default: Date.now, expires: 7200 }, // A sala expira em 2 horas
 });
 
 export default mongoose.model("Partida", partidaSchema);

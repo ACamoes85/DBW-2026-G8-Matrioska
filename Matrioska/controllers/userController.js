@@ -2,6 +2,7 @@
 
 import User from "../models/User.js";
 
+// --- Leaderboard ---
 export const getLeaderboard = async (req, res) => {
     try {
         const players = await User.find()
@@ -20,6 +21,7 @@ export const getLeaderboard = async (req, res) => {
     }
 };
 
+// --- Perfil e Edição ---
 export const getProfile = async (req, res) => {
     try {
         const user = await User.findById(req.session.user.id);
@@ -40,6 +42,7 @@ export const getEditProfile = async (req, res) => {
     }
 };
 
+// --- Hub e Páginas de Informação ---
 export const getHub = async (req, res) => {
     try {
         const user = await User.findById(req.session.user.id);
@@ -58,6 +61,7 @@ export const getHowToPlay = async (req, res) => {
     }
 };
 
+// --- Criação de Partida ---
 export const getCreateMatch = async (req, res) => {
     try {
         const user = await User.findById(req.session.user.id);
@@ -67,12 +71,23 @@ export const getCreateMatch = async (req, res) => {
     }
 };
 
+// --- Transições (Loading e Resultados) ---
 export const getLoadingMatch = async (req, res) => {
     try {
+        // 1. Pegamos o código da URL
+        const codigoSala = req.query.code ? req.query.code.trim().toUpperCase() : "";
+        
+        // 2. Opcional: Pegamos o utilizador para manter o cabeçalho/estatística
         const user = await User.findById(req.session.user.id);
-        res.render('loadingmatch', { user });
+
+        // 3. Renderizamos o loading passando o código
+        res.render("loadingmatch", { 
+            codigoSala, 
+            user: user || req.session.user 
+        });
     } catch (err) {
-        res.render('loadingmatch', { user: req.session.user });
+        console.error("Erro no Loading Controller:", err);
+        res.redirect("/hub");
     }
 };
 
@@ -85,6 +100,7 @@ export const getResultsLoading = async (req, res) => {
     }
 };
 
+// --- Scoreboard Final ---
 export const getScoreboard = async (req, res) => {
     try {
         const user = await User.findById(req.session.user.id);

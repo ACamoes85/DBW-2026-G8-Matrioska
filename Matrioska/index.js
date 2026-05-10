@@ -10,7 +10,6 @@ import MongoStore from "connect-mongodb-session";
 import http from "http"; 
 import { Server } from "socket.io"; 
 
-// Importar Models e Rotas
 import Partida from "./models/Partida.js";
 import viewRoutes from "./routes/viewRoutes.js";
 import authRoutes from "./routes/authRoutes.js"; 
@@ -21,13 +20,8 @@ const io = new Server(server);
 const MongoDBStore = MongoStore(session);
 
 const mongoURI = process.env.MONGO_URI;
+const store = new MongoDBStore({ uri: mongoURI, collection: 'sessions' });
 
-const store = new MongoDBStore({
-    uri: mongoURI,
-    collection: 'sessions'
-});
-
-// CONFIGURAÇÕES
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.json()); 
@@ -47,78 +41,82 @@ app.use((req, res, next) => {
     next();
 });
 
-// ROTAS 
-app.use("/", viewRoutes);
+// --- CONFIGURAÇÃO DE ROTAS ---
+app.use("/", viewRoutes(io)); 
 app.use("/api/auth", authRoutes);
 
 // --- LÓGICA DO SOCKET.IO ---
-
-// Mapeamento para saber qual UserID e Room pertencem a qual SocketID
 const socketToUser = {}; 
 
 io.on("connection", (socket) => {
     console.log("Novo utilizador ligado:", socket.id);
 
-    socket.on("join-room", (dados) => {
+    socket.on("join-room", async (dados) => {
         const { roomCode, user } = dados; 
-        
-        if (!user || !user.id || !roomCode) return;
+        if (!user || (!user.id && !user._id) || !roomCode) return;
 
-        // Guardamos os dados da sessão deste socket
-        socketToUser[socket.id] = { userId: user.id, roomCode: roomCode.toUpperCase() };
-
-        socket.join(roomCode.toUpperCase());
-        console.log(`Utilizador ${user.username} entrou na sala: ${roomCode}`);
+        const userId = user.id || user._id;
+        const codeUpper = roomCode.toUpperCase();
         
-        // Avisar os outros na sala que este jogador entrou
-        socket.to(roomCode.toUpperCase()).emit("player-joined", user);
+        socketToUser[socket.id] = { userId, roomCode: codeUpper };
+        socket.join(codeUpper);
+        console.log(`Socket ${socket.id} entrou na sala: ${codeUpper}`);
+
+        try {
+            const sala = await Partida.findOne({ codigoSala: codeUpper });
+            if (sala) {
+                io.to(codeUpper).emit("room-update", {
+                    jogadores: sala.jogadores,
+                    modoJogo: sala.modoJogo
+                });
+            }
+        } catch (err) {
+            console.error("Erro ao processar join-room:", err);
+        }
+    });
+
+    socket.on("start-game-request", (roomCode) => {
+        const codeUpper = roomCode.toUpperCase();
+        io.to(codeUpper).emit("navigate-to-game", codeUpper);
     });
 
     socket.on("disconnecting", async () => {
         const userData = socketToUser[socket.id];
-        
         if (userData) {
             const { userId, roomCode } = userData;
-            console.log(`Utilizador ${userId} a sair da sala ${roomCode}`);
-
             try {
-                // REMOVER DA BASE DE DADOS (Liberta a vaga na sala)
-                await Partida.findOneAndUpdate(
-                    { codigoSala: roomCode },
-                    { $pull: { jogadores: { id: userId } } }
+                // 1. Removemos o jogador filtrando explicitamente pelo campo 'id' dentro do array
+                const salaAtualizada = await Partida.findOneAndUpdate(
+                    { codigoSala: roomCode, estado: "lobby" },
+                    { $pull: { jogadores: { id: userId } } },
+                    { new: true }
                 );
 
-                // AVISAR OS OUTROS (Para remover o boneco do ecrã)
-                io.to(roomCode).emit("player-left", userId);
-
-                // LIMPEZA: Se a sala ficar vazia, podemos apagá-la
-                const salaAposSaida = await Partida.findOne({ codigoSala: roomCode });
-                if (salaAposSaida && salaAposSaida.jogadores.length === 0) {
-                    await Partida.deleteOne({ codigoSala: roomCode });
-                    console.log(`Sala ${roomCode} eliminada por estar vazia.`);
+                if (salaAtualizada) {
+                    if (salaAtualizada.jogadores.length === 0) {
+                        await Partida.deleteOne({ codigoSala: roomCode });
+                    } else {
+                        // 2. Avisamos os sockets que a lista mudou
+                        io.to(roomCode).emit("player-left", userId);
+                        io.to(roomCode).emit("room-update", {
+                            jogadores: salaAtualizada.jogadores,
+                            modoJogo: salaAtualizada.modoJogo
+                        });
+                    
+                        // DEBUG: Verifica no terminal se o primeiro jogador mudou mesmo
+                        console.log(`Novo líder da sala ${roomCode}: ${salaAtualizada.jogadores[0].username}`);
+                    }
                 }
-
             } catch (err) {
-                console.error("Erro ao processar saída do jogador:", err);
+                console.error("Erro ao processar saída:", err);
             }
-
-            // Limpar o mapeamento de memória
             delete socketToUser[socket.id];
         }
     });
-
-    socket.on("disconnect", () => {
-        console.log("Conexão socket encerrada.");
-    });
 });
 
-// LIGAÇÃO AO MONGODB
 mongoose.connect(mongoURI)
     .then(() => {
-        console.log("Connected to MongoDB Atlas");
-        const PORT = process.env.PORT || 3000; 
-        server.listen(PORT, () => {
-            console.log(`Servidor a correr em http://localhost:${PORT}`);
-        });
+        server.listen(process.env.PORT || 3000, () => console.log("Servidor e Sockets ativos na porta 3000."));
     })
-    .catch((err) => console.log("Erro ao ligar ao MongoDB:", err));
+    .catch(err => console.log(err));

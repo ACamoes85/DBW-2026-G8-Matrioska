@@ -1,40 +1,82 @@
 "use strict";
 
-// Importamos as funções do serviço de socket e os elementos 
 import { joinRoom, listenForPlayers } from "./socket-service.js";
-import { roomCodeDisplay } from "./elements.js";
-
-console.log("Lobby Manager carregado!");
+import { atualizarEstadoBotao } from "../lobby.js"; 
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Ir buscar o código da sala que está no HTML
-    const codigoSala = roomCodeDisplay?.innerText.trim();
+    const roomCodeElement = document.getElementById("room-code");
+    const userIdElement = document.getElementById("current-user-id");
+    const btnStart = document.getElementById("btn-start-match");
 
-    // Capturar os teus dados usando os campos hidden do lobby.ejs
-    const userId = document.getElementById("current-user-id")?.value;
-    const username = document.getElementById("player-username-display")?.innerText;
-    
-    const meuSlot = document.getElementById(`player-${userId}`);
-    const minhaImagem = meuSlot ? meuSlot.querySelector("img") : null;
-    const avatar = minhaImagem ? minhaImagem.src : '/images/profile1.png';
-
-    // Criamos o objeto com os dados exatos para enviar ao servidor
-    const dadosUtilizador = {
-        id: userId,
-        username: username,
-        avatar: avatar
-    };
-
-    // Entrar na sala via Socket e começar a ouvir entradas/saídas
-    if (codigoSala && codigoSala !== "------" && userId) {
-        console.log(`Ligando ao socket como: ${username} (ID: ${userId})`);
+    if (roomCodeElement && userIdElement) {
+        const roomCode = roomCodeElement.innerText.trim();
         
-        // Faz o "join" na sala enviando o código e os teus dados reais
-        joinRoom(codigoSala, dadosUtilizador);
+        const iniciarAcao = async () => {
+            try {
+                const response = await fetch("/api/match/start", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ codigoSala: roomCode })
+                });
 
-        // Ativa os ouvintes para ver outros jogadores a entrar ou sair
-        listenForPlayers();
-    } else {
-        console.error("Erro: Não foi possível recuperar os dados do utilizador para o Socket.");
+                if (response.ok) {
+                    if (window.socketLobby) {
+                        window.socketLobby.emit("start-game-request", roomCode);
+                    }
+                } else {
+                    const data = await response.json();
+                    alert(data.erro || "Erro ao iniciar jogo.");
+                }
+            } catch (err) {
+                console.error("[Manager] Erro:", err);
+            }
+        };
+
+        const user = {
+            id: userIdElement.value,
+            username: document.getElementById("player-username-display")?.innerText || "Jogador"
+        };
+
+        joinRoom(roomCode, user);
+        listenForPlayers(iniciarAcao);
+
+        // --- ESCUTAR ATUALIZAÇÃO DA SALA ---
+        if (window.socketLobby) {
+            window.socketLobby.on("room-update", (data) => {
+                console.log("[Manager] Dados da sala atualizados:", data);
+                
+                // Atualizar o Botão
+                atualizarEstadoBotao(data.jogadores, data.modoJogo);
+
+                // ATUALIZAR A LISTA VISUAL DE JOGADORES
+                const listaContainer = document.querySelector(".players-list");
+                if (listaContainer) {
+                    listaContainer.innerHTML = ""; // Limpa a lista atual
+
+                    data.jogadores.forEach(jogador => {
+                        const idJogador = String(jogador.id || jogador._id);
+                        
+                        const playerSlot = document.createElement("div");
+                        playerSlot.className = "player-slot";
+                        playerSlot.id = `player-${idJogador}`;
+
+                        playerSlot.innerHTML = `
+                            <div class="avatar-container">
+                                <img src="${jogador.avatar}" alt="Jogador">
+                                <div class="avatar-glow"></div>
+                            </div>
+                            <div class="player-name-badge">
+                                <span>${jogador.username}</span>
+                            </div>
+                        `;
+                        listaContainer.appendChild(playerSlot);
+                    });
+                }
+            });
+        }
+
+        if (btnStart) {
+            btnStart.onclick = iniciarAcao;
+        }
     }
 });
