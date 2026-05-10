@@ -1,22 +1,59 @@
 "use strict";
 
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Vai buscar os resultados guardados no final do jogo
-    const resultado = JSON.parse(localStorage.getItem("resultadoPartida"));
-    const user = localStorage.getItem("user") || "Jogador"; // Nome do utilizador
+document.addEventListener("DOMContentLoaded", async () => {
+  const resultado = JSON.parse(localStorage.getItem("resultadoPartida"));
 
-    const displayVencedor = document.getElementById("winner-display");
-    const rankingList = document.getElementById("ranking-list");
+  const displayVencedor = document.getElementById("winner-display");
+  const rankingList = document.getElementById("ranking-list");
 
-    if (resultado && displayVencedor) {
-        // Mostra o nome e a pontuação real
-        displayVencedor.innerText = `${user} - ${resultado.pontuacao} pts`;
+  if (!displayVencedor || !rankingList) return;
 
-        // No modo Solo, a classificação é apenas o próprio jogador
-        if (rankingList) {
-            rankingList.innerHTML = `<p>1. ${user} - ${resultado.pontuacao} pts</p>`;
-        }
-    } else {
-        if (displayVencedor) displayVencedor.innerText = "Sem dados da partida";
+  if (!resultado || !resultado.codigoSala) {
+    displayVencedor.innerText = "Sem dados da partida";
+    rankingList.innerHTML = "";
+    return;
+  }
+
+  try {
+    const resposta = await fetch(
+      `/api/partidas/${resultado.codigoSala}/scoreboard`,
+    );
+
+    if (!resposta.ok) {
+      throw new Error("Erro ao obter classificação da partida.");
     }
+
+    const dados = await resposta.json();
+
+    if (!dados.ranking || dados.ranking.length === 0) {
+      displayVencedor.innerText = "Sem jogadores registados";
+      rankingList.innerHTML = "";
+      return;
+    }
+
+    const vencedor = dados.vencedor;
+
+    displayVencedor.innerText = `${vencedor.username} - ${vencedor.pontuacao} pts`;
+
+    rankingList.innerHTML = "";
+
+    dados.ranking.forEach((jogador, index) => {
+      const linha = document.createElement("p");
+
+      linha.innerText =
+        `${index + 1}. ${jogador.username} - ` +
+        `${jogador.pontuacao} pts ` +
+        `(${jogador.palavrasCertas} certas, ${jogador.respostasErradas} erradas)`;
+
+      rankingList.appendChild(linha);
+    });
+  } catch (err) {
+    console.error("Erro ao carregar scoreboard:", err);
+
+    displayVencedor.innerText = `Tu - ${resultado.pontuacao || 0} pts`;
+
+    rankingList.innerHTML = `
+            <p>1. Tu - ${resultado.pontuacao || 0} pts</p>
+        `;
+  }
 });
