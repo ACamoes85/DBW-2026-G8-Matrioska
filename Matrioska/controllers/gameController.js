@@ -2,6 +2,7 @@
 
 import Partida from "../models/Partida.js";
 import Palavra from "../models/Palavra.js";
+import User from "../models/User.js";
 
 /**
  * Cria uma nova sala ou adiciona o jogador a uma sala existente
@@ -17,7 +18,8 @@ export const criarOuEntrarSala = async (req, res) => {
     const codigoUpper = codigoSala.trim().toUpperCase();
     let sala = await Partida.findOne({ codigoSala: codigoUpper });
 
-    const veioDeCriar = req.headers.referer && req.headers.referer.includes("create-match");
+    const veioDeCriar =
+      req.headers.referer && req.headers.referer.includes("create-match");
 
     if (sala) {
       if (sala.estado !== "lobby") {
@@ -95,145 +97,168 @@ export const renderizarLobby = async (req, res) => {
  * Lógica para iniciar a partida (apenas o líder/primeiro da lista)
  */
 export const iniciarPartida = async (req, res) => {
-    try {
-        const { codigoSala } = req.body;
-        
-        // Normalização do ID do utilizador na sessão
-        const rawUserId = req.session.user?._id || req.session.user?.id;
-        if (!rawUserId) return res.status(401).json({ erro: "Sessão expirada." });
-        const idUtilizadorAtual = String(rawUserId).trim();
+  try {
+    const { codigoSala } = req.body;
 
-        // Forçamos a busca da sala sem cache para garantir que a lista de jogadores é a real
-        const sala = await Partida.findOne({ codigoSala: codigoSala.toUpperCase() }).lean();
-        
-        if (!sala) return res.status(404).json({ erro: "Sala não encontrada." });
+    // Normalização do ID do utilizador na sessão
+    const rawUserId = req.session.user?._id || req.session.user?.id;
+    if (!rawUserId) return res.status(401).json({ erro: "Sessão expirada." });
+    const idUtilizadorAtual = String(rawUserId).trim();
 
-        if (!sala.jogadores || sala.jogadores.length === 0) {
-            return res.status(400).json({ erro: "A sala está vazia." });
-        }
+    // Forçamos a busca da sala sem cache para garantir que a lista de jogadores é a real
+    const sala = await Partida.findOne({
+      codigoSala: codigoSala.toUpperCase(),
+    }).lean();
 
-        // Normalização do ID do Líder (sempre o índice 0)
-        const primeiroJogador = sala.jogadores[0];
-        const idLider = String(primeiroJogador.id || primeiroJogador._id).trim();
+    if (!sala) return res.status(404).json({ erro: "Sala não encontrada." });
 
-        console.log(`[DEBUG LÍDER]`);
-        console.log(`ID do Líder na DB: "${idLider}"`);
-        console.log(`Teu ID na Sessão:  "${idUtilizadorAtual}"`);
-
-        if (idLider !== idUtilizadorAtual) {
-            return res.status(403).json({ 
-                erro: "Apenas o líder pode iniciar.",
-                detalhe: "O líder atual é " + primeiroJogador.username 
-            });
-        }
-
-        // --- Se passou a validação, segue o sorteio ---
-        const contagem = await Palavra.countDocuments();
-        if (contagem === 0) return res.status(500).json({ erro: "DB de palavras vazia." });
-
-        const random = Math.floor(Math.random() * contagem);
-        const sorteada = await Palavra.findOne().skip(random);
-
-        await Partida.updateOne(
-            { _id: sala._id },
-            {
-                $set: {
-                    palavraMestra: sorteada.palavraMestra,
-                    subPalavras: sorteada.subPalavras,
-                    estado: "em_jogo",
-                    iniciadaEm: new Date(),
-                    palavrasAcertadasRegisto: []
-                }
-            }
-        );
-
-        const salaFinal = await Partida.findById(sala._id);
-        salaFinal.jogadores.forEach(j => {
-            j.pontuacao = 0;
-            j.palavrasEncontradas = [];
-        });
-        await salaFinal.save();
-        
-        return res.status(200).json({ mensagem: "Partida iniciada!", codigoSala: sala.codigoSala });
-
-    } catch (error) {
-        console.error("Erro fatal no início:", error);
-        return res.status(500).json({ erro: "Erro interno do servidor." });
+    if (!sala.jogadores || sala.jogadores.length === 0) {
+      return res.status(400).json({ erro: "A sala está vazia." });
     }
+
+    // Normalização do ID do Líder (sempre o índice 0)
+    const primeiroJogador = sala.jogadores[0];
+    const idLider = String(primeiroJogador.id || primeiroJogador._id).trim();
+
+    console.log(`[DEBUG LÍDER]`);
+    console.log(`ID do Líder na DB: "${idLider}"`);
+    console.log(`Teu ID na Sessão:  "${idUtilizadorAtual}"`);
+
+    if (idLider !== idUtilizadorAtual) {
+      return res.status(403).json({
+        erro: "Apenas o líder pode iniciar.",
+        detalhe: "O líder atual é " + primeiroJogador.username,
+      });
+    }
+
+    // --- Se passou a validação, segue o sorteio ---
+    const contagem = await Palavra.countDocuments();
+    if (contagem === 0)
+      return res.status(500).json({ erro: "DB de palavras vazia." });
+
+    const random = Math.floor(Math.random() * contagem);
+    const sorteada = await Palavra.findOne().skip(random);
+
+    await Partida.updateOne(
+      { _id: sala._id },
+      {
+        $set: {
+          palavraMestra: sorteada.palavraMestra,
+          subPalavras: sorteada.subPalavras,
+          estado: "em_jogo",
+          iniciadaEm: new Date(),
+          finalizadaEm: null,
+          estatisticasGuardadas: false,
+          palavrasAcertadasRegisto: [],
+        },
+      },
+    );
+
+    const salaFinal = await Partida.findById(sala._id);
+    salaFinal.jogadores.forEach((j) => {
+      j.pontuacao = 0;
+      j.palavrasEncontradas = [];
+      j.respostasErradas = 0;
+    });
+    await salaFinal.save();
+
+    return res
+      .status(200)
+      .json({ mensagem: "Partida iniciada!", codigoSala: sala.codigoSala });
+  } catch (error) {
+    console.error("Erro fatal no início:", error);
+    return res.status(500).json({ erro: "Erro interno do servidor." });
+  }
 };
 
 /**
  * Validação de palavras durante o modo Multiplayer
  */
 export const validarPalavraMultiplayer = async (req, res, io) => {
-    try {
-        const { codigoSala, tentativa, userId } = req.body;
+  try {
+    const { codigoSala, tentativa, userId } = req.body;
 
-        if (!codigoSala || !tentativa || !userId) {
-            return res.status(400).json({ erro: "Dados incompletos." });
-        }
-
-        const sala = await Partida.findOne({ codigoSala: codigoSala.toUpperCase() });
-
-        if (!sala || sala.estado !== "em_jogo") {
-            return res.status(404).json({ erro: "Partida não está ativa ou não existe." });
-        }
-
-        const termoSubmetido = tentativa.trim().toUpperCase();
-
-        // Verificar se a palavra existe nas subpalavras válidas
-        const palavraExiste = sala.subPalavras.some(p => p.trim().toUpperCase() === termoSubmetido);
-
-        if (!palavraExiste) {
-            return res.status(400).json({ status: "errada", mensagem: "Essa palavra não existe!" });
-        }
-
-        // Verificar se já foi acertada por alguém nesta partida
-        const jaEncontrada = sala.palavrasAcertadasRegisto.find(p => p.termo.toUpperCase() === termoSubmetido);
-        if (jaEncontrada) {
-            return res.status(400).json({ 
-                status: "repetida", 
-                mensagem: `Já encontrada por ${jaEncontrada.username}!` 
-            });
-        }
-
-        // Identificar o jogador que enviou
-        const jogador = sala.jogadores.find(j => String(j.id || j._id) === String(userId));
-        if (!jogador) return res.status(403).json({ erro: "Jogador não pertence a esta sala." });
-
-        const pontosGanhos = termoSubmetido.length * 10;
-        
-        // Atualizar estatísticas do jogador na sala
-        jogador.pontuacao = (jogador.pontuacao || 0) + pontosGanhos;
-        jogador.palavrasEncontradas.push(termoSubmetido);
-
-        const novoRegisto = { 
-            termo: termoSubmetido, 
-            username: jogador.username, 
-            pontos: pontosGanhos 
-        };
-        sala.palavrasAcertadasRegisto.push(novoRegisto);
-
-        sala.markModified('jogadores');
-        sala.markModified('palavrasAcertadasRegisto');
-
-        await sala.save();
-
-        // Notificar todos na sala sobre o acerto via Socket.io
-        if (io) {
-            io.to(sala.codigoSala.toUpperCase()).emit("palavra-descoberta-global", {
-                registo: novoRegisto,
-                pontuacaoAtualizada: jogador.pontuacao,
-                userId: userId
-            });
-        }
-
-        return res.status(200).json({ status: "sucesso", pontos: pontosGanhos });
-
-    } catch (error) {
-        console.error("Erro na validação de palavra:", error);
-        return res.status(500).json({ erro: "Erro no servidor ao validar palavra." });
+    if (!codigoSala || !tentativa || !userId) {
+      return res.status(400).json({ erro: "Dados incompletos." });
     }
+
+    const sala = await Partida.findOne({
+      codigoSala: codigoSala.toUpperCase(),
+    });
+
+    if (!sala || sala.estado !== "em_jogo") {
+      return res
+        .status(404)
+        .json({ erro: "Partida não está ativa ou não existe." });
+    }
+
+    const termoSubmetido = tentativa.trim().toUpperCase();
+
+    // Verificar se a palavra existe nas subpalavras válidas
+    const palavraExiste = sala.subPalavras.some(
+      (p) => p.trim().toUpperCase() === termoSubmetido,
+    );
+
+    if (!palavraExiste) {
+      return res
+        .status(400)
+        .json({ status: "errada", mensagem: "Essa palavra não existe!" });
+    }
+
+    // Verificar se já foi acertada por alguém nesta partida
+    const jaEncontrada = sala.palavrasAcertadasRegisto.find(
+      (p) => p.termo.toUpperCase() === termoSubmetido,
+    );
+    if (jaEncontrada) {
+      return res.status(400).json({
+        status: "repetida",
+        mensagem: `Já encontrada por ${jaEncontrada.username}!`,
+      });
+    }
+
+    // Identificar o jogador que enviou
+    const jogador = sala.jogadores.find(
+      (j) => String(j.id || j._id) === String(userId),
+    );
+    if (!jogador)
+      return res
+        .status(403)
+        .json({ erro: "Jogador não pertence a esta sala." });
+
+    const pontosGanhos = termoSubmetido.length * 10;
+
+    // Atualizar estatísticas do jogador na sala
+    jogador.pontuacao = (jogador.pontuacao || 0) + pontosGanhos;
+    jogador.palavrasEncontradas.push(termoSubmetido);
+
+    const novoRegisto = {
+      termo: termoSubmetido,
+      username: jogador.username,
+      pontos: pontosGanhos,
+    };
+    sala.palavrasAcertadasRegisto.push(novoRegisto);
+
+    sala.markModified("jogadores");
+    sala.markModified("palavrasAcertadasRegisto");
+
+    await sala.save();
+
+    // Notificar todos na sala sobre o acerto via Socket.io
+    if (io) {
+      io.to(sala.codigoSala.toUpperCase()).emit("palavra-descoberta-global", {
+        registo: novoRegisto,
+        pontuacaoAtualizada: jogador.pontuacao,
+        userId: userId,
+      });
+    }
+
+    return res.status(200).json({ status: "sucesso", pontos: pontosGanhos });
+  } catch (error) {
+    console.error("Erro na validação de palavra:", error);
+    return res
+      .status(500)
+      .json({ erro: "Erro no servidor ao validar palavra." });
+  }
 };
 
 /**
@@ -244,12 +269,15 @@ export const renderizarJogo = async (req, res) => {
     const codigoSala = req.query.code;
     if (!codigoSala) return res.redirect("/hub");
 
-    const sala = await Partida.findOne({ codigoSala: codigoSala.trim().toUpperCase() });
+    const sala = await Partida.findOne({
+      codigoSala: codigoSala.trim().toUpperCase(),
+    });
     if (!sala) return res.redirect("/hub?error=notfound");
-    if (sala.estado === "lobby") return res.redirect(`/lobby?code=${sala.codigoSala}`);
+    if (sala.estado === "lobby")
+      return res.redirect(`/lobby?code=${sala.codigoSala}`);
 
     const jogo = {
-      palavraMestra: sala.palavraMestra, 
+      palavraMestra: sala.palavraMestra,
       subPalavras: sala.subPalavras,
     };
 
@@ -265,23 +293,137 @@ export const renderizarJogo = async (req, res) => {
  */
 export const guardarEstatisticasPartida = async (req, res) => {
   try {
-    const { codigoSala, pontuacao, palavrasEncontradas } = req.body;
-    const userId = req.session.user?.id || req.session.user?._id;
+    const {
+      codigoSala,
+      pontuacao = 0,
+      palavrasEncontradas = [],
+      respostasErradas = 0,
+    } = req.body;
 
-    if (!codigoSala || !userId) return res.status(400).json({ erro: "Dados insuficientes." });
+    const userId = String(req.session.user?.id || req.session.user?._id || "");
 
-    await Partida.findOneAndUpdate(
-      { codigoSala: codigoSala.trim().toUpperCase(), "jogadores.id": userId },
+    if (!codigoSala || !userId) {
+      return res.status(400).json({ erro: "Dados insuficientes." });
+    }
+
+    const sala = await Partida.findOne({
+      codigoSala: codigoSala.trim().toUpperCase(),
+    });
+
+    if (!sala) {
+      return res.status(404).json({ erro: "Partida não encontrada." });
+    }
+
+    const jogadorAtual = sala.jogadores.find(
+      (j) => String(j.id || j._id) === userId,
+    );
+
+    if (jogadorAtual) {
+      jogadorAtual.pontuacao = Math.max(
+        jogadorAtual.pontuacao || 0,
+        Number(pontuacao) || 0,
+      );
+
+      if (
+        Array.isArray(palavrasEncontradas) &&
+        palavrasEncontradas.length >
+          (jogadorAtual.palavrasEncontradas || []).length
+      ) {
+        jogadorAtual.palavrasEncontradas = palavrasEncontradas;
+      }
+
+      jogadorAtual.respostasErradas = Math.max(
+        jogadorAtual.respostasErradas || 0,
+        Number(respostasErradas) || 0,
+      );
+
+      sala.markModified("jogadores");
+      await sala.save();
+    }
+
+    const salaFinalizada = await Partida.findOneAndUpdate(
+  {
+    _id: sala._id,
+    estatisticasGuardadas: { $ne: true },
+  },
       {
         $set: {
-          "jogadores.$.pontuacao": pontuacao,
-          "jogadores.$.palavrasEncontradas": palavrasEncontradas,
+          estatisticasGuardadas: true,
+          estado: "finalizada",
+          finalizadaEm: new Date(),
         },
       },
+      { new: true },
     );
-    res.status(201).json({ mensagem: "Estatísticas guardadas com sucesso." });
+
+    if (!salaFinalizada) {
+      return res.status(200).json({
+        mensagem: "Estatísticas já tinham sido guardadas.",
+      });
+    }
+
+    for (const jogador of salaFinalizada.jogadores) {
+      const pontos = Number(jogador.pontuacao) || 0;
+      const respostasCertas = Array.isArray(jogador.palavrasEncontradas)
+        ? jogador.palavrasEncontradas.length
+        : 0;
+      const respostasErradasJogador = Number(jogador.respostasErradas) || 0;
+
+      await User.findOneAndUpdate(
+        { username: jogador.username },
+        {
+          $inc: {
+            "stats.totalScore": pontos,
+            "stats.correctAnswers": respostasCertas,
+            "stats.wrongAnswers": respostasErradasJogador,
+            "stats.gamesPlayed": 1,
+          },
+        },
+      );
+    }
+
+    res.status(201).json({
+      mensagem: "Estatísticas globais guardadas com sucesso.",
+    });
   } catch (err) {
     console.error("Erro ao guardar estatísticas:", err);
     res.status(500).json({ erro: "Erro interno ao guardar dados." });
+  }
+};
+
+export const obterScoreboardPartida = async (req, res) => {
+  try {
+    const { codigoSala } = req.params;
+
+    if (!codigoSala) {
+      return res.status(400).json({ erro: "Código da sala em falta." });
+    }
+
+    const sala = await Partida.findOne({
+      codigoSala: codigoSala.trim().toUpperCase(),
+    }).lean();
+
+    if (!sala) {
+      return res.status(404).json({ erro: "Partida não encontrada." });
+    }
+
+    const ranking = sala.jogadores
+      .map((jogador) => ({
+        username: jogador.username,
+        avatar: jogador.avatar,
+        pontuacao: jogador.pontuacao || 0,
+        palavrasCertas: jogador.palavrasEncontradas?.length || 0,
+        respostasErradas: jogador.respostasErradas || 0,
+      }))
+      .sort((a, b) => b.pontuacao - a.pontuacao);
+
+    res.status(200).json({
+      codigoSala: sala.codigoSala,
+      ranking,
+      vencedor: ranking[0] || null,
+    });
+  } catch (err) {
+    console.error("Erro ao obter scoreboard:", err);
+    res.status(500).json({ erro: "Erro ao obter scoreboard." });
   }
 };

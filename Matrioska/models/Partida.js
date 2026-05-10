@@ -16,6 +16,10 @@ const partidaSchema = new mongoose.Schema({
         type: [String],
         default: [],
       },
+      respostasErradas: {
+      type: Number,
+      default: 0,
+    },
     },
   ],
   // Guarda se a sala é 'solo' ou 'multiplayer'
@@ -62,6 +66,15 @@ const partidaSchema = new mongoose.Schema({
   iniciadaEm: {
     type: Date,
   },
+
+estatisticasGuardadas: {
+  type: Boolean,
+  default: false,
+},
+
+finalizadaEm: {
+  type: Date,
+},
 
   ativa: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now, expires: 7200 }, // A sala expira em 2 horas

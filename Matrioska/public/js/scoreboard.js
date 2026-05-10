@@ -1,7 +1,7 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const resultado = JSON.parse(localStorage.getItem("resultadoPartida"));
+  const resultado = JSON.parse(localStorage.getItem("resultadoPartida") || "null");
 
   const displayVencedor = document.getElementById("winner-display");
   const rankingList = document.getElementById("ranking-list");
@@ -17,13 +17,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const resposta = await fetch(
       `/api/partidas/${resultado.codigoSala}/scoreboard`,
+      {
+        cache: "no-store",
+      },
     );
 
-    if (!resposta.ok) {
-      throw new Error("Erro ao obter classificação da partida.");
-    }
-
     const dados = await resposta.json();
+
+    if (!resposta.ok) {
+      throw new Error(dados.erro || "Erro ao obter classificação.");
+    }
 
     if (!dados.ranking || dados.ranking.length === 0) {
       displayVencedor.innerText = "Sem jogadores registados";
@@ -35,25 +38,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     displayVencedor.innerText = `${vencedor.username} - ${vencedor.pontuacao} pts`;
 
-    rankingList.innerHTML = "";
-
-    dados.ranking.forEach((jogador, index) => {
-      const linha = document.createElement("p");
-
-      linha.innerText =
-        `${index + 1}. ${jogador.username} - ` +
-        `${jogador.pontuacao} pts ` +
-        `(${jogador.palavrasCertas} certas, ${jogador.respostasErradas} erradas)`;
-
-      rankingList.appendChild(linha);
-    });
+    rankingList.innerHTML = dados.ranking
+      .map(
+        (jogador, index) => `
+          <p>
+            ${index + 1}. ${jogador.username} - ${jogador.pontuacao} pts
+            <br>
+            <small>
+              ${jogador.palavrasCertas} certas, ${jogador.respostasErradas} erradas
+            </small>
+          </p>
+        `,
+      )
+      .join("");
   } catch (err) {
     console.error("Erro ao carregar scoreboard:", err);
 
-    displayVencedor.innerText = `Tu - ${resultado.pontuacao || 0} pts`;
-
-    rankingList.innerHTML = `
-            <p>1. Tu - ${resultado.pontuacao || 0} pts</p>
-        `;
+    displayVencedor.innerText = "Erro ao carregar classificação";
+    rankingList.innerHTML = "";
   }
 });
