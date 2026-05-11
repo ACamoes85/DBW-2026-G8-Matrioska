@@ -56,6 +56,11 @@ export default (io) => {
   // Iniciar Partida
   router.post("/api/match/start", protegerRota, gameController.iniciarPartida);
 
+  // Reiniciar Lobby (Jogar Novamente) - Injetando o IO para redirecionamento global
+  router.post("/api/match/reset", protegerRota, (req, res) => {
+    gameController.reiniciarLobby(req, res, io);
+  });
+
   // Renderizar o Lobby
   router.get("/lobby", protegerRota, gameController.renderizarLobby);
 

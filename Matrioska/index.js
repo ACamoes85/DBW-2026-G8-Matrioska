@@ -10,7 +10,7 @@ import MongoStore from "connect-mongodb-session";
 import http from "http"; 
 import { Server } from "socket.io"; 
 
-import Partida from "./models/Partida.js";
+import Lobby from "./models/Lobby.js";
 import viewRoutes from "./routes/viewRoutes.js";
 import authRoutes from "./routes/authRoutes.js"; 
 
@@ -52,19 +52,26 @@ io.on("connection", (socket) => {
     console.log("Novo utilizador ligado:", socket.id);
 
     socket.on("join-room", async (dados) => {
-        const { roomCode, user } = dados; 
-        if (!user || (!user.id && !user._id) || !roomCode) return;
+        // Normalização: aceita string (código) ou objeto { roomCode, user }
+        const roomCode = typeof dados === "string" ? dados : dados.roomCode;
+        const user = typeof dados === "object" ? dados.user : null;
 
-        const userId = user.id || user._id;
+        if (!roomCode) return;
+
         const codeUpper = roomCode.toUpperCase();
-        
-        socketToUser[socket.id] = { userId, roomCode: codeUpper };
         socket.join(codeUpper);
         console.log(`Socket ${socket.id} entrou na sala: ${codeUpper}`);
 
+        // Se tivermos dados do utilizador, guardamos para gerir a saída da sala depois
+        if (user && (user.id || user._id)) {
+            const userId = user.id || user._id;
+            socketToUser[socket.id] = { userId, roomCode: codeUpper };
+        }
+
         try {
-            const sala = await Partida.findOne({ codigoSala: codeUpper });
+            const sala = await Lobby.findOne({ codigoSala: codeUpper });
             if (sala) {
+                // Atualiza a lista de jogadores para todos na sala
                 io.to(codeUpper).emit("room-update", {
                     jogadores: sala.jogadores,
                     modoJogo: sala.modoJogo
@@ -85,8 +92,8 @@ io.on("connection", (socket) => {
         if (userData) {
             const { userId, roomCode } = userData;
             try {
-                // 1. Removemos o jogador filtrando explicitamente pelo campo 'id' dentro do array
-                const salaAtualizada = await Partida.findOneAndUpdate(
+                // Remove o jogador apenas se a sala ainda estiver em estado de 'lobby'
+                const salaAtualizada = await Lobby.findOneAndUpdate(
                     { codigoSala: roomCode, estado: "lobby" },
                     { $pull: { jogadores: { id: userId } } },
                     { new: true }
@@ -94,17 +101,18 @@ io.on("connection", (socket) => {
 
                 if (salaAtualizada) {
                     if (salaAtualizada.jogadores.length === 0) {
-                        await Partida.deleteOne({ codigoSala: roomCode });
+                        await Lobby.deleteOne({ codigoSala: roomCode });
+                        console.log(`Sala ${roomCode} eliminada por falta de jogadores.`);
                     } else {
-                        // 2. Avisamos os sockets que a lista mudou
                         io.to(roomCode).emit("player-left", userId);
                         io.to(roomCode).emit("room-update", {
                             jogadores: salaAtualizada.jogadores,
                             modoJogo: salaAtualizada.modoJogo
                         });
                     
-                        // DEBUG: Verifica no terminal se o primeiro jogador mudou mesmo
-                        console.log(`Novo líder da sala ${roomCode}: ${salaAtualizada.jogadores[0].username}`);
+                        if (salaAtualizada.jogadores[0]) {
+                            console.log(`Novo líder da sala ${roomCode}: ${salaAtualizada.jogadores[0].username}`);
+                        }
                     }
                 }
             } catch (err) {
@@ -115,8 +123,11 @@ io.on("connection", (socket) => {
     });
 });
 
+// --- LIGAÇÃO À BASE DE DADOS E SERVIDOR ---
 mongoose.connect(mongoURI)
     .then(() => {
-        server.listen(process.env.PORT || 3000, () => console.log("Servidor e Sockets ativos na porta 3000."));
+        server.listen(process.env.PORT || 3000, () => {
+            console.log("Servidor e Sockets ativos na porta 3000.");
+        });
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log("Erro ao ligar ao MongoDB:", err));

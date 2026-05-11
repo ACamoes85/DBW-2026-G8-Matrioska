@@ -1,8 +1,8 @@
 "use strict";
 
-import Partida from "../models/Partida.js";
 import Palavra from "../models/Palavra.js";
 import User from "../models/User.js";
+import Lobby from "../models/Lobby.js";
 
 /**
  * Cria uma nova sala ou adiciona o jogador a uma sala existente
@@ -16,7 +16,7 @@ export const criarOuEntrarSala = async (req, res) => {
     if (!codigoSala) return res.redirect("/hub?error=invalid");
 
     const codigoUpper = codigoSala.trim().toUpperCase();
-    let sala = await Partida.findOne({ codigoSala: codigoUpper });
+    let sala = await Lobby.findOne({ codigoSala: codigoUpper });
 
     const veioDeCriar =
       req.headers.referer && req.headers.referer.includes("create-match");
@@ -47,7 +47,7 @@ export const criarOuEntrarSala = async (req, res) => {
       }
     } else {
       if (veioDeCriar) {
-        sala = new Partida({
+        sala = new Lobby({
           codigoSala: codigoUpper,
           modoJogo: modoJogo || "multiplayer",
           estado: "lobby",
@@ -81,7 +81,7 @@ export const renderizarLobby = async (req, res) => {
     const codigo = req.query.code;
     if (!codigo) return res.redirect("/hub");
 
-    const sala = await Partida.findOne({ codigoSala: codigo.toUpperCase() });
+    const sala = await Lobby.findOne({ codigoSala: codigo.toUpperCase() });
     if (!sala) return res.redirect("/hub");
 
     res.render("lobby", {
@@ -106,7 +106,7 @@ export const iniciarPartida = async (req, res) => {
     const idUtilizadorAtual = String(rawUserId).trim();
 
     // Forçamos a busca da sala sem cache para garantir que a lista de jogadores é a real
-    const sala = await Partida.findOne({
+    const sala = await Lobby.findOne({
       codigoSala: codigoSala.toUpperCase(),
     }).lean();
 
@@ -139,7 +139,7 @@ export const iniciarPartida = async (req, res) => {
     const random = Math.floor(Math.random() * contagem);
     const sorteada = await Palavra.findOne().skip(random);
 
-    await Partida.updateOne(
+    await Lobby.updateOne(
       { _id: sala._id },
       {
         $set: {
@@ -154,7 +154,7 @@ export const iniciarPartida = async (req, res) => {
       },
     );
 
-    const salaFinal = await Partida.findById(sala._id);
+    const salaFinal = await Lobby.findById(sala._id);
     salaFinal.jogadores.forEach((j) => {
       j.pontuacao = 0;
       j.palavrasEncontradas = [];
@@ -182,7 +182,7 @@ export const validarPalavraMultiplayer = async (req, res, io) => {
       return res.status(400).json({ erro: "Dados incompletos." });
     }
 
-    const sala = await Partida.findOne({
+    const sala = await Lobby.findOne({
       codigoSala: codigoSala.toUpperCase(),
     });
 
@@ -269,7 +269,7 @@ export const renderizarJogo = async (req, res) => {
     const codigoSala = req.query.code;
     if (!codigoSala) return res.redirect("/hub");
 
-    const sala = await Partida.findOne({
+    const sala = await Lobby.findOne({
       codigoSala: codigoSala.trim().toUpperCase(),
     });
     if (!sala) return res.redirect("/hub?error=notfound");
@@ -306,7 +306,7 @@ export const guardarEstatisticasPartida = async (req, res) => {
       return res.status(400).json({ erro: "Dados insuficientes." });
     }
 
-    const sala = await Partida.findOne({
+    const sala = await Lobby.findOne({
       codigoSala: codigoSala.trim().toUpperCase(),
     });
 
@@ -341,7 +341,7 @@ export const guardarEstatisticasPartida = async (req, res) => {
       await sala.save();
     }
 
-    const salaFinalizada = await Partida.findOneAndUpdate(
+    const salaFinalizada = await Lobby.findOneAndUpdate(
   {
     _id: sala._id,
     estatisticasGuardadas: { $ne: true },
@@ -399,7 +399,7 @@ export const obterScoreboardPartida = async (req, res) => {
       return res.status(400).json({ erro: "Código da sala em falta." });
     }
 
-    const sala = await Partida.findOne({
+    const sala = await Lobby.findOne({
       codigoSala: codigoSala.trim().toUpperCase(),
     }).lean();
 
@@ -426,4 +426,52 @@ export const obterScoreboardPartida = async (req, res) => {
     console.error("Erro ao obter scoreboard:", err);
     res.status(500).json({ erro: "Erro ao obter scoreboard." });
   }
+};
+
+/**
+ * Reinicia a sala para o estado de lobby mantendo os mesmos jogadores (Jogar Novamente)
+ */
+export const reiniciarLobby = async (req, res, io) => {
+    try {
+        const { codigoSala } = req.body;
+        const rawUserId = req.session.user?._id || req.session.user?.id;
+        const idUtilizadorAtual = String(rawUserId).trim();
+
+        const sala = await Lobby.findOne({ codigoSala: codigoSala.toUpperCase() });
+
+        if (!sala) return res.status(404).json({ erro: "Sala não encontrada." });
+
+        // Validação básica de líder (índice 0)
+        const idLider = String(sala.jogadores[0]?.id || sala.jogadores[0]?._id).trim();
+        if (idLider !== idUtilizadorAtual) {
+            return res.status(403).json({ erro: "Apenas o líder pode reiniciar o lobby." });
+        }
+
+        // Resetar campos da sala
+        sala.estado = "lobby";
+        sala.palavraMestra = "";
+        sala.subPalavras = [];
+        sala.palavrasAcertadasRegisto = [];
+        sala.estatisticasGuardadas = false;
+        sala.finalizadaEm = null;
+
+        // Resetar estatísticas locais dos jogadores para a próxima rodada
+        sala.jogadores.forEach((j) => {
+            j.pontuacao = 0;
+            j.palavrasEncontradas = [];
+            j.respostasErradas = 0;
+        });
+
+        await sala.save();
+
+        // Emitir evento para todos via socket para redirecionar ao lobby
+        if (io) {
+            io.to(codigoSala.toUpperCase()).emit("voltar-ao-lobby", codigoSala.toUpperCase());
+        }
+
+        return res.status(200).json({ mensagem: "Lobby reiniciado!" });
+    } catch (err) {
+        console.error("Erro ao reiniciar lobby:", err);
+        return res.status(500).json({ erro: "Erro interno ao reiniciar lobby." });
+    }
 };

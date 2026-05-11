@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const displayVencedor = document.getElementById("winner-display");
   const rankingList = document.getElementById("ranking-list");
+  const btnPlayAgain = document.getElementById("btn-play-again");
+
+  // Iniciar socket para ouvir o redirecionamento global
+  const socket = io();
 
   if (!displayVencedor || !rankingList) return;
 
@@ -13,6 +17,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     rankingList.innerHTML = "";
     return;
   }
+
+  // Entrar na sala do socket para receber o evento de reset
+  socket.emit("join-room", { roomCode: resultado.codigoSala.toUpperCase() });
+
+  // Ouvir o evento emitido pelo servidor para voltar ao lobby
+  socket.on("voltar-ao-lobby", (codigo) => {
+    window.location.href = `/lobby?code=${codigo}`;
+  });
 
   try {
     const resposta = await fetch(
@@ -56,5 +68,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     displayVencedor.innerText = "Erro ao carregar classificação";
     rankingList.innerHTML = "";
+  }
+
+  // Lógica do botão Jogar Novamente
+  if (btnPlayAgain) {
+    btnPlayAgain.addEventListener("click", async () => {
+      try {
+        const response = await fetch("/api/match/reset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ codigoSala: resultado.codigoSala })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          // Se o servidor negar, mudamos o estado do botão
+          btnPlayAgain.innerText = "À espera do líder...";
+          btnPlayAgain.disabled = true;
+          btnPlayAgain.style.opacity = "0.6";
+          btnPlayAgain.style.cursor = "not-allowed";
+        }
+
+      } catch (err) {
+        console.error("Erro ao solicitar reinício:", err);
+      }
+    });
   }
 });

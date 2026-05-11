@@ -85,7 +85,7 @@ function configurarSocketMultiplayer() {
       item.style.borderLeft = "5px solid";
 
       if (souEu) {
-        // Estilo para as TUAS palavras
+        // Estilo para as tuas palavras
         item.style.backgroundColor = "rgba(0, 255, 0, 0.1)";
         item.style.borderColor = "#00FF00"; // Verde
         item.style.color = "#00FF00";
@@ -105,7 +105,7 @@ function configurarSocketMultiplayer() {
 
       listaUI.prepend(item);
 
-      // Atualização local de pontos (apenas se fui eu)
+      // Atualização local de pontos
       if (souEu) {
         pontuacao = data.pontuacaoAtualizada;
         if (!palavrasEncontradas.includes(data.registo.termo)) {
@@ -237,19 +237,25 @@ async function finalizarPartida() {
     respostasErradas
   };
 
+  // Garante que os dados estão no storage antes de mudar de página
   localStorage.setItem("resultadoPartida", JSON.stringify(resultadoPartida));
 
   try {
-    await fetch("/api/partidas/guardar", {
+    // Aguarda o servidor guardar as estatísticas
+    const response = await fetch("/api/partidas/guardar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(resultadoPartida),
     });
+
+    if (response.ok) {
+        console.log("Estatísticas guardadas com sucesso.");
+    }
   } catch (err) {
     console.error("Erro ao guardar:", err);
   }
 
   setTimeout(() => {
     window.location.href = "/resultsloading";
-  }, 1000);
+  }, 500);
 }
