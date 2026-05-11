@@ -1,472 +1,628 @@
 "use strict";
 /* Dicionário de textos para multi-idioma */
 const traducoes = {
-    pt: {
-        /* Homepage / comum */
-        welcome: "Bem-vindo à Matrioska",
-        description: "Revela o máximo de palavras antes que o tempo se esgote.",
-        login: "Entrar",
-        register: "Registar",
+  pt: {
+    /* Homepage / comum */
+    welcome: "Bem-vindo à Matrioska",
+    description: "Revela o máximo de palavras antes que o tempo se esgote.",
+    login: "Entrar",
+    register: "Registar",
 
-        /* Login */
-        loginSubtitle: "Insere os teus dados",
-        email: "E-mail",
-        username: "Nome de utilizador",
-        password: "Palavra-passe",
-        loginButton: "Entrar",
+    /* Login */
+    loginSubtitle: "Insere os teus dados",
+    email: "E-mail",
+    username: "Nome de utilizador",
+    password: "Palavra-passe",
+    loginButton: "Entrar",
 
-        /* Register */
-        registerSubtitle: "Insere os teus dados",
-        confirmPassword: "Confirmar palavra-passe",
-        registerButton: "Registar",
+    /* Register */
+    registerSubtitle: "Insere os teus dados",
+    confirmPassword: "Confirmar palavra-passe",
+    registerButton: "Registar",
 
-        /* Hub */
-        navHome: "Início",
-        navRanking: "Classificação",
-        navHow: "Como jogar",
-        createGame: "Criar partida",
-        enterRoom: "Introduzir código da sala",
-        enter: "Entrar",
+    /* Hub */
+    navHome: "Início",
+    navRanking: "Classificação",
+    navHow: "Como jogar",
+    createGame: "Criar partida",
+    enterRoom: "Introduzir código da sala",
+    enter: "Entrar",
 
-        /* How to Play */
-        back: "Voltar",
-        rulesTitle: "Como jogar",
-        rule1: "Palavra-Mestra:",
-        rule1Desc: "No teu ecrã irá aparecer uma \"Palavra-Mestra\".",
-        rule2: "Palavras escondidas:",
-        rule2Desc: "O teu objetivo é encontrar palavras menores \"escondidas\" dentro dela, antes que o tempo acabe.",
-        rule3: "Regra:",
-        rule3Desc: "As letras podem estar em sequência direta ou indireta.",
-        rule4: "Pontuação:",
-        rule4Desc: "Quanto maior a palavra, mais pontos irá obter.",
-        rule5: "Aqui está um exemplo prático:",
-        correctAnswers: "Respostas corretas:",
-        exampleWord: "Passageiro",
-        exampleAnswers: ["PASSA", "ASA", "SAGE", "AGE", "EIRO"],
+    /* How to Play */
+    back: "Voltar",
+    rulesTitle: "Como jogar",
+    rule1: "Palavra-Mestra:",
+    rule1Desc: 'No teu ecrã irá aparecer uma "Palavra-Mestra".',
+    rule2: "Palavras escondidas:",
+    rule2Desc:
+      'O teu objetivo é encontrar palavras menores "escondidas" dentro dela, antes que o tempo acabe.',
+    rule3: "Regra:",
+    rule3Desc: "As letras podem estar em sequência direta ou indireta.",
+    rule4: "Pontuação:",
+    rule4Desc: "Quanto maior a palavra, mais pontos irá obter.",
+    rule5: "Aqui está um exemplo prático:",
+    correctAnswers: "Respostas corretas:",
+    exampleWord: "Passageiro",
+    exampleAnswers: ["PASSA", "ASA", "SAGE", "AGE", "EIRO"],
 
-        /* Leaderboard */
-        leaderboardTitle: "Classificação",
-        colPos: "Posição",
-        colPlayer: "Jogador",
-        colScore: "Pontuação Total",
+    /* Leaderboard */
+    leaderboardTitle: "Classificação",
+    colPos: "Posição",
+    colPlayer: "Jogador",
+    colScore: "Pontuação Total",
 
-        /* Barra de Navegação */
-        navStart: "Início",
-        navLeaderboard: "Classificação",
-        navHowTo: "Como jogar",
+    /* Barra de Navegação */
+    navStart: "Início",
+    navLeaderboard: "Classificação",
+    navHowTo: "Como jogar",
 
-        /* Profile */
-        changePhoto: "Alterar imagem de perfil",
-        statsTitle: "Estatísticas",
-        statTotalScore: "Pontuação Total",
-        statCorrect: "Respostas Corretas",
-        statWrong: "Respostas Erradas",
-        statGames: "Partidas Jogadas",
+    /* Profile */
+    changePhoto: "Alterar imagem de perfil",
+    statsTitle: "Estatísticas",
+    statTotalScore: "Pontuação Total",
+    statCorrect: "Respostas Corretas",
+    statWrong: "Respostas Erradas",
+    statGames: "Partidas Jogadas",
 
-        /* Edit Profile*/
-        editAvatarTitle: "Imagem de perfil",
-        chooseImage: "Escolha uma imagem:",
+    /* Edit Profile*/
+    editAvatarTitle: "Imagem de perfil",
+    chooseImage: "Escolha uma imagem:",
 
-        /* Create Match */
-        createMatchTitle: "Criar partida",
-        gameModeLabel: "Modo de Jogo:",
-        multiplayer: "Multijogador",
-        solo: "Solo",
-        timeLimitLabel: "Tempo Limite:",
-        roomCodeLabel: "Código da Sala:",
-        createBtn: "Criar",
- 
-        /* Lobby */
-        lobbyTitle: "Sala de Jogo",
-        startMatchBtn: "Iniciar partida",
-        lobbyRoomCodeLabel: "Código da sala:",
+    /* Create Match */
+    createMatchTitle: "Criar partida",
+    gameModeLabel: "Modo de Jogo:",
+    multiplayer: "Multijogador",
+    solo: "Solo",
+    timeLimitLabel: "Tempo Limite:",
+    roomCodeLabel: "Código da Sala:",
+    createBtn: "Criar",
 
-        /* Game Screen */
-        gameScreenTitle: "Sala de Jogo",
-        masterWordLabel: "A palavra é:",
-        foundWordsTitle: "Palavras encontradas:",
-        gameRoomCodeLabel: "Código da sala:",
-        submitWordBtn: "Submeter",
-        gameModePrefix: "Modo:",
-        gameModeSolo: "Solo",
-        gameModeMultiplayer: "Multijogador",
-        scorePrefix: "Pontuação:",
-        emptyWordFeedback: "Escreve uma palavra antes de submeter.",
-        shortWordFeedback: "A palavra é demasiado curta.",
-        repeatedWordFeedback: "Essa palavra já foi encontrada.",
-        masterWordFeedback: "Não podes submeter a palavra-mestra completa.",
-        validWordFeedback: "Palavra válida!",
-        invalidWordFeedback: "Palavra inválida para esta ronda.",
-        noMatchFound: "Nenhuma partida encontrada!",
-        timeUpAlert: "Tempo esgotado!",
-        wordInputPlaceholder: "Escreve uma palavra...",
+    /* Lobby */
+    lobbyTitle: "Sala de Jogo",
+    startMatchBtn: "Iniciar partida",
+    lobbyRoomCodeLabel: "Código da sala:",
+    waitingLeaderMsg: "A aguardar que o líder inicie a partida...",
+    waitingPlayersBtn: "A aguardar jogadores (mín. 2)...",
+    youLabel: "Tu",
+    correctFeedback: "Acertaste!",
+    connectionError: "Erro de ligação",
 
-        /* Botão de troca de idioma */
-        nextLang: "English",
-        flag: "/images/english_icon.png",
-    },
+    /* Loading Match */
+    loadingMatchTitle: "A preparar partida...",
+    loadingRoomCodeLabel: "Código da sala:",
 
-    en: {
-        /* Homepage / comum */
-        welcome: "Welcome to Matrioska",
-        description: "Reveal as many words as possible before time runs out.",
-        login: "Login",
-        register: "Register",
+    /* Results Loading */
+    matchFinishedTitle: "Partida Terminada",
+    loadingResultsText: "A carregar resultados...",
 
-        /* Login */
-        loginSubtitle: "Enter your details",
-        email: "E-mail",
-        username: "Username",
-        password: "Password",
-        loginButton: "Login",
+    /* Scoreboard */
+    scoreboardWinnerTitle: "Vencedor",
+    scoreboardRankingTitle: "Classificação",
+    loadingWinner: "A carregar...",
+    noMatchData: "Sem dados da partida",
+    noRegisteredPlayers: "Sem jogadores registados",
+    scoreboardLoadError: "Erro ao carregar classificação",
+    playAgainBtn: "Jogar novamente",
+    backToHubBtn: "Voltar ao Hub",
+    waitingLeader: "À espera do líder...",
+    correctSingular: "certa",
+    correctPlural: "certas",
+    wrongSingular: "errada",
+    wrongPlural: "erradas",
 
-        /* Register */
-        registerSubtitle: "Enter your details",
-        confirmPassword: "Confirm password",
-        registerButton: "Register",
+    /* Game Screen */
+    gameScreenTitle: "Sala de Jogo",
+    masterWordLabel: "A palavra é:",
+    foundWordsTitle: "Palavras encontradas:",
+    gameRoomCodeLabel: "Código da sala:",
+    submitWordBtn: "Submeter",
+    gameModePrefix: "Modo:",
+    gameModeSolo: "Solo",
+    gameModeMultiplayer: "Multijogador",
+    scorePrefix: "Pontuação:",
+    emptyWordFeedback: "Escreve uma palavra antes de submeter.",
+    shortWordFeedback: "A palavra é demasiado curta.",
+    repeatedWordFeedback: "Essa palavra já foi encontrada.",
+    masterWordFeedback: "Não podes submeter a palavra-mestra completa.",
+    validWordFeedback: "Palavra válida!",
+    invalidWordFeedback: "Palavra inválida para esta ronda.",
+    noMatchFound: "Nenhuma partida encontrada!",
+    timeUpAlert: "Tempo esgotado!",
+    wordInputPlaceholder: "Escreve uma palavra...",
 
-        /* Hub */
-        navHome: "Home",
-        navRanking: "Leaderboard",
-        navHow: "How to play",
-        createGame: "Create game",
-        enterRoom: "Enter room code",
-        enter: "Enter",
+    /* Botão de troca de idioma */
+    nextLang: "English",
+    flag: "/images/english_icon.png",
+  },
 
-        /* How to Play */
-        back: "Back",
-        rulesTitle: "How to Play",
-        rule1: "Master Word:",
-        rule1Desc: "A \"Master Word\" will appear on your screen.",
-        rule2: "Hidden words:",
-        rule2Desc: "Your goal is to find and type the smaller words \"hidden\" within it before the time runs out.",
-        rule3: "The Rule:",
-        rule3Desc: "Letters can be in a direct or indirect sequence.",
-        rule4: "Scoring:",
-        rule4Desc: "The more words you find or the longer they are, the more points you earn!",
-        rule5: "Here's a practical example:",
-        correctAnswers: "Correct answers:",
-        exampleWord: "Overstanding",
-        exampleAnswers: ["OVER", "STAND", "STANDING", "STAIN", "AND"],
+  en: {
+    /* Homepage / comum */
+    welcome: "Welcome to Matrioska",
+    description: "Reveal as many words as possible before time runs out.",
+    login: "Login",
+    register: "Register",
 
-        /* Leaderboard */
-        leaderboardTitle: "Leaderboard",
-        colPos: "Rank",
-        colPlayer: "Player",
-        colScore: "Total Score",
+    /* Login */
+    loginSubtitle: "Enter your details",
+    email: "E-mail",
+    username: "Username",
+    password: "Password",
+    loginButton: "Login",
 
-        /* Barra de Navegação */
-        navStart: "Home",
-        navLeaderboard: "Leaderboard",
-        navHowTo: "How to Play",
+    /* Register */
+    registerSubtitle: "Enter your details",
+    confirmPassword: "Confirm password",
+    registerButton: "Register",
 
-        /* Profile */
-        changePhoto: "Change profile picture",
-        statsTitle: "Stats",
-        statTotalScore: "Total Score",
-        statCorrect: "Correct Answers",
-        statWrong: "Wrong Answers",
-        statGames: "Matches Played",
+    /* Hub */
+    navHome: "Home",
+    navRanking: "Leaderboard",
+    navHow: "How to play",
+    createGame: "Create game",
+    enterRoom: "Enter room code",
+    enter: "Enter",
 
-        /* Edit Profile*/
-        editAvatarTitle: "Profile picture",
-        chooseImage: "Choose a picture:",
+    /* How to Play */
+    back: "Back",
+    rulesTitle: "How to Play",
+    rule1: "Master Word:",
+    rule1Desc: 'A "Master Word" will appear on your screen.',
+    rule2: "Hidden words:",
+    rule2Desc:
+      'Your goal is to find and type the smaller words "hidden" within it before the time runs out.',
+    rule3: "The Rule:",
+    rule3Desc: "Letters can be in a direct or indirect sequence.",
+    rule4: "Scoring:",
+    rule4Desc:
+      "The more words you find or the longer they are, the more points you earn!",
+    rule5: "Here's a practical example:",
+    correctAnswers: "Correct answers:",
+    exampleWord: "Overstanding",
+    exampleAnswers: ["OVER", "STAND", "STANDING", "STAIN", "AND"],
 
-        /* Create Match */
-        createMatchTitle: "Create Match",
-        gameModeLabel: "Game Mode:",
-        multiplayer: "Multiplayer",
-        solo: "Solo",
-        timeLimitLabel: "Time Limit:",
-        roomCodeLabel: "Room Code:",
-        createBtn: "Create",
+    /* Leaderboard */
+    leaderboardTitle: "Leaderboard",
+    colPos: "Rank",
+    colPlayer: "Player",
+    colScore: "Total Score",
 
-        /* Lobby */
-        lobbyTitle: "Game Room",
-        startMatchBtn: "Start Match",
-        lobbyRoomCodeLabel: "Room code:",
+    /* Barra de Navegação */
+    navStart: "Home",
+    navLeaderboard: "Leaderboard",
+    navHowTo: "How to Play",
 
-        /* Game Screen */
-        gameScreenTitle: "Game Room",
-        masterWordLabel: "The word is:",
-        foundWordsTitle: "Found words:",
-        gameRoomCodeLabel: "Room code:",
-        submitWordBtn: "Submit",
-        gameModePrefix: "Mode:",
-        gameModeSolo: "Solo",
-        gameModeMultiplayer: "Multiplayer",
-        scorePrefix: "Score:",
-        emptyWordFeedback: "Write a word before submitting.",
-        shortWordFeedback: "The word is too short.",
-        repeatedWordFeedback: "That word has already been found.",
-        masterWordFeedback: "You cannot submit the full master word.",
-        validWordFeedback: "Valid word!",
-        invalidWordFeedback: "Invalid word for this round.",
-        noMatchFound: "No match found!",
-        timeUpAlert: "Time is up!",
-        wordInputPlaceholder: "Write a word...",
+    /* Profile */
+    changePhoto: "Change profile picture",
+    statsTitle: "Stats",
+    statTotalScore: "Total Score",
+    statCorrect: "Correct Answers",
+    statWrong: "Wrong Answers",
+    statGames: "Matches Played",
 
-        /* Botão de troca de idioma */
-        nextLang: "Português",
-        flag: "/images/portuguese_icon.png",
-    },
+    /* Edit Profile*/
+    editAvatarTitle: "Profile picture",
+    chooseImage: "Choose a picture:",
+
+    /* Create Match */
+    createMatchTitle: "Create Match",
+    gameModeLabel: "Game Mode:",
+    multiplayer: "Multiplayer",
+    solo: "Solo",
+    timeLimitLabel: "Time Limit:",
+    roomCodeLabel: "Room Code:",
+    createBtn: "Create",
+
+    /* Lobby */
+    lobbyTitle: "Game Room",
+    startMatchBtn: "Start Match",
+    lobbyRoomCodeLabel: "Room code:",
+    waitingLeaderMsg: "Waiting for the leader to start the match...",
+    waitingPlayersBtn: "Waiting for players (min. 2)...",
+    youLabel: "You",
+    correctFeedback: "Correct!",
+    connectionError: "Connection error",
+
+    /* Loading Match */
+    loadingMatchTitle: "Preparing match...",
+    loadingRoomCodeLabel: "Room code:",
+
+    /* Results Loading */
+    matchFinishedTitle: "Match finished",
+    loadingResultsText: "Loading results...",
+
+    /* Scoreboard */
+    scoreboardWinnerTitle: "Winner",
+    scoreboardRankingTitle: "Leaderboard",
+    loadingWinner: "Loading...",
+    noMatchData: "No match data",
+    noRegisteredPlayers: "No registered players",
+    scoreboardLoadError: "Error loading leaderboard",
+    playAgainBtn: "Play again",
+    backToHubBtn: "Back to Hub",
+    waitingLeader: "Waiting for the leader...",
+    correctSingular: "correct",
+    correctPlural: "correct",
+    wrongSingular: "wrong",
+    wrongPlural: "wrong",
+
+    /* Game Screen */
+    gameScreenTitle: "Game Room",
+    masterWordLabel: "The word is:",
+    foundWordsTitle: "Found words:",
+    gameRoomCodeLabel: "Room code:",
+    submitWordBtn: "Submit",
+    gameModePrefix: "Mode:",
+    gameModeSolo: "Solo",
+    gameModeMultiplayer: "Multiplayer",
+    scorePrefix: "Score:",
+    emptyWordFeedback: "Write a word before submitting.",
+    shortWordFeedback: "The word is too short.",
+    repeatedWordFeedback: "That word has already been found.",
+    masterWordFeedback: "You cannot submit the full master word.",
+    validWordFeedback: "Valid word!",
+    invalidWordFeedback: "Invalid word for this round.",
+    noMatchFound: "No match found!",
+    timeUpAlert: "Time is up!",
+    wordInputPlaceholder: "Write a word...",
+
+    /* Botão de troca de idioma */
+    nextLang: "Português",
+    flag: "/images/portuguese_icon.png",
+  },
 };
 
 /* Estado do idioma atual */
 let idiomaAtual = localStorage.getItem("idioma") || "pt";
+function texto(chave) {
+  const idioma = localStorage.getItem("idioma") || idiomaAtual || "pt";
+  return traducoes[idioma]?.[chave] || traducoes.pt?.[chave] || chave;
+}
+
+window.texto = texto;
+window.getIdiomaAtual = () =>
+  localStorage.getItem("idioma") || idiomaAtual || "pt";
 
 /* Aplica o idioma atual à página onde estiver */
 function aplicarIdioma() {
-    const dados = traducoes[idiomaAtual];
-    if (!dados) return;
+  const dados = traducoes[idiomaAtual];
+  if (!dados) return;
 
-    /* Elementos da homepage / comum */
-    const elWelcome = document.getElementById("welcome-label");
-    const elDesc = document.getElementById("description");
-    const elLogin = document.getElementById("btn-login");
-    const elRegister = document.getElementById("btn-register");
+  /* Elementos da homepage / comum */
+  const elWelcome = document.getElementById("welcome-label");
+  const elDesc = document.getElementById("description");
+  const elLogin = document.getElementById("btn-login");
+  const elRegister = document.getElementById("btn-register");
 
-    /* Elementos do login */
-    const elLoginSubtitle = document.querySelector(".auth-subtitle");
-    const elLoginEmail = document.getElementById("login-email");
-    const elLoginUsername = document.getElementById("login-username");
-    const elLoginPassword = document.getElementById("login-password");
-    const elLoginBtn = document.querySelector(".login-submit");
+  /* Elementos do login */
+  const elLoginSubtitle = document.querySelector(".auth-subtitle");
+  const elLoginEmail = document.getElementById("login-email");
+  const elLoginUsername = document.getElementById("login-username");
+  const elLoginPassword = document.getElementById("login-password");
+  const elLoginBtn = document.querySelector(".login-submit");
 
-    /* Elementos do register */
-    const elRegisterSubtitle = document.getElementById("register-subtitle");
-    const elRegisterEmail = document.getElementById("register-email");
-    const elRegisterUsername = document.getElementById("register-username");
-    const elRegisterPassword = document.getElementById("register-password");
-    const elRegisterConfirmPassword = document.getElementById(
-        "register-confirm-password"
-    );
-    const elRegisterBtn = document.getElementById("register-button");
+  /* Elementos do register */
+  const elRegisterSubtitle = document.getElementById("register-subtitle");
+  const elRegisterEmail = document.getElementById("register-email");
+  const elRegisterUsername = document.getElementById("register-username");
+  const elRegisterPassword = document.getElementById("register-password");
+  const elRegisterConfirmPassword = document.getElementById(
+    "register-confirm-password",
+  );
+  const elRegisterBtn = document.getElementById("register-button");
 
-    /* Elementos do hub */
-    const elNavHome = document.getElementById("nav-home");
-    const elNavRanking = document.getElementById("nav-ranking");
-    const elNavHow = document.getElementById("nav-how");
-    const elCreateGame = document.getElementById("btn-create");
-    const elRoomInput = document.getElementById("room-input");
-    const elEnterBtn = document.getElementById("btn-enter-room");
+  /* Elementos do hub */
+  const elNavHome = document.getElementById("nav-home");
+  const elNavRanking = document.getElementById("nav-ranking");
+  const elNavHow = document.getElementById("nav-how");
+  const elCreateGame = document.getElementById("btn-create");
+  const elRoomInput = document.getElementById("room-input");
+  const elEnterBtn = document.getElementById("btn-enter-room");
 
-    /* Elementos da How to Play */
-    const elBack = document.querySelector(".back-button");
-    const elCorrectTitle = document.querySelector(".answers-title");
-    const rulesList = document.querySelectorAll(".rules-list li");
-    const elExampleWord = document.querySelector(".word-badge");
-    const elExampleAnswers = document.querySelectorAll(".answers-list li");
-    const isHowToPage = document.querySelector(".howto-container");
-    const elRulesTitle = isHowToPage ? isHowToPage.querySelector(".title-neon") : null;
+  /* Elementos da How to Play */
+  const elBack = document.querySelector(".back-button");
+  const elCorrectTitle = document.querySelector(".answers-title");
+  const rulesList = document.querySelectorAll(".rules-list li");
+  const elExampleWord = document.querySelector(".word-badge");
+  const elExampleAnswers = document.querySelectorAll(".answers-list li");
+  const isHowToPage = document.querySelector(".howto-container");
+  const elRulesTitle = isHowToPage
+    ? isHowToPage.querySelector(".title-neon")
+    : null;
 
-    /* Elementos da Leaderboard */
-    const elLeaderboardTitle = document.querySelector(".leaderboard-card .title-neon");
-    const elTableHeaders = document.querySelectorAll(".table-header span");
+  /* Elementos da Leaderboard */
+  const elLeaderboardTitle = document.querySelector(
+    ".leaderboard-card .title-neon",
+  );
+  const elTableHeaders = document.querySelectorAll(".table-header span");
 
-    /* Elementos da Navbar */
-    const navLinks = document.querySelectorAll(".nav-links a");
+  /* Elementos da Navbar */
+  const navLinks = document.querySelectorAll(".nav-links a");
 
-    /* Elementos do Profile */
-    const elProfileTitle = document.querySelector(".stats-section .title-neon");
-    const elBtnChangePhoto = document.getElementById("btn-change-photo"); 
-    const elStatLabels = document.querySelectorAll(".stat-label");
+  /* Elementos do Profile */
+  const elProfileTitle = document.querySelector(".stats-section .title-neon");
+  const elBtnChangePhoto = document.getElementById("btn-change-photo");
+  const elStatLabels = document.querySelectorAll(".stat-label");
 
-    /* Elementos do Edit Profile */
-    const elEditAvatarTitle = document.querySelector(".edit-title");
-    const elChooseLabel = document.querySelector(".choose-label");
+  /* Elementos do Edit Profile */
+  const elEditAvatarTitle = document.querySelector(".edit-title");
+  const elChooseLabel = document.querySelector(".choose-label");
 
-    /* Elementos da Create Match */
-    const elCreateTitle = document.querySelector(".match-card .gradient-title");
-    const elLabels = document.querySelectorAll(".match-card label");
-    const elGameModeOptions = document.querySelectorAll("#game-mode option");
-    const elCreateBtn = document.querySelector(".btn-create-match");
+  /* Elementos da Create Match */
+  const elCreateTitle = document.querySelector(".match-card .gradient-title");
+  const elLabels = document.querySelectorAll(".match-card label");
+  const elGameModeOptions = document.querySelectorAll("#game-mode option");
+  const elCreateBtn = document.querySelector(".btn-create-match");
 
-    /* Elementos do Lobby */
-    const elLobbyTitle = document.querySelector(".lobby-card .gradient-title");
-    const elStartBtn = document.querySelector(".lobby-card .btn-create-match");
-    const elLobbyRoomCodeLabel = document.querySelector(".lobby-code label");
-    const elBackButtonText = document.querySelector(".back-button .txt-back");
+  /* Elementos do Lobby */
+  const elLobbyTitle = document.querySelector(".lobby-card .gradient-title");
+  const elStartBtn = document.querySelector(".lobby-card .btn-create-match");
+  const elLobbyRoomCodeLabel = document.querySelector(".lobby-code label");
+  const elBackButtonText = document.querySelector(".back-button .txt-back");
+  const elWaitingLeaderMsg = document.querySelector(".waiting-msg");
 
-    /* Elementos do Game Screen */
-    const elGameScreenTitle = document.getElementById("gamescreen-title");
-    const elMasterWordLabel = document.getElementById("master-word-label");
-    const elFoundWordsTitle = document.getElementById("found-words-title");
-    const elGameRoomCodeLabel = document.getElementById("game-room-code-label");
-    const elSubmitWordBtn = document.getElementById("submit-word-btn");
-    const elPlayerWordInput = document.getElementById("player-word");
+  /* Elementos do Loading Match */
+  const elLoadingMatchTitle = document.getElementById("loadingmatch-title");
+  const elLoadingRoomCodeLabel = document.getElementById(
+    "loadingmatch-room-label",
+  );
 
-    /* Elementos do seletor de idioma */
-    const elLangName = document.getElementById("lang-name");
-    const elLangFlag = document.getElementById("lang-flag");
+  /* Elementos do Results Loading */
+  const elResultsLoadingTitle = document.getElementById("resultsloading-title");
+  const elResultsLoadingText = document.getElementById("resultsloading-text");
 
-    /* Homepage / comum */
-    if (elWelcome) elWelcome.innerText = dados.welcome;
-    if (elDesc) elDesc.innerText = dados.description;
-    if (elLogin) elLogin.innerText = dados.login;
-    if (elRegister) elRegister.innerText = dados.register;
+  /* Elementos do Scoreboard */
+  const elScoreboardWinnerTitle = document.getElementById(
+    "scoreboard-winner-title",
+  );
+  const elScoreboardRankingTitle = document.getElementById(
+    "scoreboard-ranking-title",
+  );
+  const elWinnerDisplay = document.getElementById("winner-display");
+  const elPlayAgainBtn = document.getElementById("btn-play-again");
+  const elBackToHubBtn = document.getElementById("btn-back-hub");
 
-    /* Login */
-    if (elLoginSubtitle) elLoginSubtitle.innerText = dados.loginSubtitle;
-    if (elLoginEmail) elLoginEmail.placeholder = dados.email;
-    if (elLoginUsername) elLoginUsername.placeholder = dados.username;
-    if (elLoginPassword) elLoginPassword.placeholder = dados.password;
-    if (elLoginBtn) elLoginBtn.innerText = dados.loginButton;
+  /* Elementos do Game Screen */
+  const elGameScreenTitle = document.getElementById("gamescreen-title");
+  const elMasterWordLabel = document.getElementById("master-word-label");
+  const elFoundWordsTitle = document.getElementById("found-words-title");
+  const elGameRoomCodeLabel = document.getElementById("game-room-code-label");
+  const elSubmitWordBtn = document.getElementById("submit-word-btn");
+  const elPlayerWordInput = document.getElementById("player-word");
+  const elGameModeDisplay = document.getElementById("game-mode-display");
+  const elScoreDisplay = document.getElementById("score-display");
 
-    /* Register */
-    if (elRegisterSubtitle) elRegisterSubtitle.innerText = dados.registerSubtitle;
-    if (elRegisterEmail) elRegisterEmail.placeholder = dados.email;
-    if (elRegisterUsername) elRegisterUsername.placeholder = dados.username;
-    if (elRegisterPassword) elRegisterPassword.placeholder = dados.password;
-    if (elRegisterConfirmPassword) {
-        elRegisterConfirmPassword.placeholder = dados.confirmPassword;
-    }
-    if (elRegisterBtn) elRegisterBtn.innerText = dados.registerButton;
+  /* Elementos do seletor de idioma */
+  const elLangName = document.getElementById("lang-name");
+  const elLangFlag = document.getElementById("lang-flag");
 
-    /* Hub */
-    if (elNavHome) elNavHome.innerText = dados.navHome;
-    if (elNavRanking) elNavRanking.innerText = dados.navRanking;
-    if (elNavHow) elNavHow.innerText = dados.navHow;
-    if (elCreateGame) elCreateGame.innerText = dados.createGame;
-    if (elRoomInput) elRoomInput.placeholder = dados.enterRoom;
-    if (elEnterBtn) elEnterBtn.innerText = dados.enter;
+  /* Homepage / comum */
+  if (elWelcome) elWelcome.innerText = dados.welcome;
+  if (elDesc) elDesc.innerText = dados.description;
+  if (elLogin) elLogin.innerText = dados.login;
+  if (elRegister) elRegister.innerText = dados.register;
 
-    /* How to Play */
-    const isEditProfile = document.querySelector('.edit-profile-page');
-    if (elBack && !isEditProfile) elBack.innerHTML = `<span>←</span> ${dados.back}`;
-    if (elRulesTitle) {
-      elRulesTitle.innerText = dados.rulesTitle;
-    }
-    if (elCorrectTitle) elCorrectTitle.innerText = dados.correctAnswers;
-    if (rulesList.length > 0) {
-      rulesList[0].innerHTML = `<strong>${dados.rule1}</strong> ${dados.rule1Desc}`;
-      rulesList[1].innerHTML = `<strong>${dados.rule2}</strong> ${dados.rule2Desc}`;
-      rulesList[2].innerHTML = `<strong>${dados.rule3}</strong> ${dados.rule3Desc}`;
-      rulesList[3].innerHTML = `<strong>${dados.rule4}</strong> ${dados.rule4Desc}`;
-      rulesList[4].innerText = dados.rule5;
-    }
-    if (elExampleWord) elExampleWord.innerText = dados.exampleWord;
+  /* Login */
+  if (elLoginSubtitle) elLoginSubtitle.innerText = dados.loginSubtitle;
+  if (elLoginEmail) elLoginEmail.placeholder = dados.email;
+  if (elLoginUsername) elLoginUsername.placeholder = dados.username;
+  if (elLoginPassword) elLoginPassword.placeholder = dados.password;
+  if (elLoginBtn) elLoginBtn.innerText = dados.loginButton;
 
-      // Aplica a lista de respostas do exemplo
-      if (elExampleAnswers.length > 0 && dados.exampleAnswers) {
-          elExampleAnswers.forEach((li, index) => {
-              if (dados.exampleAnswers[index]) {
-                  li.innerText = dados.exampleAnswers[index];
-              }
-          });
-      }
-
-    // Leaderboard
-    if (elLeaderboardTitle) elLeaderboardTitle.innerText = dados.leaderboardTitle;
-    if (elTableHeaders.length >= 3) {
-      elTableHeaders[0].innerText = dados.colPos;
-      elTableHeaders[1].innerText = dados.colPlayer;
-      elTableHeaders[2].innerText = dados.colScore;
-    }
-
-    // Navbar
-    if (navLinks.length >= 3) {
-      navLinks[0].innerText = dados.navStart;
-      navLinks[1].innerText = dados.navLeaderboard;
-      navLinks[2].innerText = dados.navHowTo;
-    }
-
-    /* Profile */
-    if (elProfileTitle) elProfileTitle.innerText = dados.statsTitle;
-    if (elBtnChangePhoto) elBtnChangePhoto.innerText = dados.changePhoto;
-    if (elStatLabels.length >= 4) {
-      elStatLabels[0].innerText = dados.statTotalScore;
-      elStatLabels[1].innerText = dados.statCorrect;
-      elStatLabels[2].innerText = dados.statWrong;
-      elStatLabels[3].innerText = dados.statGames;
-    }
-
-    /* Edit Profile */
-    if (elEditAvatarTitle) elEditAvatarTitle.innerText = dados.editAvatarTitle;
-    if (elChooseLabel) elChooseLabel.innerText = dados.chooseImage;
-
-    /* Create Match Page */
-    if (elCreateTitle) elCreateTitle.innerText = dados.createMatchTitle;
-    if (elCreateBtn) elCreateBtn.innerText = dados.createBtn;
-  
-    // Mapeia os labels (Modo de Jogo, Tempo Limite, Código da Sala)
-    if (elLabels.length >= 3) {
-      elLabels[0].innerText = dados.gameModeLabel;
-      elLabels[1].innerText = dados.timeLimitLabel;
-      elLabels[2].innerText = dados.roomCodeLabel;
-    }
-
-    // Mapeia as opções do select de Modo de Jogo
-    if (elGameModeOptions.length >= 2) {
-      elGameModeOptions[0].innerText = dados.multiplayer;
-      elGameModeOptions[1].innerText = dados.solo;
-    }
-
-    /* Lobby */
-    if (elLobbyTitle) elLobbyTitle.innerText = dados.lobbyTitle;
-    if (elStartBtn) elStartBtn.innerText = dados.startMatchBtn;
-    if (elLobbyRoomCodeLabel) elLobbyRoomCodeLabel.innerText = dados.lobbyRoomCodeLabel;
-    if (elBackButtonText) elBackButtonText.innerText = dados.back;
-
-    /* Game Screen */
-    if (elGameScreenTitle) elGameScreenTitle.innerText = dados.gameScreenTitle;
-    if (elMasterWordLabel) elMasterWordLabel.innerText = dados.masterWordLabel;
-    if (elFoundWordsTitle) elFoundWordsTitle.innerText = dados.foundWordsTitle;
-    if (elGameRoomCodeLabel) elGameRoomCodeLabel.innerText = dados.gameRoomCodeLabel;
-    if (elSubmitWordBtn) elSubmitWordBtn.innerText = dados.submitWordBtn;
-    if (elPlayerWordInput) elPlayerWordInput.placeholder = dados.wordInputPlaceholder;
-    
-    /* Botão de idioma: mostra sempre a próxima língua */
-    if (elLangName) elLangName.innerText = dados.nextLang;
-    
-    if (elLangFlag) {
-        // Se for uma tag <img> usa .src, se for uma <div> usa backgroundImage
-        if (elLangFlag.tagName === "IMG") {
-            elLangFlag.src = dados.flag;
-        } else {
-            elLangFlag.style.backgroundImage = `url('${dados.flag}')`;
-        }
-    }
-
-    document.documentElement.lang = idiomaAtual === "pt" ? "pt-PT" : "en";
+  /* Register */
+  if (elRegisterSubtitle) elRegisterSubtitle.innerText = dados.registerSubtitle;
+  if (elRegisterEmail) elRegisterEmail.placeholder = dados.email;
+  if (elRegisterUsername) elRegisterUsername.placeholder = dados.username;
+  if (elRegisterPassword) elRegisterPassword.placeholder = dados.password;
+  if (elRegisterConfirmPassword) {
+    elRegisterConfirmPassword.placeholder = dados.confirmPassword;
   }
+  if (elRegisterBtn) elRegisterBtn.innerText = dados.registerButton;
+
+  /* Hub */
+  if (elNavHome) elNavHome.innerText = dados.navHome;
+  if (elNavRanking) elNavRanking.innerText = dados.navRanking;
+  if (elNavHow) elNavHow.innerText = dados.navHow;
+  if (elCreateGame) elCreateGame.innerText = dados.createGame;
+  if (elRoomInput) elRoomInput.placeholder = dados.enterRoom;
+  if (elEnterBtn) elEnterBtn.innerText = dados.enter;
+
+  /* How to Play */
+  const isEditProfile = document.querySelector(".edit-profile-page");
+  if (elBack && !isEditProfile)
+    elBack.innerHTML = `<span>←</span> ${dados.back}`;
+  if (elRulesTitle) {
+    elRulesTitle.innerText = dados.rulesTitle;
+  }
+  if (elCorrectTitle) elCorrectTitle.innerText = dados.correctAnswers;
+  if (rulesList.length > 0) {
+    rulesList[0].innerHTML = `<strong>${dados.rule1}</strong> ${dados.rule1Desc}`;
+    rulesList[1].innerHTML = `<strong>${dados.rule2}</strong> ${dados.rule2Desc}`;
+    rulesList[2].innerHTML = `<strong>${dados.rule3}</strong> ${dados.rule3Desc}`;
+    rulesList[3].innerHTML = `<strong>${dados.rule4}</strong> ${dados.rule4Desc}`;
+    rulesList[4].innerText = dados.rule5;
+  }
+  if (elExampleWord) elExampleWord.innerText = dados.exampleWord;
+
+  // Aplica a lista de respostas do exemplo
+  if (elExampleAnswers.length > 0 && dados.exampleAnswers) {
+    elExampleAnswers.forEach((li, index) => {
+      if (dados.exampleAnswers[index]) {
+        li.innerText = dados.exampleAnswers[index];
+      }
+    });
+  }
+
+  // Leaderboard
+  if (elLeaderboardTitle) elLeaderboardTitle.innerText = dados.leaderboardTitle;
+  if (elTableHeaders.length >= 3) {
+    elTableHeaders[0].innerText = dados.colPos;
+    elTableHeaders[1].innerText = dados.colPlayer;
+    elTableHeaders[2].innerText = dados.colScore;
+  }
+
+  // Navbar
+  if (navLinks.length >= 3) {
+    navLinks[0].innerText = dados.navStart;
+    navLinks[1].innerText = dados.navLeaderboard;
+    navLinks[2].innerText = dados.navHowTo;
+  }
+
+  /* Profile */
+  if (elProfileTitle) elProfileTitle.innerText = dados.statsTitle;
+  if (elBtnChangePhoto) elBtnChangePhoto.innerText = dados.changePhoto;
+  if (elStatLabels.length >= 4) {
+    elStatLabels[0].innerText = dados.statTotalScore;
+    elStatLabels[1].innerText = dados.statCorrect;
+    elStatLabels[2].innerText = dados.statWrong;
+    elStatLabels[3].innerText = dados.statGames;
+  }
+
+  /* Edit Profile */
+  if (elEditAvatarTitle) elEditAvatarTitle.innerText = dados.editAvatarTitle;
+  if (elChooseLabel) elChooseLabel.innerText = dados.chooseImage;
+
+  /* Create Match Page */
+  if (elCreateTitle) elCreateTitle.innerText = dados.createMatchTitle;
+  if (elCreateBtn) elCreateBtn.innerText = dados.createBtn;
+
+  // Mapeia os labels (Modo de Jogo, Tempo Limite, Código da Sala)
+  if (elLabels.length >= 3) {
+    elLabels[0].innerText = dados.gameModeLabel;
+    elLabels[1].innerText = dados.timeLimitLabel;
+    elLabels[2].innerText = dados.roomCodeLabel;
+  }
+
+  // Mapeia as opções do select de Modo de Jogo
+  if (elGameModeOptions.length >= 2) {
+    elGameModeOptions[0].innerText = dados.multiplayer;
+    elGameModeOptions[1].innerText = dados.solo;
+  }
+
+  /* Lobby */
+  if (elLobbyTitle) elLobbyTitle.innerText = dados.lobbyTitle;
+  if (elStartBtn) elStartBtn.innerText = dados.startMatchBtn;
+  if (elLobbyRoomCodeLabel)
+    elLobbyRoomCodeLabel.innerText = dados.lobbyRoomCodeLabel;
+  if (elBackButtonText) elBackButtonText.innerText = dados.back;
+  if (elWaitingLeaderMsg) elWaitingLeaderMsg.innerText = dados.waitingLeaderMsg;
+
+  /* Game Screen */
+  if (elGameScreenTitle) elGameScreenTitle.innerText = dados.gameScreenTitle;
+  if (elMasterWordLabel) elMasterWordLabel.innerText = dados.masterWordLabel;
+  if (elFoundWordsTitle) elFoundWordsTitle.innerText = dados.foundWordsTitle;
+  if (elGameRoomCodeLabel)
+    elGameRoomCodeLabel.innerText = dados.gameRoomCodeLabel;
+  if (elSubmitWordBtn) elSubmitWordBtn.innerText = dados.submitWordBtn;
+  if (elPlayerWordInput)
+    elPlayerWordInput.placeholder = dados.wordInputPlaceholder;
+  if (elGameModeDisplay && window.DADOS_JOGO) {
+    const modoTraduzido =
+      window.DADOS_JOGO.modoJogo === "multiplayer"
+        ? dados.gameModeMultiplayer
+        : dados.gameModeSolo;
+
+    elGameModeDisplay.innerText = `${dados.gameModePrefix} ${modoTraduzido}`;
+  }
+
+  if (elScoreDisplay) {
+    const pontos = elScoreDisplay.innerText.match(/\d+/)?.[0] || "0";
+    elScoreDisplay.innerText = `${dados.scorePrefix} ${pontos}`;
+  }
+
+  /* Loading Match */
+  if (elLoadingMatchTitle) {
+    elLoadingMatchTitle.innerText = dados.loadingMatchTitle;
+  }
+
+  if (elLoadingRoomCodeLabel) {
+    elLoadingRoomCodeLabel.innerText = dados.loadingRoomCodeLabel;
+  }
+
+  /* Results Loading */
+  if (elResultsLoadingTitle) {
+    elResultsLoadingTitle.innerText = dados.matchFinishedTitle;
+  }
+
+  if (elResultsLoadingText) {
+    elResultsLoadingText.innerText = dados.loadingResultsText;
+  }
+
+  /* Scoreboard */
+  if (elScoreboardWinnerTitle) {
+    elScoreboardWinnerTitle.innerText = dados.scoreboardWinnerTitle;
+  }
+
+  if (elScoreboardRankingTitle) {
+    elScoreboardRankingTitle.innerText = dados.scoreboardRankingTitle;
+  }
+
+  if (elPlayAgainBtn) {
+    elPlayAgainBtn.innerText = dados.playAgainBtn;
+  }
+
+  if (elBackToHubBtn) {
+    elBackToHubBtn.innerText = dados.backToHubBtn;
+  }
+
+  if (elWinnerDisplay && elWinnerDisplay.innerText.trim() === "A carregar...") {
+    elWinnerDisplay.innerText = dados.loadingWinner;
+  }
+
+  /* Botão de idioma: mostra sempre a próxima língua */
+  if (elLangName) elLangName.innerText = dados.nextLang;
+
+  if (elLangFlag) {
+    // Se for uma tag <img> usa .src, se for uma <div> usa backgroundImage
+    if (elLangFlag.tagName === "IMG") {
+      elLangFlag.src = dados.flag;
+    } else {
+      elLangFlag.style.backgroundImage = `url('${dados.flag}')`;
+    }
+  }
+
+  document.documentElement.lang = idiomaAtual === "pt" ? "pt-PT" : "en";
+}
 
 /* Função de troca de idioma */
 function toggleLanguage() {
-    idiomaAtual = idiomaAtual === "pt" ? "en" : "pt";
-    localStorage.setItem("idioma", idiomaAtual);
-    aplicarIdioma();
+  idiomaAtual = idiomaAtual === "pt" ? "en" : "pt";
+  localStorage.setItem("idioma", idiomaAtual);
+  aplicarIdioma();
 }
 
 // Função para aplicar o nome em qualquer página --- */
 function aplicarNomeUtilizador() {
-    const nome = localStorage.getItem("user") || localStorage.getItem("username");
-    if (!nome) return;
+  const nome = localStorage.getItem("user") || localStorage.getItem("username");
+  if (!nome) return;
 
-    // Lista de IDs 
-    const idsPossiveis = [
-        "user-display-name",        // ID na página Profile
-        "player-username-display",   // ID na página Lobby
-        "nav-user-name"
-    ];
-    
-    idsPossiveis.forEach(id => {
-        const elemento = document.getElementById(id);
-        if (elemento) {
-            elemento.innerText = nome;
-        }
-    });
+  // Lista de IDs
+  const idsPossiveis = [
+    "user-display-name", // ID na página Profile
+    "player-username-display", // ID na página Lobby
+    "nav-user-name",
+  ];
+
+  idsPossiveis.forEach((id) => {
+    const elemento = document.getElementById(id);
+    if (elemento) {
+      elemento.innerText = nome;
+    }
+  });
 }
+
+window.getTexto = function (chave) {
+  const idioma = localStorage.getItem("idioma") || "pt";
+  return traducoes[idioma]?.[chave] || traducoes.pt[chave] || chave;
+};
 
 /* Inicialização */
 document.addEventListener("DOMContentLoaded", () => {
-    aplicarIdioma();
-    aplicarNomeUtilizador();
+  aplicarIdioma();
+  aplicarNomeUtilizador();
 
-    // Event listener para o botão de troca de idioma 
-    const btnLang = document.getElementById("btn-toggle-lang");
-    if (btnLang) {
-        btnLang.addEventListener("click", toggleLanguage);
-    }
+  // Event listener para o botão de troca de idioma
+  const btnLang = document.getElementById("btn-toggle-lang");
+  if (btnLang) {
+    btnLang.addEventListener("click", toggleLanguage);
+  }
 });
-

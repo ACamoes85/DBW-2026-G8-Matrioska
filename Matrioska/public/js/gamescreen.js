@@ -1,4 +1,7 @@
 "use strict";
+const t = (chave, fallback) => {
+  return window.texto ? window.texto(chave) : fallback;
+};
 
 // Instância única de socket para este ficheiro
 const socket = io();
@@ -36,10 +39,21 @@ function inicializarJogo() {
   const elTimer = document.getElementById("game-timer");
   const elMasterWord = document.getElementById("master-word");
   const elScore = document.getElementById("score-display");
+  const elModo = document.getElementById("game-mode-display");
 
   if (elTimer) elTimer.innerText = `${tempoRestante}s`;
   if (elMasterWord) elMasterWord.innerText = palavraMestraAtual;
-  if (elScore) elScore.innerText = `Pontuação: ${pontuacao}`;
+  if (elScore)
+    elScore.innerText = `${t("scorePrefix", "Pontuação:")} ${pontuacao}`;
+
+  if (elModo && window.DADOS_JOGO) {
+    const modoTraduzido =
+      window.DADOS_JOGO.modoJogo === "multiplayer"
+        ? t("gameModeMultiplayer", "Multijogador")
+        : t("gameModeSolo", "Solo");
+
+    elModo.innerText = `${t("gameModePrefix", "Modo:")} ${modoTraduzido}`;
+  }
 
   const elHiddenCode = document.getElementById("room-code-hidden");
   const elRoomCodeDisplay = document.getElementById("game-room-code");
@@ -96,7 +110,7 @@ function configurarSocketMultiplayer() {
         item.style.color = "#00E5FF";
       }
 
-      const nomeExibicao = souEu ? "Tu" : data.registo.username;
+      const nomeExibicao = souEu ? t("youLabel", "Tu") : data.registo.username;
 
       item.innerHTML = `
                 <span>${data.registo.termo} <small>(+${data.registo.pontos})</small></span>
@@ -112,7 +126,8 @@ function configurarSocketMultiplayer() {
           palavrasEncontradas.push(data.registo.termo);
         }
         const elScore = document.getElementById("score-display");
-        if (elScore) elScore.innerText = `Pontuação: ${pontuacao}`;
+        if (elScore)
+          elScore.innerText = `${t("scorePrefix", "Pontuação:")} ${pontuacao}`;
       }
     });
   }
@@ -164,20 +179,36 @@ async function submeterPalavra() {
       if (!response.ok) {
         if (data.status === "errada") {
           respostasErradas++;
+          mostrarFeedback(
+            t("invalidWordFeedback", "Palavra incorreta!"),
+            "#FF4444",
+          );
+        } else if (data.status === "repetida") {
+          mostrarFeedback(
+            t("repeatedWordFeedback", "Essa palavra já foi encontrada."),
+            "orange",
+          );
+        } else {
+          mostrarFeedback(
+            data.mensagem || t("connectionError", "Erro de ligação"),
+            "#FF4444",
+          );
         }
-        mostrarFeedback(data.mensagem || "Erro ao validar", "#FF4444");
       } else {
-        mostrarFeedback("Acertaste!", "#00FF00");
+        mostrarFeedback(t("correctFeedback", "Acertaste!"), "#00FF00");
       }
     } catch (err) {
       console.error("Erro na comunicação API:", err);
-      mostrarFeedback("Erro de ligação", "red");
+      mostrarFeedback(t("connectionError", "Erro de ligação"), "red");
     }
   } else {
     // Lógica Solo
     const listaUI = document.getElementById("found-words-list");
     if (palavrasEncontradas.includes(tentativa)) {
-      mostrarFeedback("Já encontraste essa!", "orange");
+      mostrarFeedback(
+        t("repeatedWordFeedback", "Essa palavra já foi encontrada."),
+        "orange",
+      );
     } else if (palavrasValidasAtuais.includes(tentativa)) {
       palavrasEncontradas.push(tentativa);
       const pontosGanhos = tentativa.length * 10;
@@ -189,11 +220,14 @@ async function submeterPalavra() {
 
       const elScore = document.getElementById("score-display");
       if (elScore) elScore.innerText = `Pontuação: ${pontuacao}`;
-      mostrarFeedback("Acertaste!", "#00FF00");
+      mostrarFeedback(t("correctFeedback", "Acertaste!"), "#00FF00");
     } else {
-    respostasErradas++;
-    mostrarFeedback("Palavra incorreta!", "#FF4444");
-}
+      respostasErradas++;
+      mostrarFeedback(
+        t("invalidWordFeedback", "Palavra incorreta!"),
+        "#FF4444",
+      );
+    }
   }
 
   input.value = "";
@@ -234,7 +268,7 @@ async function finalizarPartida() {
     palavraMestra: palavraMestraAtual,
     palavrasEncontradas,
     pontuacao,
-    respostasErradas
+    respostasErradas,
   };
 
   // Garante que os dados estão no storage antes de mudar de página
@@ -249,7 +283,7 @@ async function finalizarPartida() {
     });
 
     if (response.ok) {
-        console.log("Estatísticas guardadas com sucesso.");
+      console.log("Estatísticas guardadas com sucesso.");
     }
   } catch (err) {
     console.error("Erro ao guardar:", err);

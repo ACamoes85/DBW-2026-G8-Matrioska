@@ -60,9 +60,9 @@
                 <% if (eLider) { %>
                     <button class="btn-create-match" id="btn-start-match">Iniciar partida</button>
                 <% } else { %>
-                    <p class="waiting-msg" style="color: white; font-style: italic; opacity: 0.8;">
-                        A aguardar que o líder inicie a partida...
-                    </p>
+                    <p id="waiting-leader-msg" class="waiting-msg" style="color: white; font-style: italic; opacity: 0.8;">
+    A aguardar que o líder inicie a partida...
+</p>
                 <% } %>
             </div>
         </div>
@@ -71,7 +71,5 @@
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="/js/Socket/lobby-manager.js"></script>
     <script src="/js/main.js"></script>
-    <script src="/js/lobby.js"></script>
-
 </body>
 </html>

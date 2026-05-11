@@ -1,22 +1,22 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-PT">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>A preparar partida</title>
-    <link rel="stylesheet" href="/css/loadingmatch.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="/css/loadingmatch.css" />
+  </head>
+  <body>
     <div class="card">
-        <h1>A preparar partida...</h1>
+      <h1 id="loadingmatch-title">A preparar partida...</h1>
 
-        <div class="room-box">
-            <p>Código da sala:</p>
-            <div class="code" id="display-room-code"><%= codigoSala %></div>
-        </div>
+      <div class="room-box">
+        <p id="loadingmatch-room-label">Código da sala:</p>
+        <div class="code" id="display-room-code"><%= codigoSala %></div>
+      </div>
     </div>
 
+    <script src="/js/main.js"></script>
     <script src="/js/loading.js"></script>
-</body>
+  </body>
 </html>

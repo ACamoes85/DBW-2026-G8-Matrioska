@@ -1,7 +1,17 @@
 "use strict";
 
+function t(chave) {
+  return window.getTexto ? window.getTexto(chave) : chave;
+}
+
+function plural(numero, singular, plural) {
+  return Number(numero) === 1 ? singular : plural;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
-  const resultado = JSON.parse(localStorage.getItem("resultadoPartida") || "null");
+  const resultado = JSON.parse(
+    localStorage.getItem("resultadoPartida") || "null",
+  );
 
   const displayVencedor = document.getElementById("winner-display");
   const rankingList = document.getElementById("ranking-list");
@@ -13,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!displayVencedor || !rankingList) return;
 
   if (!resultado || !resultado.codigoSala) {
-    displayVencedor.innerText = "Sem dados da partida";
+    displayVencedor.innerText = t("noMatchData");
     rankingList.innerHTML = "";
     return;
   }
@@ -37,11 +47,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dados = await resposta.json();
 
     if (!resposta.ok) {
-      throw new Error(dados.erro || "Erro ao obter classificação.");
+      throw new Error(dados.erro || t("scoreboardLoadError"));
     }
 
     if (!dados.ranking || dados.ranking.length === 0) {
-      displayVencedor.innerText = "Sem jogadores registados";
+      displayVencedor.innerText = t("noRegisteredPlayers");
       rankingList.innerHTML = "";
       return;
     }
@@ -57,7 +67,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             ${index + 1}. ${jogador.username} - ${jogador.pontuacao} pts
             <br>
             <small>
-              ${jogador.palavrasCertas} certas, ${jogador.respostasErradas} erradas
+              ${jogador.palavrasCertas} ${plural(jogador.palavrasCertas, t("correctSingular"), t("correctPlural"))}, ${jogador.respostasErradas} ${plural(jogador.respostasErradas, t("wrongSingular"), t("wrongPlural"))}
             </small>
           </p>
         `,
@@ -66,7 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (err) {
     console.error("Erro ao carregar scoreboard:", err);
 
-    displayVencedor.innerText = "Erro ao carregar classificação";
+    displayVencedor.innerText = t("scoreboardLoadError");
     rankingList.innerHTML = "";
   }
 
@@ -77,19 +87,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         const response = await fetch("/api/match/reset", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ codigoSala: resultado.codigoSala })
+          body: JSON.stringify({ codigoSala: resultado.codigoSala }),
         });
 
         const data = await response.json();
 
         if (!response.ok) {
           // Se o servidor negar, mudamos o estado do botão
-          btnPlayAgain.innerText = "À espera do líder...";
+          btnPlayAgain.innerText = t("waitingLeader");
           btnPlayAgain.disabled = true;
           btnPlayAgain.style.opacity = "0.6";
           btnPlayAgain.style.cursor = "not-allowed";
         }
-
       } catch (err) {
         console.error("Erro ao solicitar reinício:", err);
       }

@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scoreboard</title>
-    <link rel="stylesheet" href="/css/scoreboard.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/css/scoreboard.css" />
+  </head>
+  <body>
     <main class="scoreboard-screen">
-        <section class="scoreboard-card">
-            <h2 class="subtitle">Vencedor</h2>
-            
-            <h1 class="winner" id="winner-display">A carregar...</h1>
+      <section class="scoreboard-card">
+        <h2 class="subtitle" id="scoreboard-winner-title">Vencedor</h2>
 
-            <div class="ranking">
-                <h3>Classificação</h3>
-                <div id="ranking-list">
-                    </div>
-            </div>
+        <h1 class="winner" id="winner-display">A carregar...</h1>
 
-            <div class="buttons">
-                <button id="btn-play-again" class="btn">Jogar novamente</button>
-                <a href="/hub" class="btn">Voltar ao Hub</a>
-            </div>
-        </section>
+        <div class="ranking">
+          <h3 id="scoreboard-ranking-title">Classificação</h3>
+          <div id="ranking-list"></div>
+        </div>
+
+        <div class="buttons">
+          <button id="btn-play-again" class="btn">Jogar novamente</button>
+          <a href="/hub" class="btn" id="btn-back-hub">Voltar ao Hub</a>
+        </div>
+      </section>
     </main>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/scoreboard.js"></script>
-</body>
+  </body>
 </html>
