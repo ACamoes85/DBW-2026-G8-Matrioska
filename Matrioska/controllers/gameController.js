@@ -26,7 +26,7 @@ export const criarOuEntrarSala = async (req, res) => {
         return res.redirect("/hub?error=started");
       }
       if (sala.modoJogo === "solo") {
-        const jaEstaNaSala = sala.jogadores.find((j) => j.id === user.id);
+        const jaEstaNaSala = sala.jogadores.find((j) => String(j.id) === String(user.id));
         if (!jaEstaNaSala) {
           return res.redirect("/hub?error=solo_room");
         }
@@ -36,7 +36,7 @@ export const criarOuEntrarSala = async (req, res) => {
         return res.redirect("/hub?error=full");
       }
 
-      const jaEstaNaSala = sala.jogadores.find((j) => j.id === user.id);
+      const jaEstaNaSala = sala.jogadores.find((j) => String(j.id) === String(user.id));
       if (!jaEstaNaSala) {
         sala.jogadores.push({
           id: user.id,
@@ -52,7 +52,7 @@ export const criarOuEntrarSala = async (req, res) => {
           modoJogo: modoJogo || "multiplayer",
           idiomaJogo: idiomaNormalizado,
           estado: "lobby",
-          tempoJogo: parseInt(tempoLimite, 10) || 30,
+          tempoJogo: parseInt(tempoJogo, 10) || 30,
           jogadores: [
             {
               id: user.id,
@@ -325,77 +325,64 @@ export const guardarEstatisticasPartida = async (req, res) => {
       return res.status(404).json({ erro: "Partida não encontrada." });
     }
 
+    // Atualiza apenas o jogador que enviou os dados
     const jogadorAtual = sala.jogadores.find(
       (j) => String(j.id || j._id) === userId,
     );
 
     if (jogadorAtual) {
-      jogadorAtual.pontuacao = Math.max(
-        jogadorAtual.pontuacao || 0,
-        Number(pontuacao) || 0,
-      );
-
-      if (
-        Array.isArray(palavrasEncontradas) &&
-        palavrasEncontradas.length >
-          (jogadorAtual.palavrasEncontradas || []).length
-      ) {
-        jogadorAtual.palavrasEncontradas = palavrasEncontradas;
-      }
-
-      jogadorAtual.respostasErradas = Math.max(
-        jogadorAtual.respostasErradas || 0,
-        Number(respostasErradas) || 0,
-      );
-
+      jogadorAtual.pontuacao = Number(pontuacao) || 0;
+      jogadorAtual.palavrasEncontradas = Array.isArray(palavrasEncontradas)
+        ? palavrasEncontradas
+        : [];
+      jogadorAtual.respostasErradas = Number(respostasErradas) || 0;
       sala.markModified("jogadores");
       await sala.save();
     }
 
-    const salaFinalizada = await Lobby.findOneAndUpdate(
-      {
-        _id: sala._id,
-        estatisticasGuardadas: { $ne: true },
-      },
-      {
-        $set: {
-          estatisticasGuardadas: true,
-          estado: "finalizada",
-          finalizadaEm: new Date(),
-        },
-      },
-      { new: true },
+    // Verifica se todos os jogadores já enviaram os seus dados
+    // para só então finalizar a sala e atualizar as estatísticas globais
+    const todosEntregaram = sala.jogadores.every(
+      (j) => j.pontuacao !== undefined && j.pontuacao !== null
     );
 
-    if (!salaFinalizada) {
-      return res.status(200).json({
-        mensagem: "Estatísticas já tinham sido guardadas.",
-      });
-    }
+    const jaFinalizada = sala.estatisticasGuardadas;
 
-    for (const jogador of salaFinalizada.jogadores) {
-      const pontos = Number(jogador.pontuacao) || 0;
-      const respostasCertas = Array.isArray(jogador.palavrasEncontradas)
-        ? jogador.palavrasEncontradas.length
-        : 0;
-      const respostasErradasJogador = Number(jogador.respostasErradas) || 0;
+    if (todosEntregaram && !jaFinalizada) {
+      await Lobby.updateOne(
+        { _id: sala._id },
+        { $set: { estatisticasGuardadas: true, estado: "finalizada", finalizadaEm: new Date() } }
+      );
 
-      await User.findOneAndUpdate(
-        { username: jogador.username },
-        {
-          $inc: {
-            "stats.totalScore": pontos,
-            "stats.correctAnswers": respostasCertas,
-            "stats.wrongAnswers": respostasErradasJogador,
-            "stats.gamesPlayed": 1,
-          },
-        },
+      for (const jogador of sala.jogadores) {
+        const pontos = Number(jogador.pontuacao) || 0;
+        const respostasCertas = Array.isArray(jogador.palavrasEncontradas)
+          ? jogador.palavrasEncontradas.length
+          : 0;
+        const erradas = Number(jogador.respostasErradas) || 0;
+
+        await User.findOneAndUpdate(
+          { username: jogador.username },
+          {
+            $inc: {
+              "stats.totalScore": pontos,
+              "stats.correctAnswers": respostasCertas,
+              "stats.wrongAnswers": erradas,
+              "stats.gamesPlayed": 1,
+            },
+          }
+        );
+      }
+    } else if (!jaFinalizada) {
+      // Marca a sala como finalizada mesmo que nem todos tenham enviado
+      // (para o scoreboard poder ser carregado)
+      await Lobby.updateOne(
+        { _id: sala._id },
+        { $set: { estado: "finalizada", finalizadaEm: new Date() } }
       );
     }
 
-    res.status(201).json({
-      mensagem: "Estatísticas globais guardadas com sucesso.",
-    });
+    res.status(201).json({ mensagem: "Estatísticas guardadas." });
   } catch (err) {
     console.error("Erro ao guardar estatísticas:", err);
     res.status(500).json({ erro: "Erro interno ao guardar dados." });
@@ -491,5 +478,21 @@ export const reiniciarLobby = async (req, res, io) => {
   } catch (err) {
     console.error("Erro ao reiniciar lobby:", err);
     return res.status(500).json({ erro: "Erro interno ao reiniciar lobby." });
+  }
+};
+
+/**
+ * Devolve o username do líder atual da sala (índice 0 dos jogadores)
+ */
+export const obterLiderSala = async (req, res) => {
+  try {
+    const { codigoSala } = req.params;
+    const sala = await Lobby.findOne({ codigoSala: codigoSala.trim().toUpperCase() }).lean();
+    if (!sala || sala.jogadores.length === 0) {
+      return res.status(404).json({ username: null });
+    }
+    return res.status(200).json({ username: sala.jogadores[0].username });
+  } catch (err) {
+    return res.status(500).json({ username: null });
   }
 };

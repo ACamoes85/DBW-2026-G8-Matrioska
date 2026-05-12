@@ -52,7 +52,6 @@ io.on("connection", (socket) => {
     console.log("Novo utilizador ligado:", socket.id);
 
     socket.on("join-room", async (dados) => {
-        // Normalização: aceita string (código) ou objeto { roomCode, user }
         const roomCode = typeof dados === "string" ? dados : dados.roomCode;
         const user = typeof dados === "object" ? dados.user : null;
 
@@ -60,25 +59,24 @@ io.on("connection", (socket) => {
 
         const codeUpper = roomCode.toUpperCase();
         socket.join(codeUpper);
-        console.log(`Socket ${socket.id} entrou na sala: ${codeUpper}`);
 
-        // Se tivermos dados do utilizador, guardamos para gerir a saída da sala depois
         if (user && (user.id || user._id)) {
-            const userId = user.id || user._id;
+            const userId = String(user.id || user._id);
             socketToUser[socket.id] = { userId, roomCode: codeUpper };
-        }
 
-        try {
-            const sala = await Lobby.findOne({ codigoSala: codeUpper });
-            if (sala) {
-                // Atualiza a lista de jogadores para todos na sala
-                io.to(codeUpper).emit("room-update", {
-                    jogadores: sala.jogadores,
-                    modoJogo: sala.modoJogo
-                });
+            // Só emite room-update quando é uma ligação com utilizador identificado
+            // (lobby), não quando é uma ligação anónima do gamescreen/scoreboard
+            try {
+                const sala = await Lobby.findOne({ codigoSala: codeUpper });
+                if (sala && sala.estado === "lobby") {
+                    io.to(codeUpper).emit("room-update", {
+                        jogadores: sala.jogadores,
+                        modoJogo: sala.modoJogo
+                    });
+                }
+            } catch (err) {
+                console.error("Erro ao processar join-room:", err);
             }
-        } catch (err) {
-            console.error("Erro ao processar join-room:", err);
         }
     });
 
@@ -92,29 +90,41 @@ io.on("connection", (socket) => {
         if (userData) {
             const { userId, roomCode } = userData;
             try {
-                // Remove o jogador apenas se a sala ainda estiver em estado de 'lobby'
-                const salaAtualizada = await Lobby.findOneAndUpdate(
-                    { codigoSala: roomCode, estado: "lobby" },
-                    { $pull: { jogadores: { id: userId } } },
-                    { new: true }
-                );
+                const sala = await Lobby.findOne({ codigoSala: roomCode });
+                if (!sala) return;
 
-                if (salaAtualizada) {
-                    if (salaAtualizada.jogadores.length === 0) {
+                const eraLider = sala.jogadores.length > 0 &&
+                    String(sala.jogadores[0].id || sala.jogadores[0]._id) === String(userId);
+
+                if (sala.estado === "lobby") {
+                    sala.jogadores = sala.jogadores.filter(
+                        (j) => String(j.id || j._id) !== String(userId)
+                    );
+
+                    if (sala.jogadores.length === 0) {
                         await Lobby.deleteOne({ codigoSala: roomCode });
-                        console.log(`Sala ${roomCode} eliminada por falta de jogadores.`);
+                        return;
+                    }
+
+                    if (eraLider) {
+                        // Líder saiu do lobby: avisa os outros e apaga a sala
+                        await Lobby.deleteOne({ codigoSala: roomCode });
+                        io.to(roomCode).emit("lider-saiu-lobby");
                     } else {
+                        await sala.save();
                         io.to(roomCode).emit("player-left", userId);
                         io.to(roomCode).emit("room-update", {
-                            jogadores: salaAtualizada.jogadores,
-                            modoJogo: salaAtualizada.modoJogo
+                            jogadores: sala.jogadores,
+                            modoJogo: sala.modoJogo
                         });
-                    
-                        if (salaAtualizada.jogadores[0]) {
-                            console.log(`Novo líder da sala ${roomCode}: ${salaAtualizada.jogadores[0].username}`);
-                        }
+                    }
+                } else {
+                    // Em jogo / scoreboard: não remove da sala, mas avisa se era o líder
+                    if (eraLider) {
+                        io.to(roomCode).emit("lider-saiu-jogo");
                     }
                 }
+
             } catch (err) {
                 console.error("Erro ao processar saída:", err);
             }

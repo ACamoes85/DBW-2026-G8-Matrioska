@@ -23,6 +23,8 @@ let tempoRestante = 30;
 let intervaloTemporizador = null;
 
 function inicializarJogo() {
+  // Limpa flags de sessões anteriores
+  localStorage.removeItem("lider-saiu");
   if (window.DADOS_JOGO) {
     palavraMestraAtual = (window.DADOS_JOGO.palavraMestra || "")
       .toUpperCase()
@@ -78,6 +80,11 @@ function configurarSocketMultiplayer() {
     // Guarda o líder atual no localStorage para o scoreboard saber quem pode reiniciar
     socket.on("novo-lider", ({ novoLiderId }) => {
       localStorage.setItem("liderSala", String(novoLiderId));
+    });
+
+    // Líder saiu durante o jogo — guarda aviso para mostrar no scoreboard
+    socket.on("lider-saiu-jogo", () => {
+      localStorage.setItem("lider-saiu", "1");
     });
 
     socket.on("palavra-descoberta-global", (data) => {

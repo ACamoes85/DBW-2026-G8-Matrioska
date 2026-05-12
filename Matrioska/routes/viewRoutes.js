@@ -80,6 +80,12 @@ export default (io) => {
     gameController.obterScoreboardPartida,
   );
 
+  router.get(
+    "/api/partidas/:codigoSala/lider",
+    protegerRota,
+    gameController.obterLiderSala,
+  );
+
   // --- Outras Views ---
   router.get("/loadingmatch", protegerRota, userController.getLoadingMatch);
   router.get("/scoreboard", protegerRota, userController.getScoreboard);

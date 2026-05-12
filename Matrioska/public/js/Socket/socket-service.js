@@ -1,72 +1,72 @@
 "use strict";
 
-// Inicializa a conexão Socket.io
 const socket = io();
-
-// Disponibiliza o socket globalmente para o lobby-manager e outros scripts
 window.socketLobby = socket;
 
-/**
- * Envia o sinal para entrar na sala
- */
+const t = (chave, fallback) => {
+    return window.texto ? window.texto(chave) : fallback;
+};
+
 export function joinRoom(roomCode, user) {
     if (roomCode && user) {
-        // Garantimos que enviamos o ID de forma consistente (id ou _id)
         const userId = user.id || user._id;
-        console.log(`[Socket] A emitir join-room para a sala: ${roomCode} com user: ${userId}`);
         socket.emit("join-room", { roomCode, user: { ...user, id: userId } });
     }
 }
 
-/**
- * Escuta os eventos do servidor para gerir a navegação e saída
- */
 export function listenForPlayers(callbackIniciar) {
-    
+
+    // LÍDER SAIU DO LOBBY — redireciona todos para o hub com aviso
+    socket.on("lider-saiu-lobby", () => {
+        localStorage.setItem("aviso-hub", t("leaderLeftLobby", "O líder saiu do lobby. A sala foi encerrada."));
+        window.location.href = "/hub";
+    });
+
     // QUANDO ALGUÉM SAI
     socket.on("player-left", (userId) => {
         const idRemover = String(userId).trim();
-        console.log(`[Socket] Jogador saiu: ${idRemover}`);
-
-        // Remover o elemento visual do jogador que saiu
         const elementoParaRemover = document.getElementById(`player-${idRemover}`);
         if (elementoParaRemover) elementoParaRemover.remove();
+    });
 
-        // Lógica de promoção de líder
-        const todosOsSlots = document.querySelectorAll('.player-slot');
-        const meuIdInput = document.getElementById("current-user-id");
-        
-        if (meuIdInput && todosOsSlots.length > 0) {
-            const meuId = String(meuIdInput.value).trim();
-            const primeiroJogadorId = todosOsSlots[0].id.replace('player-', ''); 
+    // NOVO LÍDER — emitido pelo servidor quando o líder sai (qualquer estado da sala)
+    socket.on("novo-lider", ({ novoLiderId, jogadores, modoJogo }) => {
+        const meuId = String(document.getElementById("current-user-id")?.value || "").trim();
+        const souONovoLider = meuId === String(novoLiderId).trim();
 
-            if (primeiroJogadorId === meuId) {
-                const actionsContainer = document.querySelector('.actions-section');
-                
-                // Se eu sou o novo primeiro da lista e o botão ainda não existe, eu crio-o
-                if (actionsContainer && !document.getElementById('btn-start-match')) {
-                    console.log("[Socket] Promoção: Agora és o líder da sala.");
-                    
+        // Atualiza o botão no lobby
+        const actionsContainer = document.querySelector(".actions-section");
+        if (actionsContainer) {
+            if (souONovoLider) {
+                actionsContainer.innerHTML = `
+                    <button class="btn-create-match" id="btn-start-match">
+                        ${t("startMatchBtn", "Iniciar partida")}
+                    </button>
+                `;
+                const novoBtn = document.getElementById("btn-start-match");
+                if (novoBtn && callbackIniciar) {
+                    novoBtn.onclick = callbackIniciar;
+                }
+                // Atualiza o estado do botão conforme o número de jogadores
+                if (typeof atualizarEstadoBotao === "function") {
+                    atualizarEstadoBotao(jogadores, modoJogo);
+                }
+            } else {
+                // Garante que não-líderes veem a mensagem de espera
+                if (!document.querySelector(".waiting-msg")) {
                     actionsContainer.innerHTML = `
-                        <button class="btn-create-match" id="btn-start-match">
-                            Iniciar partida
-                        </button>
+                        <p id="waiting-leader-msg" class="waiting-msg" style="color: white; font-style: italic; opacity: 0.8;">
+                            ${t("waitingLeaderMsg", "A aguardar que o líder inicie a partida...")}
+                        </p>
                     `;
-                    
-                    const novoBtn = document.getElementById('btn-start-match');
-                    if (novoBtn && callbackIniciar) {
-                        novoBtn.onclick = callbackIniciar;
-                    }
                 }
             }
         }
     });
 
-    // ESCUTAR REDIRECIONAMENTO PARA O JOGO 
+    // REDIRECIONAMENTO PARA O JOGO
     socket.on("navigate-to-game", (roomCode) => {
         const limpo = String(roomCode).trim().toUpperCase();
-        console.log(`[Socket] A iniciar transição para a sala ${limpo}`);
-        // Redireciona para o loading antes do gamescreen
         window.location.href = `/loadingmatch?code=${limpo}`;
     });
 }
