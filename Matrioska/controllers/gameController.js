@@ -9,9 +9,9 @@ import Lobby from "../models/Lobby.js";
  */
 export const criarOuEntrarSala = async (req, res) => {
   try {
-    const { codigoSala, modoJogo, tempoJogo } = req.body;
+    const { codigoSala, modoJogo, tempoJogo, idiomaJogo } = req.body;
     const user = req.session.user;
-
+    const idiomaNormalizado = idiomaJogo === "en" ? "en" : "pt";
     if (!user) return res.redirect("/login");
     if (!codigoSala) return res.redirect("/hub?error=invalid");
 
@@ -50,8 +50,9 @@ export const criarOuEntrarSala = async (req, res) => {
         sala = new Lobby({
           codigoSala: codigoUpper,
           modoJogo: modoJogo || "multiplayer",
+          idiomaJogo: idiomaNormalizado,
           estado: "lobby",
-          tempoJogo: parseInt(tempoJogo, 10) || 30,
+          tempoJogo: parseInt(tempoLimite, 10) || 30,
           jogadores: [
             {
               id: user.id,
@@ -132,12 +133,22 @@ export const iniciarPartida = async (req, res) => {
     }
 
     // --- Se passou a validação, segue o sorteio ---
-    const contagem = await Palavra.countDocuments();
-    if (contagem === 0)
-      return res.status(500).json({ erro: "DB de palavras vazia." });
+    const idiomaDaSala = sala.idiomaJogo || "pt";
+
+    const filtroPalavras = {
+      idioma: idiomaDaSala,
+    };
+
+    const contagem = await Palavra.countDocuments(filtroPalavras);
+
+    if (contagem === 0) {
+      return res.status(500).json({
+        erro: `Não existem palavras para o idioma ${idiomaDaSala}.`,
+      });
+    }
 
     const random = Math.floor(Math.random() * contagem);
-    const sorteada = await Palavra.findOne().skip(random);
+    const sorteada = await Palavra.findOne(filtroPalavras).skip(random);
 
     await Lobby.updateOne(
       { _id: sala._id },
@@ -342,10 +353,10 @@ export const guardarEstatisticasPartida = async (req, res) => {
     }
 
     const salaFinalizada = await Lobby.findOneAndUpdate(
-  {
-    _id: sala._id,
-    estatisticasGuardadas: { $ne: true },
-  },
+      {
+        _id: sala._id,
+        estatisticasGuardadas: { $ne: true },
+      },
       {
         $set: {
           estatisticasGuardadas: true,
@@ -432,46 +443,53 @@ export const obterScoreboardPartida = async (req, res) => {
  * Reinicia a sala para o estado de lobby mantendo os mesmos jogadores (Jogar Novamente)
  */
 export const reiniciarLobby = async (req, res, io) => {
-    try {
-        const { codigoSala } = req.body;
-        const rawUserId = req.session.user?._id || req.session.user?.id;
-        const idUtilizadorAtual = String(rawUserId).trim();
+  try {
+    const { codigoSala } = req.body;
+    const rawUserId = req.session.user?._id || req.session.user?.id;
+    const idUtilizadorAtual = String(rawUserId).trim();
 
-        const sala = await Lobby.findOne({ codigoSala: codigoSala.toUpperCase() });
+    const sala = await Lobby.findOne({ codigoSala: codigoSala.toUpperCase() });
 
-        if (!sala) return res.status(404).json({ erro: "Sala não encontrada." });
+    if (!sala) return res.status(404).json({ erro: "Sala não encontrada." });
 
-        // Validação básica de líder (índice 0)
-        const idLider = String(sala.jogadores[0]?.id || sala.jogadores[0]?._id).trim();
-        if (idLider !== idUtilizadorAtual) {
-            return res.status(403).json({ erro: "Apenas o líder pode reiniciar o lobby." });
-        }
-
-        // Resetar campos da sala
-        sala.estado = "lobby";
-        sala.palavraMestra = "";
-        sala.subPalavras = [];
-        sala.palavrasAcertadasRegisto = [];
-        sala.estatisticasGuardadas = false;
-        sala.finalizadaEm = null;
-
-        // Resetar estatísticas locais dos jogadores para a próxima rodada
-        sala.jogadores.forEach((j) => {
-            j.pontuacao = 0;
-            j.palavrasEncontradas = [];
-            j.respostasErradas = 0;
-        });
-
-        await sala.save();
-
-        // Emitir evento para todos via socket para redirecionar ao lobby
-        if (io) {
-            io.to(codigoSala.toUpperCase()).emit("voltar-ao-lobby", codigoSala.toUpperCase());
-        }
-
-        return res.status(200).json({ mensagem: "Lobby reiniciado!" });
-    } catch (err) {
-        console.error("Erro ao reiniciar lobby:", err);
-        return res.status(500).json({ erro: "Erro interno ao reiniciar lobby." });
+    // Validação básica de líder (índice 0)
+    const idLider = String(
+      sala.jogadores[0]?.id || sala.jogadores[0]?._id,
+    ).trim();
+    if (idLider !== idUtilizadorAtual) {
+      return res
+        .status(403)
+        .json({ erro: "Apenas o líder pode reiniciar o lobby." });
     }
+
+    // Resetar campos da sala
+    sala.estado = "lobby";
+    sala.palavraMestra = "";
+    sala.subPalavras = [];
+    sala.palavrasAcertadasRegisto = [];
+    sala.estatisticasGuardadas = false;
+    sala.finalizadaEm = null;
+
+    // Resetar estatísticas locais dos jogadores para a próxima rodada
+    sala.jogadores.forEach((j) => {
+      j.pontuacao = 0;
+      j.palavrasEncontradas = [];
+      j.respostasErradas = 0;
+    });
+
+    await sala.save();
+
+    // Emitir evento para todos via socket para redirecionar ao lobby
+    if (io) {
+      io.to(codigoSala.toUpperCase()).emit(
+        "voltar-ao-lobby",
+        codigoSala.toUpperCase(),
+      );
+    }
+
+    return res.status(200).json({ mensagem: "Lobby reiniciado!" });
+  } catch (err) {
+    console.error("Erro ao reiniciar lobby:", err);
+    return res.status(500).json({ erro: "Erro interno ao reiniciar lobby." });
+  }
 };

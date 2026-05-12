@@ -17,11 +17,17 @@ const lobbySchema = new mongoose.Schema({
         default: [],
       },
       respostasErradas: {
-      type: Number,
-      default: 0,
-    },
+        type: Number,
+        default: 0,
+      },
     },
   ],
+
+  idiomaJogo: {
+    type: String,
+    enum: ["pt", "en"],
+    default: "pt",
+  },
   // Guarda se a sala é 'solo' ou 'multiplayer'
   modoJogo: {
     type: String,
@@ -35,14 +41,14 @@ const lobbySchema = new mongoose.Schema({
     enum: ["lobby", "em_jogo", "finalizada"],
     default: "lobby",
   },
-  
+
   // Palavra escolhida para esta partida
   palavraMestra: {
     type: String,
     default: "",
   },
 
-  // Lista de respostas válidas para a palavra-mestra 
+  // Lista de respostas válidas para a palavra-mestra
   subPalavras: {
     type: [String],
     default: [],
@@ -50,10 +56,10 @@ const lobbySchema = new mongoose.Schema({
 
   palavrasAcertadasRegisto: [
     {
-      termo: String,     // A palavra acertada
-      username: String,  // Quem a encontrou
-      pontos: Number     // Quantos pontos valeu
-    }
+      termo: String, // A palavra acertada
+      username: String, // Quem a encontrou
+      pontos: Number, // Quantos pontos valeu
+    },
   ],
 
   // Tempo definido para esta partida
@@ -67,14 +73,14 @@ const lobbySchema = new mongoose.Schema({
     type: Date,
   },
 
-estatisticasGuardadas: {
-  type: Boolean,
-  default: false,
-},
+  estatisticasGuardadas: {
+    type: Boolean,
+    default: false,
+  },
 
-finalizadaEm: {
-  type: Date,
-},
+  finalizadaEm: {
+    type: Date,
+  },
 
   ativa: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now, expires: 7200 }, // A sala expira em 2 horas
