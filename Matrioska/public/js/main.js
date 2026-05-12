@@ -58,6 +58,7 @@ const traducoes = {
 
     /* Profile */
     changePhoto: "Alterar imagem de perfil",
+    logout: "Terminar sessão",
     statsTitle: "Estatísticas",
     statTotalScore: "Pontuação Total",
     statCorrect: "Respostas Corretas",
@@ -86,6 +87,17 @@ const traducoes = {
     youLabel: "Tu",
     correctFeedback: "Acertaste!",
     connectionError: "Erro de ligação",
+
+    /* Login / Registo */
+    loginSuccess: "Login efetuado! A redirecionar...",
+    loginError: "Credenciais incorretas.",
+    registerSuccess: "Conta criada! Bem-vindo.",
+    registerError: "Erro ao realizar registo.",
+    passwordMismatch: "As passwords não coincidem.",
+    userNotFound: "Utilizador não encontrado.",
+    wrongPassword: "Password incorreta.",
+    userExists: "Email ou utilizador já em uso.",
+    serverError: "Erro no servidor. Tenta novamente.",
 
     /* Loading Match */
     loadingMatchTitle: "A preparar partida...",
@@ -193,6 +205,7 @@ const traducoes = {
 
     /* Profile */
     changePhoto: "Change profile picture",
+    logout: "Log out",
     statsTitle: "Stats",
     statTotalScore: "Total Score",
     statCorrect: "Correct Answers",
@@ -221,6 +234,17 @@ const traducoes = {
     youLabel: "You",
     correctFeedback: "Correct!",
     connectionError: "Connection error",
+
+    /* Login / Register */
+    loginSuccess: "Logged in! Redirecting...",
+    loginError: "Invalid credentials.",
+    registerSuccess: "Account created! Welcome.",
+    registerError: "Error during registration.",
+    passwordMismatch: "Passwords do not match.",
+    userNotFound: "User not found.",
+    wrongPassword: "Incorrect password.",
+    userExists: "Email or username already in use.",
+    serverError: "Server error. Please try again.",
 
     /* Loading Match */
     loadingMatchTitle: "Preparing match...",
@@ -341,6 +365,7 @@ function aplicarIdioma() {
   /* Elementos do Profile */
   const elProfileTitle = document.querySelector(".stats-section .title-neon");
   const elBtnChangePhoto = document.getElementById("btn-change-photo");
+  const elBtnLogout = document.getElementById("btn-logout");
   const elStatLabels = document.querySelectorAll(".stat-label");
 
   /* Elementos do Edit Profile */
@@ -470,6 +495,7 @@ function aplicarIdioma() {
   /* Profile */
   if (elProfileTitle) elProfileTitle.innerText = dados.statsTitle;
   if (elBtnChangePhoto) elBtnChangePhoto.innerText = dados.changePhoto;
+  if (elBtnLogout) elBtnLogout.innerText = dados.logout;
   if (elStatLabels.length >= 4) {
     elStatLabels[0].innerText = dados.statTotalScore;
     elStatLabels[1].innerText = dados.statCorrect;
@@ -589,6 +615,8 @@ function toggleLanguage() {
   localStorage.setItem("idioma", idiomaAtual);
   aplicarIdioma();
 }
+
+window.toggleLanguage = toggleLanguage;
 
 // Função para aplicar o nome em qualquer página --- */
 function aplicarNomeUtilizador() {

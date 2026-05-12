@@ -8,31 +8,25 @@ export const registrar = async (req, res) => {
         const { email, username, password, confirmPassword } = req.body;
 
         if (password !== confirmPassword) {
-            return res.status(400).json({ message: "As passwords não coincidem." });
+            return res.status(400).json({ code: "passwordMismatch" });
         }
 
         const userExists = await User.findOne({ $or: [{ email }, { username }] });
         if (userExists) {
-            return res.status(400).json({ message: "Email ou utilizador já em uso." });
+            return res.status(400).json({ code: "userExists" });
         }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const novoUser = new User({
-            email,
-            username,
-            password: hashedPassword
-        });
-
+        const novoUser = new User({ email, username, password: hashedPassword });
         await novoUser.save();
-        
-        // Criar sessão automaticamente ao registar
+
         req.session.user = { id: novoUser._id, username: novoUser.username, avatar: novoUser.avatar };
-        
-        res.status(201).json({ message: "Conta criada com sucesso!" });
+
+        res.status(201).json({ code: "registerSuccess" });
     } catch (err) {
-        res.status(500).json({ message: "Erro ao registar." });
+        res.status(500).json({ code: "serverError" });
     }
 };
 
@@ -42,24 +36,19 @@ export const login = async (req, res) => {
 
         const user = await User.findOne({ email, username });
         if (!user) {
-            return res.status(400).json({ message: "Utilizador não encontrado." });
+            return res.status(400).json({ code: "userNotFound" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Password incorreta." });
+            return res.status(400).json({ code: "wrongPassword" });
         }
 
-        // Guardar dados importantes na sessão
-        req.session.user = {
-            id: user._id,
-            username: user.username,
-            avatar: user.avatar
-        };
+        req.session.user = { id: user._id, username: user.username, avatar: user.avatar };
 
-        res.status(200).json({ message: "Login efetuado!" });
+        res.status(200).json({ code: "loginSuccess" });
     } catch (err) {
-        res.status(500).json({ message: "Erro ao entrar." });
+        res.status(500).json({ code: "serverError" });
     }
 };
 
@@ -80,4 +69,14 @@ export const updateAvatar = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: "Erro" });
     }
+};
+export const logout = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Erro ao terminar sessão:", err);
+            return res.redirect("/profile");
+        }
+        res.clearCookie("connect.sid");
+        res.redirect("/");
+    });
 };

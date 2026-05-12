@@ -75,6 +75,11 @@ function configurarSocketMultiplayer() {
       },
     });
 
+    // Guarda o líder atual no localStorage para o scoreboard saber quem pode reiniciar
+    socket.on("novo-lider", ({ novoLiderId }) => {
+      localStorage.setItem("liderSala", String(novoLiderId));
+    });
+
     socket.on("palavra-descoberta-global", (data) => {
       const listaUI = document.getElementById("found-words-list");
       if (!listaUI) return;
@@ -219,7 +224,7 @@ async function submeterPalavra() {
       if (listaUI) listaUI.prepend(item);
 
       const elScore = document.getElementById("score-display");
-      if (elScore) elScore.innerText = `Pontuação: ${pontuacao}`;
+      if (elScore) elScore.innerText = `${t("scorePrefix", "Pontuação:")} ${pontuacao}`;
       mostrarFeedback(t("correctFeedback", "Acertaste!"), "#00FF00");
     } else {
       respostasErradas++;

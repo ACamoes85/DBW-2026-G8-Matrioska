@@ -9,5 +9,6 @@ const router = express.Router();
 router.post('/register', authController.registrar);
 router.post('/login', authController.login);
 router.post('/update-avatar', authController.updateAvatar);
+router.get('/logout', authController.logout);
 
 export default router;
