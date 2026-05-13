@@ -62,21 +62,24 @@ io.on("connection", (socket) => {
 
         if (user && (user.id || user._id)) {
             const userId = String(user.id || user._id);
-            socketToUser[socket.id] = { userId, roomCode: codeUpper };
 
-            // Só emite room-update quando é uma ligação com utilizador identificado
-            // (lobby), não quando é uma ligação anónima do gamescreen/scoreboard
+            let contexto = "outro";
             try {
                 const sala = await Lobby.findOne({ codigoSala: codeUpper });
-                if (sala && sala.estado === "lobby") {
-                    io.to(codeUpper).emit("room-update", {
-                        jogadores: sala.jogadores,
-                        modoJogo: sala.modoJogo
-                    });
+                if (sala) {
+                    contexto = sala.estado === "lobby" ? "lobby" : "jogo";
+                    if (sala.estado === "lobby") {
+                        io.to(codeUpper).emit("room-update", {
+                            jogadores: sala.jogadores,
+                            modoJogo: sala.modoJogo
+                        });
+                    }
                 }
             } catch (err) {
                 console.error("Erro ao processar join-room:", err);
             }
+
+            socketToUser[socket.id] = { userId, roomCode: codeUpper, contexto };
         }
     });
 
@@ -96,7 +99,7 @@ io.on("connection", (socket) => {
                 const eraLider = sala.jogadores.length > 0 &&
                     String(sala.jogadores[0].id || sala.jogadores[0]._id) === String(userId);
 
-                if (sala.estado === "lobby") {
+                if (sala.estado === "lobby" && userData.contexto === "lobby") {
                     sala.jogadores = sala.jogadores.filter(
                         (j) => String(j.id || j._id) !== String(userId)
                     );
@@ -118,10 +121,19 @@ io.on("connection", (socket) => {
                             modoJogo: sala.modoJogo
                         });
                     }
-                } else {
-                    // Em jogo / scoreboard: não remove da sala, mas avisa se era o líder
+                } else if (sala.estado !== "lobby") {
                     if (eraLider) {
-                        io.to(roomCode).emit("lider-saiu-jogo");
+                        setTimeout(() => {
+                            const outroSocketDoMesmoUser = Object.entries(socketToUser).some(
+                                ([sid, dados]) =>
+                                    sid !== socket.id &&
+                                    dados.userId === userId &&
+                                    dados.roomCode === roomCode
+                            );
+                            if (!outroSocketDoMesmoUser) {
+                                io.to(roomCode).emit("lider-saiu-jogo");
+                            }
+                        }, 3000); // 3 segundos de tolerância para a nova ligação chegar
                     }
                 }
 

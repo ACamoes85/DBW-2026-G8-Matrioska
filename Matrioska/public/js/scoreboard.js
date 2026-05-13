@@ -54,7 +54,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Entra na sala para receber eventos em tempo real
-  socket.emit("join-room", { roomCode: resultado.codigoSala.toUpperCase() });
+  // É obrigatório passar o user para que o servidor registe este socket
+  // em socketToUser e consiga emitir "lider-saiu-jogo" quando o líder sair
+  const userIdScoreboard = resultado.userId || null;
+  const usernameScoreboard = resultado.username || localStorage.getItem("user") || "";
+  socket.emit("join-room", {
+    roomCode: resultado.codigoSala.toUpperCase(),
+    user: userIdScoreboard ? { id: userIdScoreboard, username: usernameScoreboard } : undefined,
+  });
 
   // Líder saiu durante o scoreboard
   socket.on("lider-saiu-jogo", () => {
@@ -94,25 +101,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       </p>
     `).join("");
 
-    // O líder é sempre o primeiro jogador da sala na DB
     // Verifica se o utilizador atual é o líder
     const meuUsername = localStorage.getItem("user") || "";
-    const souLider = dados.ranking.length > 0 && !liderSaiu &&
-      dados.vencedor !== null && dados.ranking[0] &&
-      // Busca o primeiro jogador da sala via API — usa o codigoSala para confirmar
-      meuUsername === (await fetch(`/api/partidas/${resultado.codigoSala}/lider`)
-        .then(r => r.ok ? r.json() : { username: null })
-        .then(d => d.username)
-        .catch(() => null));
+    const liderUsername = await fetch(`/api/partidas/${resultado.codigoSala}/lider`)
+      .then(r => r.ok ? r.json() : { username: null })
+      .then(d => d.username)
+      .catch(() => null);
+
+    const souLider = !liderSaiu && meuUsername === liderUsername;
 
     if (!liderSaiu) {
-      if (souLider) {
-        btnPlayAgain.disabled = false;
-        btnPlayAgain.style.opacity = "1";
-        btnPlayAgain.style.cursor = "pointer";
-      } else {
-        bloquearJogarNovamente(btnPlayAgain, t("waitingLeader", "À espera do líder..."));
-      }
+      // Tanto o líder como os outros veem o botão ativo.
+      // A diferença está no que acontece quando clicam (ver listener abaixo).
+      btnPlayAgain.disabled = false;
+      btnPlayAgain.style.opacity = "1";
+      btnPlayAgain.style.cursor = "pointer";
     }
 
   } catch (err) {
@@ -124,17 +127,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (btnPlayAgain) {
     btnPlayAgain.addEventListener("click", async () => {
       if (btnPlayAgain.disabled) return;
-      try {
-        const response = await fetch("/api/match/reset", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ codigoSala: resultado.codigoSala }),
-        });
-        if (!response.ok) {
-          bloquearJogarNovamente(btnPlayAgain, t("waitingLeader", "À espera do líder..."));
+
+      // Verifica em tempo real se é o líder (pode ter mudado entretanto)
+      const meuUsernameAtual = localStorage.getItem("user") || "";
+      const liderAtual = await fetch(`/api/partidas/${resultado.codigoSala}/lider`)
+        .then(r => r.ok ? r.json() : { username: null })
+        .then(d => d.username)
+        .catch(() => null);
+      const souLiderAgora = meuUsernameAtual === liderAtual;
+
+      if (souLiderAgora) {
+        // Líder: faz o reset → todos são redirecionados via socket "voltar-ao-lobby"
+        try {
+          const response = await fetch("/api/match/reset", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ codigoSala: resultado.codigoSala }),
+          });
+          if (!response.ok) {
+            bloquearJogarNovamente(btnPlayAgain, t("waitingLeader", "À espera do líder..."));
+          }
+        } catch (err) {
+          console.error("Erro ao solicitar reinício:", err);
         }
-      } catch (err) {
-        console.error("Erro ao solicitar reinício:", err);
+      } else {
+        // Não-líder: desativa o botão e fica à espera que o líder clique
+        bloquearJogarNovamente(btnPlayAgain, t("waitingLeader", "À espera do líder..."));
       }
     });
   }

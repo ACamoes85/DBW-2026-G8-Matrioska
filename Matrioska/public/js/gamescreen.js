@@ -281,6 +281,8 @@ async function finalizarPartida() {
     palavrasEncontradas,
     pontuacao,
     respostasErradas,
+    userId: window.DADOS_JOGO ? window.DADOS_JOGO.userId : null,
+    username: window.DADOS_JOGO ? window.DADOS_JOGO.username : null,
   };
 
   // Garante que os dados estão no storage antes de mudar de página
