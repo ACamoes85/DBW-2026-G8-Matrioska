@@ -161,6 +161,21 @@ io.on("connection", (socket) => {
                 console.error("Erro ao processar saída:", err);
             }
             delete socketToUser[socket.id];
+
+            // se não restarem sockets na sala após o scoreboard, apaga a sala
+            if (contexto === "scoreboard") {
+                setTimeout(async () => {
+                    const aindaHaSockets = Object.values(socketToUser).some(
+                        (d) => d.roomCode === roomCode
+                    );
+                    if (!aindaHaSockets) {
+                        try {
+                            await Lobby.deleteOne({ codigoSala: roomCode, estado: "finalizada" });
+                            console.log(`[Cleanup] Sala ${roomCode} apagada após scoreboard.`);
+                        } catch (_) {}
+                    }
+                }, 10_000); // 10 segundos de tolerância para reconexões
+            }
         }
     });
 });

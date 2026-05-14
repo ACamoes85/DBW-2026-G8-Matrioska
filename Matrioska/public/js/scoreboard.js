@@ -39,8 +39,26 @@ function mostrarAviso(mensagem) {
 
 /* Executa quando a página terminar de carregar */
 document.addEventListener("DOMContentLoaded", async () => {
-    /* Obter dados da partida guardados no navegador */
-    const resultado = JSON.parse(localStorage.getItem("resultadoPartida") || "null");
+    /* Melhoria 4: obter codigoSala da URL ou do localStorage como fallback */
+    const urlParams = new URLSearchParams(window.location.search);
+    const codigoSalaUrl = urlParams.get("code");
+    const resultadoStorage = JSON.parse(localStorage.getItem("resultadoPartida") || "null");
+
+    // Constrói o objeto resultado com prioridade para a URL
+    const resultado = codigoSalaUrl
+        ? { ...resultadoStorage, codigoSala: codigoSalaUrl }
+        : resultadoStorage;
+
+    /* Dados do utilizador atual: tenta DOM, depois localStorage */
+    const userIdScoreboardRaw =
+        document.getElementById("current-user-id")?.value ||
+        resultado?.userId ||
+        null;
+    const usernameScoreboardRaw =
+        document.getElementById("current-username")?.value ||
+        resultado?.username ||
+        localStorage.getItem("user") ||
+        "";
 
     /* Elementos HTML do scoreboard */
     const displayVencedor = document.getElementById("winner-display");
@@ -77,9 +95,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         bloquearJogarNovamente(btnPlayAgain);
     }
 
-    /* Dados do utilizador atual para entrar novamente na sala */
-    const userIdScoreboard = resultado.userId || null;
-    const usernameScoreboard = resultado.username || localStorage.getItem("user") || "";
+    /* Aliases para compatibilidade com o código abaixo */
+    const userIdScoreboard = userIdScoreboardRaw;
+    const usernameScoreboard = usernameScoreboardRaw;
 
     /* Entrar na sala para receber eventos em tempo real */
     socket.emit("join-room", {
