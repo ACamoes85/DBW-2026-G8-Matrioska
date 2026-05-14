@@ -54,6 +54,8 @@ io.on("connection", (socket) => {
     socket.on("join-room", async (dados) => {
         const roomCode = typeof dados === "string" ? dados : dados.roomCode;
         const user = typeof dados === "object" ? dados.user : null;
+        // O scoreboard envia contexto: "scoreboard" explicitamente
+        const contextoCliente = typeof dados === "object" ? dados.contexto : null;
 
         if (!roomCode) return;
 
@@ -63,11 +65,13 @@ io.on("connection", (socket) => {
         if (user && (user.id || user._id)) {
             const userId = String(user.id || user._id);
 
-            let contexto = "outro";
+            let contexto = contextoCliente || "outro";
             try {
                 const sala = await Lobby.findOne({ codigoSala: codeUpper });
                 if (sala) {
-                    contexto = sala.estado === "lobby" ? "lobby" : "jogo";
+                    if (!contextoCliente) {
+                        contexto = sala.estado === "lobby" ? "lobby" : "jogo";
+                    }
                     if (sala.estado === "lobby") {
                         io.to(codeUpper).emit("room-update", {
                             jogadores: sala.jogadores,
@@ -91,7 +95,7 @@ io.on("connection", (socket) => {
     socket.on("disconnecting", async () => {
         const userData = socketToUser[socket.id];
         if (userData) {
-            const { userId, roomCode } = userData;
+            const { userId, roomCode, contexto } = userData;
             try {
                 const sala = await Lobby.findOne({ codigoSala: roomCode });
                 if (!sala) return;
@@ -99,7 +103,8 @@ io.on("connection", (socket) => {
                 const eraLider = sala.jogadores.length > 0 &&
                     String(sala.jogadores[0].id || sala.jogadores[0]._id) === String(userId);
 
-                if (sala.estado === "lobby" && userData.contexto === "lobby") {
+                if (sala.estado === "lobby" && contexto === "lobby") {
+                    // --- Saída do Lobby ---
                     sala.jogadores = sala.jogadores.filter(
                         (j) => String(j.id || j._id) !== String(userId)
                     );
@@ -110,7 +115,6 @@ io.on("connection", (socket) => {
                     }
 
                     if (eraLider) {
-                        // Líder saiu do lobby: avisa os outros e apaga a sala
                         await Lobby.deleteOne({ codigoSala: roomCode });
                         io.to(roomCode).emit("lider-saiu-lobby");
                     } else {
@@ -121,19 +125,35 @@ io.on("connection", (socket) => {
                             modoJogo: sala.modoJogo
                         });
                     }
-                } else if (sala.estado !== "lobby") {
+
+                } else if (contexto === "jogo" || contexto === "scoreboard") {
+                    // --- Saída durante o jogo ou do scoreboard ---
+                    // Durante o jogo: avisa imediatamente (com tolerância para reconexão).
+                    // Do scoreboard: avisa também, pois o líder saiu de verdade.
+                    // Não emite se a sala já voltou ao lobby (líder clicou "jogar novamente").
                     if (eraLider) {
-                        setTimeout(() => {
+                        setTimeout(async () => {
+                            // Verifica se o líder já tem outro socket ativo na sala
                             const outroSocketDoMesmoUser = Object.entries(socketToUser).some(
                                 ([sid, dados]) =>
                                     sid !== socket.id &&
                                     dados.userId === userId &&
                                     dados.roomCode === roomCode
                             );
-                            if (!outroSocketDoMesmoUser) {
-                                io.to(roomCode).emit("lider-saiu-jogo");
+                            if (outroSocketDoMesmoUser) return;
+
+                            // Verifica o estado atual da sala
+                            try {
+                                const salaAtual = await Lobby.findOne({ codigoSala: roomCode }).lean();
+                                // Só emite se a sala ainda estiver em jogo ou finalizada
+                                // (não emite se já voltou ao lobby — líder clicou "jogar novamente")
+                                if (salaAtual && salaAtual.estado !== "lobby") {
+                                    io.to(roomCode).emit("lider-saiu-jogo");
+                                }
+                            } catch (_) {
+                                // Se não conseguir verificar, não emite para evitar falsos positivos
                             }
-                        }, 3000); // 3 segundos de tolerância para a nova ligação chegar
+                        }, 5000); // 5 segundos de tolerância para a nova ligação chegar
                     }
                 }
 

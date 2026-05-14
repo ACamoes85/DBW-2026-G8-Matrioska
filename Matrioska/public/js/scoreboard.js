@@ -84,6 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     /* Entrar na sala para receber eventos em tempo real */
     socket.emit("join-room", {
         roomCode: resultado.codigoSala.toUpperCase(),
+        contexto: "scoreboard",
         user: userIdScoreboard
             ? { id: userIdScoreboard, username: usernameScoreboard }
             : undefined,
