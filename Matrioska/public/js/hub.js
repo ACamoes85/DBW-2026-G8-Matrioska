@@ -5,6 +5,7 @@ function mostrarAviso(mensagem) {
     if (!el) return;
     el.innerText = mensagem;
     el.style.display = "block";
+    el.classList.add("visivel");
 }
 
 document.addEventListener("DOMContentLoaded", () => {

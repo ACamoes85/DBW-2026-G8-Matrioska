@@ -109,6 +109,7 @@ const traducoes = {
 
     /* Scoreboard */
     scoreboardWinnerTitle: "Vencedor",
+    scoreboardTie: "Empate",
     scoreboardRankingTitle: "Classificação",
     loadingWinner: "A carregar...",
     noMatchData: "Sem dados da partida",
@@ -267,6 +268,7 @@ const traducoes = {
 
     /* Scoreboard */
     scoreboardWinnerTitle: "Winner",
+    scoreboardTie: "Tie",
     scoreboardRankingTitle: "Leaderboard",
     loadingWinner: "Loading...",
     noMatchData: "No match data",

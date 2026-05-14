@@ -15,8 +15,6 @@ function bloquearJogarNovamente(btnPlayAgain, mensagem) {
     if (!btnPlayAgain) return;
 
     btnPlayAgain.disabled = true;
-    btnPlayAgain.style.opacity = "0.5";
-    btnPlayAgain.style.cursor = "not-allowed";
     btnPlayAgain.innerText = mensagem || t("leaderLeft");
 }
 
@@ -27,8 +25,6 @@ function mostrarAviso(mensagem) {
     if (!el) {
         el = document.createElement("p");
         el.id = "scoreboard-aviso";
-        el.style.cssText =
-            "color:#ff6b6b;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);border-radius:8px;padding:10px 14px;font-weight:600;text-align:center;margin-bottom:12px;";
 
         const buttons = document.querySelector(".buttons");
         if (buttons) buttons.before(el);
@@ -37,19 +33,76 @@ function mostrarAviso(mensagem) {
     el.innerText = mensagem;
 }
 
+/* Lança confetti animado */
+function lancarConfetti() {
+    const container = document.getElementById("sb-confetti");
+    if (!container) return;
+
+    const cores = ["#66adff", "#ff45f3", "#ffd966", "#5ec8ef", "#a78bfa", "#ffffff"];
+    for (let i = 0; i < 32; i++) {
+        const dot = document.createElement("div");
+        dot.className = "sb-confetti-dot";
+        const size = 4 + Math.random() * 6;
+        dot.style.cssText = [
+            `left: ${Math.random() * 100}%`,
+            `width: ${size}px`,
+            `height: ${size}px`,
+            `background: ${cores[i % cores.length]}`,
+            `border-radius: ${Math.random() > 0.5 ? "50%" : "2px"}`,
+            `animation-delay: ${Math.random() * 2}s`,
+            `animation-duration: ${2.5 + Math.random() * 2}s`,
+        ].join(";");
+        container.appendChild(dot);
+    }
+}
+
+/* Devolve a classe de medalha consoante a posição */
+function classeMedalha(posicao) {
+    if (posicao === 1) return "sb-medal sb-medal-1";
+    if (posicao === 2) return "sb-medal sb-medal-2";
+    if (posicao === 3) return "sb-medal sb-medal-3";
+    return "sb-medal sb-medal-n";
+}
+
+/* Constrói o HTML de uma linha de jogador */
+function construirLinhaJogador(jogador, posicao, meuUsername) {
+    const pontos = Number(jogador.pontuacao);
+    const souEu = jogador.username === meuUsername;
+    const avatar = jogador.avatar || "/images/profile1.png";
+
+    return `
+        <div class="sb-row${souEu ? " is-me" : ""}">
+            <div class="${classeMedalha(posicao)}">${posicao}</div>
+            <img class="sb-avatar" src="${avatar}" alt="${jogador.username}" onerror="this.src='/images/profile1.png'">
+            <div class="sb-info">
+                <div class="sb-username">
+                    ${jogador.username}
+                    ${souEu ? `<span class="sb-me-badge">(${t("youLabel")})</span>` : ""}
+                </div>
+                <div class="sb-stats">
+                    ${jogador.palavrasCertas} ${plural(jogador.palavrasCertas, t("correctSingular"), t("correctPlural"))}
+                    &nbsp;·&nbsp;
+                    ${jogador.respostasErradas} ${plural(jogador.respostasErradas, t("wrongSingular"), t("wrongPlural"))}
+                </div>
+            </div>
+            <div class="sb-pts-block">
+                <div class="sb-pts-value">${pontos}</div>
+                <div class="sb-pts-label">pts</div>
+            </div>
+        </div>
+    `;
+}
+
 /* Executa quando a página terminar de carregar */
 document.addEventListener("DOMContentLoaded", async () => {
-    /* Melhoria 4: obter codigoSala da URL ou do localStorage como fallback */
     const urlParams = new URLSearchParams(window.location.search);
     const codigoSalaUrl = urlParams.get("code");
     const resultadoStorage = JSON.parse(localStorage.getItem("resultadoPartida") || "null");
 
-    // Constrói o objeto resultado com prioridade para a URL
     const resultado = codigoSalaUrl
         ? { ...resultadoStorage, codigoSala: codigoSalaUrl }
         : resultadoStorage;
 
-    /* Dados do utilizador atual: tenta DOM, depois localStorage */
     const userIdScoreboardRaw =
         document.getElementById("current-user-id")?.value ||
         resultado?.userId ||
@@ -60,46 +113,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         localStorage.getItem("user") ||
         "";
 
-    /* Elementos HTML do scoreboard */
     const displayVencedor = document.getElementById("winner-display");
-    const rankingList = document.getElementById("ranking-list");
-    const btnPlayAgain = document.getElementById("btn-play-again");
+    const winnerPts       = document.getElementById("winner-pts");
+    const rankingList     = document.getElementById("ranking-list");
+    const btnPlayAgain    = document.getElementById("btn-play-again");
 
-    /* Título onde aparece "Vencedor" ou "Empate" */
     const tituloVencedor =
-        document.getElementById("winner-title") ||
-        document.querySelector(".subtitle") ||
-        document.querySelector("h2");
+        document.getElementById("scoreboard-winner-title") ||
+        document.querySelector(".sb-winner-label");
 
-    /* Criar ligação ao servidor por Socket.io */
     const socket = io();
 
-    /* Se os elementos principais não existirem, interrompe */
     if (!displayVencedor || !rankingList) return;
 
-    /* Se não houver dados da partida, não é possível mostrar resultados */
     if (!resultado || !resultado.codigoSala) {
         displayVencedor.innerText = t("noMatchData");
         rankingList.innerHTML = "";
         return;
     }
 
-    /* Verifica se o líder saiu durante o jogo */
     const liderSaiu = localStorage.getItem("lider-saiu") === "1";
 
     if (liderSaiu) {
         localStorage.removeItem("lider-saiu");
-        mostrarAviso(
-            t("leaderLeftGame", "O líder saiu durante o jogo. Não é possível jogar novamente.")
-        );
+        mostrarAviso(t("leaderLeftGame", "O líder saiu durante o jogo. Não é possível jogar novamente."));
         bloquearJogarNovamente(btnPlayAgain);
     }
 
-    /* Aliases para compatibilidade com o código abaixo */
-    const userIdScoreboard = userIdScoreboardRaw;
-    const usernameScoreboard = usernameScoreboardRaw;
+    const userIdScoreboard    = userIdScoreboardRaw;
+    const usernameScoreboard  = usernameScoreboardRaw;
 
-    /* Entrar na sala para receber eventos em tempo real */
     socket.emit("join-room", {
         roomCode: resultado.codigoSala.toUpperCase(),
         contexto: "scoreboard",
@@ -108,32 +151,27 @@ document.addEventListener("DOMContentLoaded", async () => {
             : undefined,
     });
 
-    /* Evento recebido quando o líder sai */
     socket.on("lider-saiu-jogo", () => {
         mostrarAviso(t("leaderLeftGame", "O líder saiu. Não é possível jogar novamente."));
         bloquearJogarNovamente(btnPlayAgain);
     });
 
-    /* Evento recebido quando o líder reinicia a partida */
     socket.on("voltar-ao-lobby", (codigo) => {
         localStorage.removeItem("lider-saiu");
         window.location.href = `/lobby?code=${codigo}`;
     });
 
     try {
-        /* Buscar scoreboard da partida ao servidor */
         const resposta = await fetch(`/api/partidas/${resultado.codigoSala}/scoreboard`, {
             cache: "no-store",
         });
 
         const dados = await resposta.json();
 
-        /* Se a resposta der erro, lança exceção */
         if (!resposta.ok) {
             throw new Error(dados.erro || t("scoreboardLoadError"));
         }
 
-        /* Se não houver ranking, mostra mensagem */
         if (!dados.ranking || dados.ranking.length === 0) {
             displayVencedor.innerText = t("noRegisteredPlayers");
             rankingList.innerHTML = "";
@@ -142,107 +180,68 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         displayVencedor.dataset.loaded = "true";
 
-        /* Ordenar ranking por pontuação decrescente */
         const rankingOrdenado = [...dados.ranking].sort(
             (a, b) => Number(b.pontuacao) - Number(a.pontuacao)
         );
 
-        /* Encontrar maior pontuação */
-        const maxPontos = Math.max(
-            ...rankingOrdenado.map((jogador) => Number(jogador.pontuacao))
-        );
+        const maxPontos = Math.max(...rankingOrdenado.map((j) => Number(j.pontuacao)));
 
-        /* Jogadores empatados no primeiro lugar */
         const vencedores = rankingOrdenado.filter(
-            (jogador) => Number(jogador.pontuacao) === maxPontos
+            (j) => Number(j.pontuacao) === maxPontos
         );
 
-        /* Mostrar vencedor único ou empate no primeiro lugar */
+        /* Vencedor ou empate */
         if (vencedores.length > 1) {
-            if (tituloVencedor) {
-                tituloVencedor.innerText = "Empate";
-            }
-
-            displayVencedor.innerText = `${maxPontos} pts`;
+            if (tituloVencedor) tituloVencedor.innerText = t("scoreboardTie");
+            displayVencedor.innerText = vencedores.map((v) => v.username).join(" & ");
+            if (winnerPts) winnerPts.innerText = `${maxPontos} pts`;
         } else {
-            if (tituloVencedor) {
-                tituloVencedor.innerText = "Vencedor";
-            }
-
-            displayVencedor.innerText = `${vencedores[0].username} - ${maxPontos} pts`;
+            if (tituloVencedor) tituloVencedor.innerText = t("scoreboardWinnerTitle", "Vencedor");
+            displayVencedor.innerText = vencedores[0].username;
+            if (winnerPts) winnerPts.innerText = `${maxPontos} pts`;
         }
 
-        /* Variáveis para calcular posições com empate */
-        let posicaoAtual = 1;
+        /* Lança confetti para o vencedor */
+        lancarConfetti();
+
+        /* Constrói a lista com posições a ter em conta empates */
+        const meuUsername = localStorage.getItem("user") || "";
+        let posicaoAtual    = 1;
         let pontosAnteriores = null;
 
-        /* Construir lista de classificação */
         rankingList.innerHTML = rankingOrdenado
             .map((jogador, index) => {
                 const pontos = Number(jogador.pontuacao);
-
-                /* Só muda de posição se tiver menos pontos */
                 if (pontosAnteriores !== null && pontos < pontosAnteriores) {
                     posicaoAtual = index + 1;
                 }
-
                 pontosAnteriores = pontos;
-
-                return `
-          <p>
-            ${posicaoAtual}. ${jogador.username} - ${pontos} pts
-            <br>
-            <small>
-              ${jogador.palavrasCertas} ${plural(
-                    jogador.palavrasCertas,
-                    t("correctSingular"),
-                    t("correctPlural")
-                )}, 
-              ${jogador.respostasErradas} ${plural(
-                    jogador.respostasErradas,
-                    t("wrongSingular"),
-                    t("wrongPlural")
-                )}
-            </small>
-          </p>
-        `;
+                return construirLinhaJogador(jogador, posicaoAtual, meuUsername);
             })
             .join("");
 
-        /* Obter utilizador atual */
-        const meuUsername = localStorage.getItem("user") || "";
-
-        /* Verificar quem é o líder da partida */
         const liderUsername = await fetch(`/api/partidas/${resultado.codigoSala}/lider`)
             .then((r) => (r.ok ? r.json() : { username: null }))
             .then((d) => d.username)
             .catch(() => null);
 
-        /* Confirmar se o utilizador atual é líder */
-        const souLider = !liderSaiu && meuUsername === liderUsername;
-
-        /* Ativar botão caso o líder não tenha saído */
         if (!liderSaiu) {
             btnPlayAgain.disabled = false;
             btnPlayAgain.style.opacity = "1";
             btnPlayAgain.style.cursor = "pointer";
         }
     } catch (err) {
-        /* Tratamento de erro ao carregar o scoreboard */
         console.error("Erro ao carregar scoreboard:", err);
         displayVencedor.innerText = t("scoreboardLoadError");
         rankingList.innerHTML = "";
     }
 
-    /* Evento do botão "Jogar novamente" */
     if (btnPlayAgain) {
         btnPlayAgain.addEventListener("click", async () => {
             if (btnPlayAgain.disabled) return;
 
-            /* Obter utilizador atual no momento do clique */
             const meuUsernameAtual = localStorage.getItem("user") || "";
 
-            /* Confirmar novamente quem é o líder */
             const liderAtual = await fetch(`/api/partidas/${resultado.codigoSala}/lider`)
                 .then((r) => (r.ok ? r.json() : { username: null }))
                 .then((d) => d.username)
@@ -252,29 +251,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (souLiderAgora) {
                 try {
-                    /* Líder pede ao servidor para reiniciar a partida */
                     const response = await fetch("/api/match/reset", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ codigoSala: resultado.codigoSala }),
                     });
 
-                    /* Se falhar, bloqueia o botão */
                     if (!response.ok) {
-                        bloquearJogarNovamente(
-                            btnPlayAgain,
-                            t("waitingLeader", "À espera do líder...")
-                        );
+                        bloquearJogarNovamente(btnPlayAgain, t("waitingLeader", "À espera do líder..."));
                     }
                 } catch (err) {
                     console.error("Erro ao solicitar reinício:", err);
                 }
             } else {
-                /* Se não for líder, fica à espera */
-                bloquearJogarNovamente(
-                    btnPlayAgain,
-                    t("waitingLeader", "À espera do líder...")
-                );
+                bloquearJogarNovamente(btnPlayAgain, t("waitingLeader", "À espera do líder..."));
             }
         });
     }

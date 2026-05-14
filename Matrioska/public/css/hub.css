@@ -277,6 +277,25 @@ body {
         display: none !important;
     }
 
+    /* AVISO (líder saiu, sala cheia, etc.) —
+       aparece como toast fixo no topo para não perturbar o layout */
+    #hub-aviso {
+        display: none;
+    }
+
+    #hub-aviso.visivel {
+        display: block !important;
+        position: fixed !important;
+        top: 78px !important; /* abaixo da navbar */
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 40px) !important;
+        max-width: 340px !important;
+        text-align: center !important;
+        z-index: 999 !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+    }
+
     /* IMAGEM RELÓGIO */
     .right {
         order: 1 !important;

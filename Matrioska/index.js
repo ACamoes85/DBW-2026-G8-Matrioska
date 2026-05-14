@@ -11,6 +11,7 @@ import http from "http";
 import { Server } from "socket.io"; 
 
 import Lobby from "./models/Lobby.js";
+import User from "./models/User.js";
 import viewRoutes from "./routes/viewRoutes.js";
 import authRoutes from "./routes/authRoutes.js"; 
 
@@ -46,7 +47,25 @@ app.use("/", viewRoutes(io));
 app.use("/api/auth", authRoutes);
 
 // --- LÓGICA DO SOCKET.IO ---
-const socketToUser = {}; 
+const socketToUser = {};
+
+/**
+ * Atualiza os avatares dos jogadores de uma sala com os valores mais recentes da BD.
+ * Corrige o problema de avatar não aparecer no lobby após mudança de perfil.
+ */
+async function jogadoresComAvatarAtualizado(jogadores) {
+    return Promise.all(
+        jogadores.map(async (j) => {
+            try {
+                const userDB = await User.findById(j.id || j._id).select("avatar").lean();
+                const base = j.toObject ? j.toObject() : { ...j };
+                return { ...base, avatar: userDB ? userDB.avatar : (j.avatar || "/images/profile1.png") };
+            } catch {
+                return j.toObject ? j.toObject() : j;
+            }
+        })
+    );
+}
 
 io.on("connection", (socket) => {
     console.log("Novo utilizador ligado:", socket.id);
@@ -73,8 +92,9 @@ io.on("connection", (socket) => {
                         contexto = sala.estado === "lobby" ? "lobby" : "jogo";
                     }
                     if (sala.estado === "lobby") {
+                        const jogadoresAtualizados = await jogadoresComAvatarAtualizado(sala.jogadores);
                         io.to(codeUpper).emit("room-update", {
-                            jogadores: sala.jogadores,
+                            jogadores: jogadoresAtualizados,
                             modoJogo: sala.modoJogo
                         });
                     }
@@ -105,31 +125,74 @@ io.on("connection", (socket) => {
 
                 if (sala.estado === "lobby" && contexto === "lobby") {
                     // --- Saída do Lobby ---
-                    sala.jogadores = sala.jogadores.filter(
-                        (j) => String(j.id || j._id) !== String(userId)
-                    );
+                    // Usa tolerância de 2s para ignorar F5/recarregamentos.
+                    setTimeout(async () => {
+                        // Se o utilizador já voltou a ligar, ignora
+                        const voltou = Object.values(socketToUser).some(
+                            (d) => d.userId === userId && d.roomCode === roomCode && d.contexto === "lobby"
+                        );
+                        if (voltou) return;
 
-                    if (sala.jogadores.length === 0) {
-                        await Lobby.deleteOne({ codigoSala: roomCode });
-                        return;
-                    }
+                        try {
+                            const salaAtual = await Lobby.findOne({ codigoSala: roomCode });
+                            if (!salaAtual || salaAtual.estado !== "lobby") return;
 
-                    if (eraLider) {
-                        await Lobby.deleteOne({ codigoSala: roomCode });
-                        io.to(roomCode).emit("lider-saiu-lobby");
-                    } else {
-                        await sala.save();
-                        io.to(roomCode).emit("player-left", userId);
-                        io.to(roomCode).emit("room-update", {
-                            jogadores: sala.jogadores,
-                            modoJogo: sala.modoJogo
-                        });
-                    }
+                            const eraLiderAgora = salaAtual.jogadores.length > 0 &&
+                                String(salaAtual.jogadores[0].id || salaAtual.jogadores[0]._id) === String(userId);
+
+                            salaAtual.jogadores = salaAtual.jogadores.filter(
+                                (j) => String(j.id || j._id) !== String(userId)
+                            );
+
+                            if (salaAtual.jogadores.length === 0) {
+                                await Lobby.deleteOne({ codigoSala: roomCode });
+                                return;
+                            }
+
+                            if (eraLiderAgora) {
+                                await Lobby.deleteOne({ codigoSala: roomCode });
+                                io.to(roomCode).emit("lider-saiu-lobby");
+                            } else {
+                                await salaAtual.save();
+                                io.to(roomCode).emit("player-left", userId);
+                                io.to(roomCode).emit("room-update", {
+                                    jogadores: salaAtual.jogadores,
+                                    modoJogo: salaAtual.modoJogo
+                                });
+                            }
+                        } catch (err) {
+                            console.error("Erro ao processar saída do lobby (delayed):", err);
+                        }
+                    }, 2000); // 2 segundos de tolerância para F5/recarregamentos
 
                 } else if (contexto === "jogo" || contexto === "scoreboard") {
                     // --- Saída durante o jogo ou do scoreboard ---
-                    // Durante o jogo: avisa imediatamente (com tolerância para reconexão).
-                    // Do scoreboard: avisa também, pois o líder saiu de verdade.
+
+                    if (contexto === "scoreboard") {
+                        // Tolerância de 2s para F5 no scoreboard — só remove se não voltou.
+                        setTimeout(async () => {
+                            const voltou = Object.values(socketToUser).some(
+                                (d) => d.userId === userId && d.roomCode === roomCode && d.contexto === "scoreboard"
+                            );
+                            if (voltou) return;
+
+                            try {
+                                const salaAtual = await Lobby.findOne({ codigoSala: roomCode });
+                                if (!salaAtual || salaAtual.estado === "lobby") return;
+
+                                salaAtual.jogadores = salaAtual.jogadores.filter(
+                                    (j) => String(j.id || j._id) !== String(userId)
+                                );
+                                salaAtual.markModified("jogadores");
+                                await salaAtual.save();
+                                console.log(`[Scoreboard] Jogador ${userId} removido da sala ${roomCode}.`);
+                            } catch (err) {
+                                console.error("Erro ao remover jogador do scoreboard (delayed):", err);
+                            }
+                        }, 2000);
+                    }
+
+                    // Avisa os outros se o líder saiu (com tolerância para reconexão).
                     // Não emite se a sala já voltou ao lobby (líder clicou "jogar novamente").
                     if (eraLider) {
                         setTimeout(async () => {
@@ -153,7 +216,7 @@ io.on("connection", (socket) => {
                             } catch (_) {
                                 // Se não conseguir verificar, não emite para evitar falsos positivos
                             }
-                        }, 5000); // 5 segundos de tolerância para a nova ligação chegar
+                        }, 3000); // 3 segundos de tolerância para a nova ligação chegar
                     }
                 }
 

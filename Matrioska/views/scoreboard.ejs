@@ -4,14 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scoreboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/scoreboard.css" />
   </head>
   <body>
     <main class="scoreboard-screen">
       <section class="scoreboard-card">
-        <h2 class="subtitle" id="scoreboard-winner-title">Vencedor</h2>
 
+        <div class="sb-confetti" id="sb-confetti"></div>
+
+        <p class="sb-winner-label" id="scoreboard-winner-title">Vencedor</p>
         <h1 class="winner" id="winner-display">A carregar...</h1>
+        <p class="sb-winner-pts" id="winner-pts"></p>
+
+        <div class="sb-divider"></div>
 
         <div class="ranking">
           <h3 id="scoreboard-ranking-title">Classificação</h3>
@@ -19,9 +25,10 @@
         </div>
 
         <div class="buttons">
-          <button id="btn-play-again" class="btn">Jogar novamente</button>
-          <a href="/hub" class="btn" id="btn-back-hub">Voltar ao Hub</a>
+          <button id="btn-play-again" class="btn">▶ Jogar novamente</button>
+          <a href="/hub" class="btn" id="btn-back-hub">← Voltar ao Hub</a>
         </div>
+
       </section>
     </main>
 

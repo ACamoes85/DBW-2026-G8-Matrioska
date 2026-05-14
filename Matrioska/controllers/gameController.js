@@ -335,57 +335,103 @@ export const guardarEstatisticasPartida = async (req, res) => {
       return res.status(400).json({ erro: "Dados insuficientes." });
     }
 
-    const sala = await Lobby.findOne({ codigoSala: codigoUpper });
-    if (!sala) return res.status(404).json({ erro: "Partida não encontrada." });
-
-    const jogadorAtual = sala.jogadores.find(
-      (j) => String(j.id || j._id) === userId
+    // Operação atómica: marca estatisticasEntregues apenas se ainda for false.
+    // Evita a race condition onde dois pedidos simultâneos passam a verificação
+    // ao mesmo tempo e um sobrescreve o outro.
+    const salaAntes = await Lobby.findOneAndUpdate(
+      {
+        codigoSala: codigoUpper,
+        "jogadores.id": userId,
+        "jogadores.estatisticasEntregues": false,
+      },
+      {
+        $set: {
+          "jogadores.$.estatisticasEntregues": true,
+          // No modo solo, os dados vêm do cliente (não há servidor a rastrear em tempo real).
+          // No modo multiplayer, pontuacao e palavrasEncontradas já estão corretos
+          // na BD (atualizados em tempo real pelo validarPalavraMultiplayer),
+          // mas respostasErradas só existe no cliente — atualizamos sempre esse campo.
+          "jogadores.$.respostasErradas": Number(respostasErradas) || 0,
+        },
+      },
+      { new: false } // devolve o documento antes da atualização
     );
 
-    if (jogadorAtual && !jogadorAtual.estatisticasEntregues) {
-      jogadorAtual.pontuacao = Number(pontuacao) || 0;
-      jogadorAtual.palavrasEncontradas = Array.isArray(palavrasEncontradas)
-        ? palavrasEncontradas
-        : [];
-      jogadorAtual.respostasErradas = Number(respostasErradas) || 0;
-      jogadorAtual.estatisticasEntregues = true; // melhoria 2: flag explícita
-      sala.markModified("jogadores");
-      await sala.save();
+    // Se salaAntes for null, este jogador já entregou (ou não pertence à sala).
+    // Pode acontecer com reconexões/pedidos duplicados — responde OK na mesma.
+    if (!salaAntes) {
+      // Verifica se a sala existe mesmo para distinguir "já entregou" de "sala não encontrada"
+      const salaExiste = await Lobby.exists({ codigoSala: codigoUpper });
+      if (!salaExiste) return res.status(404).json({ erro: "Partida não encontrada." });
+      // Já entregou — responde 201 para o cliente navegar normalmente
+      return res.status(201).json({ mensagem: "Estatísticas já guardadas." });
     }
 
-    const jaFinalizada = sala.estatisticasGuardadas;
+    // No modo solo os dados vêm do cliente; no multiplayer apenas atualizamos
+    // se o jogador ainda não tinha pontuação acumulada no servidor (ex: ficou AFK).
+    const jogadorNaSala = salaAntes.jogadores.find(
+      (j) => String(j.id || j._id) === userId
+    );
+    const eModoSolo = salaAntes.modoJogo === "solo";
 
-    // só considera "todos entregaram" quando a flag por jogador está a true
-    const todosEntregaram = sala.jogadores.every((j) => j.estatisticasEntregues === true);
+    if (jogadorNaSala && eModoSolo) {
+      // Solo: sobrescreve com os dados do cliente (fonte de verdade)
+      await Lobby.updateOne(
+        { codigoSala: codigoUpper, "jogadores.id": userId },
+        {
+          $set: {
+            "jogadores.$.pontuacao": Number(pontuacao) || 0,
+            "jogadores.$.palavrasEncontradas": Array.isArray(palavrasEncontradas)
+              ? palavrasEncontradas
+              : [],
+          },
+        }
+      );
+    }
+    // Multiplayer: pontuacao e palavrasEncontradas já estão corretos na BD;
+    // apenas respostasErradas foi atualizado na operação atómica acima.
+
+    // Lê o estado mais recente da sala para verificar se todos entregaram
+    const salaAtual = await Lobby.findOne({ codigoSala: codigoUpper });
+    if (!salaAtual) return res.status(201).json({ mensagem: "Estatísticas guardadas." });
+
+    const jaFinalizada = salaAtual.estatisticasGuardadas;
+    const todosEntregaram = salaAtual.jogadores.every((j) => j.estatisticasEntregues === true);
 
     if (todosEntregaram && !jaFinalizada) {
-      await Lobby.updateOne(
-        { _id: sala._id },
-        { $set: { estatisticasGuardadas: true, estado: "finalizada", finalizadaEm: new Date() } }
+      // Marca como finalizada de forma atómica (evita dupla execução)
+      const resultado = await Lobby.findOneAndUpdate(
+        { _id: salaAtual._id, estatisticasGuardadas: false },
+        { $set: { estatisticasGuardadas: true, estado: "finalizada", finalizadaEm: new Date() } },
+        { new: true }
       );
 
-      for (const jogador of sala.jogadores) {
-        const pontos = Number(jogador.pontuacao) || 0;
-        const respostasCertas = Array.isArray(jogador.palavrasEncontradas)
-          ? jogador.palavrasEncontradas.length
-          : 0;
-        const erradas = Number(jogador.respostasErradas) || 0;
+      // Se resultado for null, outro pedido já marcou — não duplicar as atualizações de User
+      if (resultado) {
+        for (const jogador of resultado.jogadores) {
+          const pontos = Number(jogador.pontuacao) || 0;
+          const respostasCertas = Array.isArray(jogador.palavrasEncontradas)
+            ? jogador.palavrasEncontradas.length
+            : 0;
+          const erradas = Number(jogador.respostasErradas) || 0;
 
-        await User.findOneAndUpdate(
-          { username: jogador.username },
-          {
-            $inc: {
-              "stats.totalScore": pontos,
-              "stats.correctAnswers": respostasCertas,
-              "stats.wrongAnswers": erradas,
-              "stats.gamesPlayed": 1,
-            },
-          }
-        );
+          await User.findOneAndUpdate(
+            { username: jogador.username },
+            {
+              $inc: {
+                "stats.totalScore": pontos,
+                "stats.correctAnswers": respostasCertas,
+                "stats.wrongAnswers": erradas,
+                "stats.gamesPlayed": 1,
+              },
+            }
+          );
+        }
+        console.log(`[Stats] Partida ${codigoUpper} finalizada. Stats de ${resultado.jogadores.length} jogadores guardadas.`);
       }
     } else if (!jaFinalizada) {
       await Lobby.updateOne(
-        { _id: sala._id },
+        { _id: salaAtual._id },
         { $set: { estado: "finalizada", finalizadaEm: new Date() } }
       );
     }
@@ -468,6 +514,12 @@ export const reiniciarLobby = async (req, res, io) => {
 
     if (io) {
       io.to(codigoUpper).emit("voltar-ao-lobby", codigoUpper);
+      // Emite room-update com a lista já limpa (sem jogadores que saíram do scoreboard)
+      // para que o lobby-manager atualize a lista visual correctamente ao carregar.
+      io.to(codigoUpper).emit("room-update", {
+        jogadores: sala.jogadores,
+        modoJogo: sala.modoJogo,
+      });
     }
 
     return res.status(200).json({ mensagem: "Lobby reiniciado!" });
