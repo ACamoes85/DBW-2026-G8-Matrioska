@@ -3,93 +3,67 @@
 import express from "express";
 import * as gameController from "../controllers/gameController.js";
 import * as userController from "../controllers/userController.js";
+import { protegerRota } from "../middleware/auth.js";
 
 /**
- * Exportamos uma função que recebe o 'io'.
+ * Exporta uma função que recebe o `io` (instância do Socket.IO).
+ * O `io` é necessário nos controllers que precisam de emitir eventos em tempo real.
  */
 export default (io) => {
-  const router = express.Router();
+    const router = express.Router();
 
-  // Prevenção de Cache
-  router.use((req, res, next) => {
-    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
-    next();
-  });
+    // Previne cache em todas as rotas — importante para páginas protegidas
+    router.use((req, res, next) => {
+        res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+        next();
+    });
 
-  /**
-   * Middleware: Proteção de Rotas
-   */
-  const protegerRota = (req, res, next) => {
-    if (req.session && req.session.user) {
-      return next();
-    }
-    res.redirect("/login");
-  };
+    // ── Rotas Públicas ────────────────────────────────────────────────────────
+    router.get(["/", "/homepage"], (req, res) => res.render("homepage"));
+    router.get("/login", (req, res) => res.render("login"));
+    router.get("/register", (req, res) => res.render("register"));
 
-  // --- Rotas Públicas ---
-  router.get(["/", "/homepage"], (req, res) => res.render("homepage"));
-  router.get("/login", (req, res) => res.render("login"));
-  router.get("/register", (req, res) => res.render("register"));
+    // ── Rotas Protegidas (requerem sessão activa) ─────────────────────────────
+    router.get("/hub",          protegerRota, userController.getHub);
+    router.get("/howtoplay",    protegerRota, userController.getHowToPlay);
+    router.get("/leaderboard",  protegerRota, userController.getLeaderboard);
+    router.get("/profile",      protegerRota, userController.getProfile);
+    router.get("/edit-profile", protegerRota, userController.getEditProfile);
+    router.get("/create-match", protegerRota, userController.getCreateMatch);
 
-  // --- Rotas Protegidas ---
-  router.get("/hub", protegerRota, userController.getHub);
-  router.get("/howtoplay", protegerRota, userController.getHowToPlay);
-  router.get("/leaderboard", protegerRota, userController.getLeaderboard);
-  router.get("/profile", protegerRota, userController.getProfile);
-  router.get("/edit-profile", protegerRota, userController.getEditProfile);
-  router.get("/create-match", protegerRota, userController.getCreateMatch);
+    // ── API de Jogo ───────────────────────────────────────────────────────────
 
-  // --- Rotas de Lógica de Jogo (APIs e Páginas) ---
+    // Criar ou entrar numa sala
+    router.post("/api/match/create", protegerRota, gameController.criarOuEntrarSala);
 
-  // Criar ou Entrar (POST)
-  router.post(
-    "/api/match/create",
-    protegerRota,
-    gameController.criarOuEntrarSala,
-  );
+    // Iniciar a partida (apenas o líder)
+    router.post("/api/match/start", protegerRota, gameController.iniciarPartida);
 
-  // Rota de Validação (Injetando o IO para que o Controller possa emitir eventos)
-  router.post("/api/match/validate-word", protegerRota, (req, res) => {
-    gameController.validarPalavraMultiplayer(req, res, io);
-  });
+    // Validar tentativa de palavra — injeta io para emitir eventos em tempo real
+    router.post("/api/match/validate-word", protegerRota, (req, res) => {
+        gameController.validarPalavraMultiplayer(req, res, io);
+    });
 
-  // Iniciar Partida
-  router.post("/api/match/start", protegerRota, gameController.iniciarPartida);
+    // Reiniciar lobby após scoreboard (Jogar Novamente) — injeta io para redirecionar todos
+    router.post("/api/match/reset", protegerRota, (req, res) => {
+        gameController.reiniciarLobby(req, res, io);
+    });
 
-  // Reiniciar Lobby (Jogar Novamente) - Injetando o IO para redirecionamento global
-  router.post("/api/match/reset", protegerRota, (req, res) => {
-    gameController.reiniciarLobby(req, res, io);
-  });
+    // Guardar estatísticas no fim da partida
+    router.post("/api/partidas/guardar", protegerRota, gameController.guardarEstatisticasPartida);
 
-  // Renderizar o Lobby
-  router.get("/lobby", protegerRota, gameController.renderizarLobby);
+    // Obter dados para o scoreboard
+    router.get("/api/partidas/:codigoSala/scoreboard", protegerRota, gameController.obterScoreboardPartida);
 
-  // Renderizar o Ecrã de Jogo
-  router.get("/gamescreen", protegerRota, gameController.renderizarJogo);
+    // Obter o líder actual da sala
+    router.get("/api/partidas/:codigoSala/lider", protegerRota, gameController.obterLiderSala);
 
-  // API para guardar estatísticas no fim
-  router.post(
-    "/api/partidas/guardar",
-    protegerRota,
-    gameController.guardarEstatisticasPartida,
-  );
+    // ── Vistas de Jogo ────────────────────────────────────────────────────────
+    router.get("/lobby",          protegerRota, gameController.renderizarLobby);
+    router.get("/gamescreen",     protegerRota, gameController.renderizarJogo);
+    router.get("/loadingmatch",   protegerRota, userController.getLoadingMatch);
+    router.get("/scoreboard",     protegerRota, userController.getScoreboard);
+    router.get("/resultsloading", protegerRota, userController.getResultsLoading);
 
-  router.get(
-    "/api/partidas/:codigoSala/scoreboard",
-    protegerRota,
-    gameController.obterScoreboardPartida,
-  );
-
-  router.get(
-    "/api/partidas/:codigoSala/lider",
-    protegerRota,
-    gameController.obterLiderSala,
-  );
-
-  // --- Outras Views ---
-  router.get("/loadingmatch", protegerRota, userController.getLoadingMatch);
-  router.get("/scoreboard", protegerRota, userController.getScoreboard);
-  router.get("/resultsloading", protegerRota, userController.getResultsLoading);
-
-  return router;
+    return router;
 };
