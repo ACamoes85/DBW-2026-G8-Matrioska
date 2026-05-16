@@ -30,13 +30,13 @@ A pontuação é baseada no número de letras de cada palavra correta.
 
 ## Tecnologias Utilizadas
 
-Node.js + Express: Servidor 
-webSocket.IO: Comunicação em tempo real
-MongoDB + Mongoose: Base de dados
-EJS: Motor de templates
-CSS: Estilização
-express-session: Gestão de sessões
-bcrypt: Hash de passwords
+- Node.js + Express: Servidor 
+- webSocket.IO: Comunicação em tempo real
+- MongoDB + Mongoose: Base de dados
+- EJS: Motor de templates
+- CSS: Estilização
+- express-session: Gestão de sessões
+- bcrypt: Hash de passwords
 
 ## Instalação e Configuração
 
