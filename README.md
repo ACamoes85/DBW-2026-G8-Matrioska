@@ -69,7 +69,7 @@ Matrioska:
 
 ## Documentação
 
-Os diagramas abaixo representam o funcionamento do sistema considerando a arquitetura final com Backend (API) e base de dados.
+Os diagramas abaixo representam o funcionamento do sistema considerando a arquitetura final com Frontend (Browser), Servidor (Node.js/Express) e base de dados (MongoDB).
 
 ## Diagramas de Sequência
 
