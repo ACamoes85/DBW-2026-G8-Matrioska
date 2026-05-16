@@ -2,7 +2,7 @@
 
 Projeto desenvolvido no âmbito da unidade curricular de Desenvolvimento Baseado na Web (DBW) 2025/2026, da Universidade da Madeira.
 
-## Grupo
+## Grupo 8
 - Afonso Camoes - 2123322
 - Rafael Vieira Silva - 2176524
 - Teresa Silva - 2028815
