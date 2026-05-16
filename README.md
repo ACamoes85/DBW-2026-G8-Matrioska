@@ -41,17 +41,17 @@ A pontuação é baseada no número de letras de cada palavra correta.
 ## Instalação e Configuração
 
 1. Clonar o repositório
-git clone https://github.com/ACamoes85/DBW-2026-G8-Matrioska.git
-cd DBW-2026-G8-Matrioska/Matrioska
+- git clone https://github.com/ACamoes85/DBW-2026-G8-Matrioska.git
+- cd DBW-2026-G8-Matrioska/Matrioska
 
 2. Instalar as dependências
-npm install
+- npm install
 
 3. Arrancar o servidor
-npm start
+- npm start
 
 4. Abrir no browser
-Aceder a http://localhost:3000
+- Aceder a http://localhost:3000
 
 ## Documentação
 
