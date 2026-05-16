@@ -1,6 +1,6 @@
 # Matrioska
 
-Projeto desenvolvido no âmbito da unidade curricular de Desenvolvimento Baseado na Web (DBW) 2025/2026, na Universidade da Madeira.
+Projeto desenvolvido no âmbito da unidade curricular de Desenvolvimento Baseado na Web (DBW) 2025/2026, da Universidade da Madeira.
 
 ## Grupo
 - Afonso Camoes - 2123322
