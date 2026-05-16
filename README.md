@@ -14,7 +14,6 @@ https://www.figma.com/proto/9WQMXkhvHajC7p8u6XquYu/Matrioska?node-id=156-41&t=pM
 ## Descrição
 
 Matrioska é um jogo multijogador de agilidade linguística onde os jogadores recebem uma Palavra-Mestra e têm 30/60 segundos para descobrir o maior número possível de subpalavras válidas.
-
 A pontuação é baseada no número de letras de cada palavra correta.
 
 ## Funcionalidades
@@ -37,6 +36,21 @@ A pontuação é baseada no número de letras de cada palavra correta.
 - CSS: Estilização
 - express-session: Gestão de sessões
 - bcrypt: Hash de passwords
+
+## Estrutura do Projeto
+
+Matrioska:
+- config/ -> Configuração da BD, sessão e Socket.IO
+- controllers/ -> Processamento dos pedidos HTTP (auth, jogo, utilizador)
+- middleware/ -> Middlewares reutilizáveis (autenticação)
+- models/ -> Schemas Mongoose (User, Lobby, Palavra)
+- public/ -> Ficheiros estáticos (CSS, JS, imagens)
+- routes/ -> Definição das rotas da aplicação
+- scripts/ -> Scripts auxiliares (seed da BD)
+- utils/ -> Utilitários (sanitização, rate limiter)
+- views/ -> Templates EJS
+- index.js -> Ponto de entrada da aplicação
+- .env  -> Variáveis de ambiente (credenciais da BD e sessão)
 
 ## Instalação e Configuração
 
